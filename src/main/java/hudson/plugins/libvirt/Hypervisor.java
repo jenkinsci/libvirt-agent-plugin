@@ -428,6 +428,7 @@ public class Hypervisor extends Cloud {
             List<String> types = new ArrayList<String>();
             types.add("QEMU");
             types.add("XEN");
+            types.add("LXC");
             return types;
         }
     }
