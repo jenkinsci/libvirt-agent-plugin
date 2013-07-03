@@ -188,8 +188,8 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     @Override
     public synchronized void afterDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
         delegate.afterDisconnect(slaveComputer, taskListener);
-                    }
-            	
+    }
+
     @Override
     public void beforeDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
         delegate.beforeDisconnect(slaveComputer, taskListener);
