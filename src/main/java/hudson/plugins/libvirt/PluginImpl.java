@@ -72,6 +72,19 @@ public class PluginImpl extends Plugin {
 		}
 	}
 
+    public FormValidation doCheckStartupTimesToRetryOnFailure(@QueryParameter String retriesValue) throws IOException, ServletException {
+        try {
+            int v = Integer.parseInt(retriesValue);
+            if (v < 0) {
+                return FormValidation.error("Negative value.");
+            } else {
+                return FormValidation.ok();
+            }
+        } catch (NumberFormatException e) {
+            return FormValidation.error("Not a number.");
+        }
+    }
+
     public void doComputerNameValues(StaplerRequest req, StaplerResponse rsp, @QueryParameter("value") String value) throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
         List<VirtualMachine> virtualMachines = null;

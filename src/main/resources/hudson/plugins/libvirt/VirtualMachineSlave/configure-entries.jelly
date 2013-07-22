@@ -33,6 +33,10 @@
         <f:textbox default="60" checkUrl="'${rootURL}/plugin/libvirt-slave/checkStartupWaitingPeriodSeconds?secsValue='+this.value"/>
     </f:entry>
 
+    <f:entry title="${%Times to Retry Startup}" field="startupTimesToRetryOnFailure" help="/plugin/libvirt-slave/help-libvirt-timesToRetryOnFailure.html">
+        <f:textbox default="0" checkUrl="'${rootURL}/plugin/libvirt-slave/checkStartupTimesToRetryOnFailure?retriesValue='+this.value"/>
+    </f:entry>
+
     <f:entry title="${%# of executors}" field="numExecutors">
         <f:textbox/>
     </f:entry>
