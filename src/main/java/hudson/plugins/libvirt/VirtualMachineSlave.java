@@ -50,6 +50,7 @@ public class VirtualMachineSlave extends Slave {
     private String 				snapshotName;
     private String 				virtualMachineName;
     private int 				startupWaitingPeriodSeconds;
+    private int                 startupTimesToRetryOnFailure;
 
     @DataBoundConstructor
     public VirtualMachineSlave(String name, String nodeDescription, String remoteFS, String numExecutors,
@@ -65,6 +66,7 @@ public class VirtualMachineSlave extends Slave {
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
         this.startupWaitingPeriodSeconds = startupWaitingPeriodSeconds;
+        this.startupTimesToRetryOnFailure = startupTimesToRetryOnFailure;
     }
 
     public String getHypervisorDescription() {
@@ -81,6 +83,10 @@ public class VirtualMachineSlave extends Slave {
 
     public int getStartupWaitingPeriodSeconds() {
         return startupWaitingPeriodSeconds;
+    }
+
+    public int getStartupTimesToRetryOnFailure() {
+        return startupTimesToRetryOnFailure;
     }
 
     public ComputerLauncher getDelegateLauncher() {
