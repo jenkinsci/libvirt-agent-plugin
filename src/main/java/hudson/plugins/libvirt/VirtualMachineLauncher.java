@@ -128,31 +128,40 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
             Domain domain = computers.get(virtualMachine.getName());
             if (domain != null) {
-                int currRetries = 0;
-                while (true) {
-                    currRetries++;
+                if (domain.getInfo().state != DomainState.VIR_DOMAIN_BLOCKED &&
+                    domain.getInfo().state != DomainState.VIR_DOMAIN_RUNNING) {
+                    taskListener.getLogger().println("Starting, waiting for " + WAIT_TIME_MS + "ms to let it fully boot up...");
+                    domain.create();
+                    Thread.sleep(WAIT_TIME_MS);
 
-                    if (domain.getInfo().state != DomainState.VIR_DOMAIN_BLOCKED &&
-                        domain.getInfo().state != DomainState.VIR_DOMAIN_RUNNING) {
-                        taskListener.getLogger().println("Starting, waiting for " + WAIT_TIME_MS + "ms to let it fully boot up...");
-                        domain.create();
+                    int attempts = 0;
+                    while (true) {
+                        attempts++;
+
+                        taskListener.getLogger().println("Connecting slave client.");
+
+                        // This call doesn't seem to actually throw anything, but we'll catch IOException just in case
+                        try {
+                            delegate.launch(slaveComputer, taskListener);
+                        } catch (IOException e) {
+                        }
+
+                        if (slaveComputer.isOnline()) {
+                            break;
+                        } else if (attempts >= timesToRetryOnFailure) {
+                            taskListener.getLogger().println("Maximum retries reached. Failed to start slave client.");
+                            break;
+                        }
+
+                        taskListener.getLogger().println("Not up yet, waiting for " + WAIT_TIME_MS + "ms more (" +
+                                                         attempts + "/" + timesToRetryOnFailure + " retries)...");
                         Thread.sleep(WAIT_TIME_MS);
-                    } else {
-                        taskListener.getLogger().println("Already running, no startup required.");
                     }
+                } else {
+                    taskListener.getLogger().println("Already running, no startup required.");
+
                     taskListener.getLogger().println("Connecting slave client.");
-                    try {
-                        delegate.launch(slaveComputer, taskListener);
-                        break;
-                    } catch (IOException e) {
-                        if (currRetries > timesToRetryOnFailure)
-                            throw e;
-                        // else
-                        taskListener.getLogger().println(
-                                "Not up yet, waiting for " + WAIT_TIME_MS + "ms more (" + currRetries + "/" + timesToRetryOnFailure +
-                                        " retries)...");
-                        Thread.sleep(WAIT_TIME_MS);
-                    }
+                    delegate.launch(slaveComputer, taskListener);
                 }
             } else {
 	            throw new IOException("VM \"" + virtualMachine.getName() + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found!");
