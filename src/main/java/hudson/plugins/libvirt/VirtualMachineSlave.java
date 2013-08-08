@@ -50,12 +50,14 @@ public class VirtualMachineSlave extends Slave {
     private String 				snapshotName;
     private String 				virtualMachineName;
     private int 				startupWaitingPeriodSeconds;
+    private String              beforeJobSnapshotName;
 
     @DataBoundConstructor
     public VirtualMachineSlave(String name, String nodeDescription, String remoteFS, String numExecutors,
             Mode mode, String labelString, VirtualMachineLauncher launcher, ComputerLauncher delegateLauncher,
             RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-            String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds)
+            String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds,
+            String beforeJobSnapshotName)
             throws
             Descriptor.FormException, IOException {
         super(name, nodeDescription, remoteFS, Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
@@ -65,6 +67,7 @@ public class VirtualMachineSlave extends Slave {
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
         this.startupWaitingPeriodSeconds = startupWaitingPeriodSeconds;
+        this.beforeJobSnapshotName = beforeJobSnapshotName;
     }
 
     public String getHypervisorDescription() {
@@ -81,6 +84,10 @@ public class VirtualMachineSlave extends Slave {
 
     public int getStartupWaitingPeriodSeconds() {
         return startupWaitingPeriodSeconds;
+    }
+
+    public String getBeforeJobSnapshotName() {
+        return beforeJobSnapshotName;
     }
 
     public ComputerLauncher getDelegateLauncher() {

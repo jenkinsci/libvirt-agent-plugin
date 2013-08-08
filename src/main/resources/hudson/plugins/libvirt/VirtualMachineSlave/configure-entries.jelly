@@ -5,7 +5,7 @@
 	</f:entry>
     
     <f:entry title="${%Virtual Machine}" field="virtualMachineName" help="/plugin/libvirt-slave/help-libvirt-computerName.html">
-        <select class="setting-input" name="virtualMachineName" value="${instance.virtualMachineName}" onchange="updateListBox(document.getElementsByName('snapshotName')[0],'${rootURL}/plugin/libvirt-slave/snapshotNameValues?vm='+encode(this.value)+'&amp;hypervisor='+encode(document.getElementsByName('_.hypervisorDescription')[0].options[document.getElementsByName('_.hypervisorDescription')[0].selectedIndex].text))">
+        <select class="setting-input" name="virtualMachineName" value="${instance.virtualMachineName}" onchange="snapshotsList='${rootURL}/plugin/libvirt-slave/snapshotNameValues?vm='+encode(this.value)+'&amp;hypervisor='+encode(document.getElementsByName('_.hypervisorDescription')[0].options[document.getElementsByName('_.hypervisorDescription')[0].selectedIndex].text); updateListBox(document.getElementsByName('snapshotName')[0], snapshotsList); updateListBox(document.getElementsByName('beforeJobSnapshotName')[0], snapshotsList)">
             <j:forEach var="vc" items="${descriptor.getDefinedVirtualMachines(it.hypervisorDescription)}" varStatus="loop">
                 <option selected="${vc.name==it.virtualMachineName?'true':null}">
                     ${vc.name}
@@ -19,6 +19,17 @@
         	<option selected="${it.snapshotName == null || it.snapshotName == ''}"></option>
             <j:forEach var="sshot" items="${descriptor.getDefinedSnapshots(it.hypervisorDescription, it.virtualMachineName)}" varStatus="loop">
                 <option selected="${sshot==it.snapshotName?'true':null}">
+                    ${sshot}
+                </option>
+            </j:forEach>
+        </select>
+    </f:entry>
+
+    <f:entry title="${%Before Job Snapshot}" field="beforeJobSnapshotName" help="/plugin/libvirt-slave/help-libvirt-beforeJobSnapshotName.html">
+        <select class="setting-input" name="beforeJobSnapshotName" value="${instance.beforeJobSnapshotName}">
+            <option selected="${it.beforeJobSnapshotName == null || it.beforeJobSnapshotName == ''}"></option>
+            <j:forEach var="sshot" items="${descriptor.getDefinedSnapshots(it.hypervisorDescription, it.virtualMachineName)}" varStatus="loop">
+                <option selected="${sshot==it.beforeJobSnapshotName?'true':null}">
                     ${sshot}
                 </option>
             </j:forEach>
