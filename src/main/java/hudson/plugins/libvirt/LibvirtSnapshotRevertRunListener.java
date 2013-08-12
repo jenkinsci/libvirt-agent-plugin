@@ -15,80 +15,103 @@ import org.libvirt.Domain;
 import org.libvirt.DomainSnapshot;
 import org.libvirt.LibvirtException;
 
-// Supertype doesn't declare generic types, can't do anything to fix that and still be able to override.
-@SuppressWarnings("rawtypes")
 @Extension
-public class LibvirtSnapshotRevertRunListener extends RunListener<Run> {
+public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
 
     @Override
-    public void onStarted(Run r, TaskListener listener) {
+    public void onStarted(Run<?, ?> r, TaskListener listener) {
         Node node = r.getExecutor().getOwner().getNode();
 
         if (node instanceof VirtualMachineSlave) {
             VirtualMachineSlave slave = (VirtualMachineSlave) node;
 
-            String beforeJobSnapshotName = slave.getBeforeJobSnapshotName();
-            if (beforeJobSnapshotName != null && beforeJobSnapshotName.length() > 0) {
+            String snapshotName = null;
 
-                ComputerLauncher launcher = slave.getLauncher();
-                if (launcher instanceof ComputerLauncher) {
+            BeforeJobSnapshotJobProperty prop = r.getParent().getProperty(BeforeJobSnapshotJobProperty.class);
+            String jobBeforeJobSnapshotName = null;
+            if (prop != null)
+                jobBeforeJobSnapshotName = prop.getSnapshotName();
 
-                    VirtualMachineLauncher slaveLauncher = (VirtualMachineLauncher) launcher;
-                    Hypervisor hypervisor = slaveLauncher.findOurHypervisorInstance();
+            String slaveBeforeJobSnapshotName = slave.getBeforeJobSnapshotName();
+
+            if (jobBeforeJobSnapshotName != null && jobBeforeJobSnapshotName.length() > 0) {
+                listener.getLogger().println("Got snapshot " + jobBeforeJobSnapshotName + " from job configuration");
+                snapshotName = jobBeforeJobSnapshotName;
+            }
+
+            if (slaveBeforeJobSnapshotName != null && slaveBeforeJobSnapshotName.length() > 0) {
+                if (snapshotName == null) {
+                    listener.getLogger().println("Got snapshot " + slaveBeforeJobSnapshotName + " from slave/node configuration");
+                    snapshotName = slaveBeforeJobSnapshotName;
+                } else {
+                    listener.getLogger().println("Favouring snapshot from previously identified source over " +
+                                                 slaveBeforeJobSnapshotName + " from slave/node configuration");
+                }
+            }
+
+            if (snapshotName != null)
+                revertVMSnapshot(slave, snapshotName, listener);
+        }
+    }
+
+    private static void revertVMSnapshot(VirtualMachineSlave slave, String snapshotName, TaskListener listener) {
+        ComputerLauncher launcher = slave.getLauncher();
+        if (launcher instanceof ComputerLauncher) {
+
+            VirtualMachineLauncher slaveLauncher = (VirtualMachineLauncher) launcher;
+            Hypervisor hypervisor = slaveLauncher.findOurHypervisorInstance();
+
+            try {
+                Map<String, Domain> domains = hypervisor.getDomains();
+
+                String vmName = slaveLauncher.getVirtualMachineName();
+                Domain domain = domains.get(vmName);
+                if (domain != null) {
+                    listener.getLogger().println("Preparing to revert " + vmName + " to snapshot " + snapshotName + ".");
 
                     try {
-                        Map<String, Domain> domains = hypervisor.getDomains();
-
-                        String vmName = slaveLauncher.getVirtualMachineName();
-                        Domain domain = domains.get(vmName);
-                        if (domain != null) {
-                            listener.getLogger().println("Preparing to revert " + vmName + " to snapshot " + beforeJobSnapshotName + ".");
-
+                        DomainSnapshot snapshot = domain.snapshotLookupByName(snapshotName);
+                        try {
+                            Computer computer = slave.getComputer();
                             try {
-                                DomainSnapshot snapshot = domain.snapshotLookupByName(beforeJobSnapshotName);
+                                computer.getChannel().syncLocalIO();
                                 try {
-                                    Computer computer = slave.getComputer();
+                                    computer.getChannel().close();
+                                    computer.disconnect(null);
                                     try {
-                                        computer.getChannel().syncLocalIO();
+                                        computer.waitUntilOffline();
+
+                                        listener.getLogger().println("Reverting " + vmName + " to snapshot " + snapshotName + ".");
+                                        domain.revertToSnapshot(snapshot);
+
+                                        listener.getLogger().println("Relaunching " + vmName + ".");
                                         try {
-                                            computer.getChannel().close();
-                                            computer.disconnect(null);
-                                            try {
-                                                computer.waitUntilOffline();
-
-                                                listener.getLogger().println("Reverting " + vmName + " to snapshot " + beforeJobSnapshotName + ".");
-                                                domain.revertToSnapshot(snapshot);
-
-                                                listener.getLogger().println("Relaunching " + vmName + ".");
-                                                try {
-                                                    launcher.launch(slave.getComputer(), listener);
-                                                } catch (IOException e) {
-                                                    listener.fatalError("Could not relaunch VM: " + e);
-                                                } catch (InterruptedException e) {
-                                                    listener.fatalError("Could not relaunch VM: " + e);
-                                                }
-                                            } catch (InterruptedException e) {
-                                                listener.fatalError("Interrupted while waiting for computer to be offline: " + e);
-                                            }
+                                            launcher.launch(slave.getComputer(), listener);
                                         } catch (IOException e) {
-                                            listener.fatalError("Error closing channel: " + e);
+                                            listener.fatalError("Could not relaunch VM: " + e);
+                                        } catch (InterruptedException e) {
+                                            listener.fatalError("Could not relaunch VM: " + e);
                                         }
                                     } catch (InterruptedException e) {
-                                        listener.fatalError("Interrupted while syncing IO: " + e);
+                                        listener.fatalError("Interrupted while waiting for computer to be offline: " + e);
                                     }
-                                } catch (LibvirtException e) {
-                                    listener.fatalError("No snapshot named " + beforeJobSnapshotName + " for VM: " + e);
+                                } catch (IOException e) {
+                                    listener.fatalError("Error closing channel: " + e);
                                 }
-                            } catch (LibvirtException e) {
-                                listener.fatalError("No snapshot named " + beforeJobSnapshotName + " for VM: " + e);
+                            } catch (InterruptedException e) {
+                                listener.fatalError("Interrupted while syncing IO: " + e);
                             }
-                        } else {
-                            listener.fatalError("No VM named " + vmName);
+                        } catch (LibvirtException e) {
+                            listener.fatalError("No snapshot named " + snapshotName + " for VM: " + e);
                         }
                     } catch (LibvirtException e) {
-                        listener.fatalError("Can't get VM domains: " + e);
+                        listener.fatalError("No snapshot named " + snapshotName + " for VM: " + e);
                     }
+                } else {
+                    listener.fatalError("No VM named " + vmName);
                 }
+            } catch (LibvirtException e) {
+                listener.fatalError("Can't get VM domains: " + e);
             }
         }
     }
