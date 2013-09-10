@@ -121,8 +121,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 	            if (virtualMachine == null) // still null? no such vm!
 	            	throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
 	        }
-        
-            Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
+	        Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
             Domain domain = computers.get(virtualMachine.getName());
             if (domain != null) {
                 if (domain.getInfo().state != DomainState.VIR_DOMAIN_BLOCKED && domain.getInfo().state != DomainState.VIR_DOMAIN_RUNNING) {
@@ -157,45 +156,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public synchronized void afterDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
-    	
-        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + slaveComputer.getDisplayName() + "\") is to be shut down.");
         delegate.afterDisconnect(slaveComputer, taskListener);
-
-        try {
-            Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
-            Domain domain = computers.get(virtualMachine.getName());
-            if (domain != null) {
-            	if (domain.getInfo().state.equals(DomainState.VIR_DOMAIN_RUNNING) || domain.getInfo().state.equals(DomainState.VIR_DOMAIN_BLOCKED)) {
-                    if (snapshotName != null && snapshotName.length() > 0) {
-                    	taskListener.getLogger().println("Reverting to " + snapshotName + " and shutting down.");
-                        domain.revertToSnapshot(domain.snapshotLookupByName(snapshotName));
-                    } else {
-                    	taskListener.getLogger().println("Shutting down.");
-                        domain.shutdown();
-                    }
-                } else {
-                    taskListener.getLogger().println("Already suspended, no shutdown required.");
-                }
-                VirtualMachineLauncher vmL = (VirtualMachineLauncher) ((SlaveComputer) slaveComputer).getLauncher();
-                Hypervisor vmC = vmL.findOurHypervisorInstance();
-                vmC.markVMOffline(slaveComputer.getDisplayName(), vmL.getVirtualMachineName());
-            } else {
-            	// log to slave 
-            	taskListener.getLogger().println("\"" + virtualMachineName + "\" not found on Hypervisor, can not shut down!");
-            	
-            	// log to jenkins
-            	LogRecord rec = new LogRecord(Level.WARNING, "Can not shut down {0} on Hypervisor {1}, domain not found!");
-                rec.setParameters(new Object[]{virtualMachine.getName(), virtualMachine.getHypervisor().getHypervisorURI()});
-                LOGGER.log(rec);
-            }
-        } catch (Throwable t) {
-            taskListener.fatalError(t.getMessage(), t);
-            
-            LogRecord rec = new LogRecord(Level.SEVERE, "Error while shutting down {0} on Hypervisor {1}.");
-            rec.setParameters(new Object[]{virtualMachine.getName(), virtualMachine.getHypervisor().getHypervisorURI()});
-            rec.setThrown(t);
-            LOGGER.log(rec);
-        }
     }
 
     @Override
