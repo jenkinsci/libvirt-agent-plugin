@@ -24,6 +24,7 @@ package hudson.plugins.libvirt;
 import hudson.model.TaskListener;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import hudson.plugins.libvirt.lib.IDomain;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerLauncher;
 import hudson.slaves.SlaveComputer;
@@ -36,8 +37,7 @@ import java.util.logging.Logger;
 import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.libvirt.Domain;
-import org.libvirt.DomainInfo.DomainState;
+
 
 public class VirtualMachineLauncher extends ComputerLauncher {
 
@@ -126,11 +126,11 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 	            if (virtualMachine == null) // still null? no such vm!
 	            	throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
 	        }
-	        Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
-            Domain domain = computers.get(virtualMachine.getName());
+        
+            Map<String, IDomain> computers = virtualMachine.getHypervisor().getDomains();
+            IDomain domain = computers.get(virtualMachine.getName());
             if (domain != null) {
-                if (domain.getInfo().state != DomainState.VIR_DOMAIN_BLOCKED &&
-                    domain.getInfo().state != DomainState.VIR_DOMAIN_RUNNING) {
+                if( domain.isNotBlockedAndNotRunning() ) {
                     taskListener.getLogger().println("Starting, waiting for " + WAIT_TIME_MS + "ms to let it fully boot up...");
                     domain.create();
                     Thread.sleep(WAIT_TIME_MS);
@@ -188,8 +188,8 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     @Override
     public synchronized void afterDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
         delegate.afterDisconnect(slaveComputer, taskListener);
-    }
-
+                    }
+            	
     @Override
     public void beforeDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
         delegate.beforeDisconnect(slaveComputer, taskListener);

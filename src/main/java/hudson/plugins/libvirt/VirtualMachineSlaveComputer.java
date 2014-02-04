@@ -23,27 +23,21 @@ package hudson.plugins.libvirt;
 import hudson.model.TaskListener;
 import hudson.model.Slave;
 import hudson.slaves.OfflineCause;
+import hudson.plugins.libvirt.lib.IConnect;
 import hudson.slaves.SlaveComputer;
 import hudson.util.StreamTaskListener;
 import hudson.util.io.ReopenableRotatingFileOutputStream;
+import hudson.model.Slave;
 
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-
-import org.libvirt.Domain;
-import org.libvirt.DomainInfo.DomainState;
 
 public class VirtualMachineSlaveComputer extends SlaveComputer {
 
 	private static final Logger logger = Logger.getLogger(VirtualMachineSlaveComputer.class.getName());
-			
+
 	private final TaskListener taskListener;
 	
     public VirtualMachineSlaveComputer(Slave slave) {
-        super(slave);    
+        super(slave);
         this.taskListener = new StreamTaskListener(new ReopenableRotatingFileOutputStream(getLogFile(),10));
     }
 
@@ -74,7 +68,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                             domain.destroy();
                         } else {
                             domain.shutdown();
-                        }
+}
                     }
                 } else {
                     taskListener.getLogger().println("Already suspended, no shutdown required.");
