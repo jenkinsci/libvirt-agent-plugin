@@ -1,4 +1,5 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">    
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <f:entry title="${%Hypervisor Type}" field="hypervisorType" name="hypervisorType" help="/plugin/libvirt-slave/help-libvirt-hypervisorType.html">
         <select class="setting-input" name="hypervisorType">
             <j:forEach var="t" items="${descriptor.getHypervisorTypes()}" varStatus="loop">
@@ -22,6 +23,14 @@
         <f:entry title="${%Concurrent Slaves Capacity}" help="/plugin/libvirt-slave/help-libvirt-maxOnlineSlaves.html">
             <f:textbox clazz="required number" field="maxOnlineSlaves" />
         </f:entry>
+
+        <f:entry title="${%Use Native Java libvirt client}" field="useNativeJavaConnection">
+            <f:checkbox />
+        </f:entry>
+
+        <f:entry title="${%Native Credentials}" field="credentialsId">
+            <c:select/>
+        </f:entry>
     </f:advanced>
-    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="hypervisorType,hypervisorHost,username,hypervisorSshPort,hypervisorSystemUrl"/>
+    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="hypervisorType,hypervisorHost,username,hypervisorSshPort,hypervisorSystemUrl,useNativeJavaConnection,credentialsId"/>
 </j:jelly>

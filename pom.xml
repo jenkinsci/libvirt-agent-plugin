@@ -35,6 +35,11 @@
             <name>Marco Mornati</name>
             <email>mmornati@byte-code.com</email>
         </developer>
+        <developer>
+            <id>magnayn</id>
+            <name>Nigel Magnay</name>
+            <email>nigel.magnay@gmail.com</email>
+        </developer>
  	</developers>
 
 	<scm>
@@ -112,6 +117,21 @@
             <groupId>org.libvirt</groupId>
             <artifactId>libvirt</artifactId>
             <version>0.4.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nirima.jlibvirt</groupId>
+            <artifactId>jlibvirt</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>credentials</artifactId>
+            <version>1.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>ssh-credentials</artifactId>
+            <version>1.5.1</version>
         </dependency>
     </dependencies>
 </project>
