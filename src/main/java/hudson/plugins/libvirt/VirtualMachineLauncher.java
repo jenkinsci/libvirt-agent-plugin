@@ -95,7 +95,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public boolean isLaunchSupported() {
-        return delegate.isLaunchSupported();
+        return true;
     }
 
     public Hypervisor findOurHypervisorInstance() throws RuntimeException {
