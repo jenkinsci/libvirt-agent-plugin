@@ -53,17 +53,18 @@ public class VirtualMachineSlave extends Slave {
     private int 				startupWaitingPeriodSeconds;
     private String              shutdownMethod;
     private boolean             rebootAfterRun;
+    private int                 startupTimesToRetryOnFailure;
 
     @DataBoundConstructor
     public VirtualMachineSlave(String name, String nodeDescription, String remoteFS, String numExecutors,
             Mode mode, String labelString, VirtualMachineLauncher launcher, ComputerLauncher delegateLauncher,
             RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
             String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds,
-            String shutdownMethod, boolean rebootAfterRun)
+            String shutdownMethod, boolean rebootAfterRun, int startupTimesToRetryOnFailure)
             throws
             Descriptor.FormException, IOException {
         super(name, nodeDescription, remoteFS, Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
-                launcher == null ? new VirtualMachineLauncher(delegateLauncher, hypervisorDescription, virtualMachineName, snapshotName, startupWaitingPeriodSeconds) : launcher,
+                launcher == null ? new VirtualMachineLauncher(delegateLauncher, hypervisorDescription, virtualMachineName, snapshotName, startupWaitingPeriodSeconds, startupTimesToRetryOnFailure) : launcher,
                 retentionStrategy, nodeProperties);        
         this.hypervisorDescription = hypervisorDescription;
         this.virtualMachineName = virtualMachineName;
@@ -71,6 +72,7 @@ public class VirtualMachineSlave extends Slave {
         this.startupWaitingPeriodSeconds = startupWaitingPeriodSeconds;
         this.shutdownMethod = shutdownMethod;
         this.rebootAfterRun = rebootAfterRun;
+        this.startupTimesToRetryOnFailure = startupTimesToRetryOnFailure;
     }
 
     public String getHypervisorDescription() {
@@ -95,6 +97,10 @@ public class VirtualMachineSlave extends Slave {
 
     public boolean getRebootAfterRun() {
         return rebootAfterRun;
+    }
+
+    public int getStartupTimesToRetryOnFailure() {
+        return startupTimesToRetryOnFailure;
     }
 
     public ComputerLauncher getDelegateLauncher() {
