@@ -39,6 +39,7 @@ import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -146,6 +147,7 @@ public class VirtualMachineSlave extends Slave {
             Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
             if (hypervisor != null)
             	virtualMachinesList.addAll(hypervisor.getVirtualMachines());
+            Collections.sort(virtualMachinesList);
             return virtualMachinesList;
         }
 
