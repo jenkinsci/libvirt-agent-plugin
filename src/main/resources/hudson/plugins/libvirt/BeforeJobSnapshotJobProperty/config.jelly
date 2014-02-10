@@ -1,0 +1,14 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+
+    <f:optionalBlock name="snapshots"
+                     title="${%Use Snapshots}"
+                     checked="${instance.snapshotsEnabled}"
+                     help="/plugin/libvirt-slave/help-libvirt-jobUseSnapshots.html">
+
+        <f:entry title="${%Before Run Snapshot}" field="snapshotName" help="/plugin/libvirt-slave/help-libvirt-beforeJobSnapshotJobProperty.html">
+            <f:textbox class="setting-input" name="snapshotName" value="${instance.snapshotName}" />
+        </f:entry>
+
+    </f:optionalBlock>
+
+</j:jelly>
