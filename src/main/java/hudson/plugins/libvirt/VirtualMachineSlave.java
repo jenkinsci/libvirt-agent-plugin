@@ -50,12 +50,15 @@ public class VirtualMachineSlave extends Slave {
     private String 				snapshotName;
     private String 				virtualMachineName;
     private int 				startupWaitingPeriodSeconds;
+    private String              shutdownMethod;
+    private boolean             rebootAfterRun;
 
     @DataBoundConstructor
     public VirtualMachineSlave(String name, String nodeDescription, String remoteFS, String numExecutors,
             Mode mode, String labelString, VirtualMachineLauncher launcher, ComputerLauncher delegateLauncher,
             RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-            String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds)
+            String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds,
+            String shutdownMethod, boolean rebootAfterRun)
             throws
             Descriptor.FormException, IOException {
         super(name, nodeDescription, remoteFS, Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
@@ -65,6 +68,8 @@ public class VirtualMachineSlave extends Slave {
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
         this.startupWaitingPeriodSeconds = startupWaitingPeriodSeconds;
+        this.shutdownMethod = shutdownMethod;
+        this.rebootAfterRun = rebootAfterRun;
     }
 
     public String getHypervisorDescription() {
@@ -81,6 +86,14 @@ public class VirtualMachineSlave extends Slave {
 
     public int getStartupWaitingPeriodSeconds() {
         return startupWaitingPeriodSeconds;
+    }
+
+    public String getShutdownMethod() {
+        return shutdownMethod;
+    }
+
+    public boolean getRebootAfterRun() {
+        return rebootAfterRun;
     }
 
     public ComputerLauncher getDelegateLauncher() {

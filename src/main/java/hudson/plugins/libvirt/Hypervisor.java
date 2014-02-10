@@ -74,7 +74,7 @@ public class Hypervisor extends Cloud {
         super("Hypervisor(libvirt)");
         this.hypervisorType = hypervisorType;
         this.hypervisorHost = hypervisorHost;
-        if (hypervisorSystemUrl != null && !hypervisorSystemUrl.equals("")) {
+        if (hypervisorSystemUrl != null) {
             this.hypervisorSystemUrl = hypervisorSystemUrl;
         } else {
             this.hypervisorSystemUrl = "system";
@@ -428,6 +428,7 @@ public class Hypervisor extends Cloud {
             List<String> types = new ArrayList<String>();
             types.add("QEMU");
             types.add("XEN");
+            types.add("LXC");
             return types;
         }
     }

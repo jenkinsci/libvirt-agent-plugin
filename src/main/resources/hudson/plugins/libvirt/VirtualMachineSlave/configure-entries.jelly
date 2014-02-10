@@ -45,6 +45,25 @@
         <f:textbox/>
     </f:entry>
 
+    <f:entry title="${%Shutdown Method}" field="shutdownMethod" help="/plugin/libvirt-slave/help-libvirt-shutdownMethod.html">
+        <select class="setting-input" name="shutdownMethod" value="${instance.shutdownMethod}" >
+                <option selected="${(it.shutdownMethod=='shutdown')?'true':null}" >
+                    shutdown
+                </option>
+                <option selected="${(it.shutdownMethod=='suspend')?'true':null}" >
+                    suspend
+                </option>
+                <option selected="${(it.shutdownMethod=='destroy')?'true':null}" >
+                    destroy
+                </option>
+        </select>
+    </f:entry>
+
+    <f:entry title="${%Reboot this slave after each build}" field="rebootAfterRun">
+        <f:checkbox/>
+    </f:entry>
+
+
     <f:slave-mode name="mode" node="${it}"/>
 
     <f:dropdownList name="slave.delegateLauncher" title="${%Secondary launch method}"
