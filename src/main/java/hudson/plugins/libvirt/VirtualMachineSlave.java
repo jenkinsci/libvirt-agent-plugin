@@ -114,7 +114,12 @@ public class VirtualMachineSlave extends Slave {
         return ((VirtualMachineLauncher) getLauncher()).getDelegate();
     }
 
-    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+    @Override
+	public Computer createComputer() {
+		return new VirtualMachineSlaveComputer(this);
+	}
+
+	public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
     @Extension
     public static class VirtualMachineComputerListener extends ComputerListener {

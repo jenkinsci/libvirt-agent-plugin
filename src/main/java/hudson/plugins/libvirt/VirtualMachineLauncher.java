@@ -49,7 +49,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     private String snapshotName;
     private final int WAIT_TIME_MS;
     private final int timesToRetryOnFailure;
-
+    
     @DataBoundConstructor
     public VirtualMachineLauncher(ComputerLauncher delegate, String hypervisorDescription, String virtualMachineName, String snapshotName,
             int waitingTimeSecs, int timesToRetryOnFailure) {
@@ -82,7 +82,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             }
         }
     }
-
+    
     public ComputerLauncher getDelegate() {
         return delegate;
     }
@@ -126,8 +126,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 	            if (virtualMachine == null) // still null? no such vm!
 	            	throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
 	        }
-        
-            Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
+	        Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
             Domain domain = computers.get(virtualMachine.getName());
             if (domain != null) {
                 if (domain.getInfo().state != DomainState.VIR_DOMAIN_BLOCKED &&
@@ -162,8 +161,8 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                 } else {
                     taskListener.getLogger().println("Already running, no startup required.");
 
-                    taskListener.getLogger().println("Connecting slave client.");
-                    delegate.launch(slaveComputer, taskListener);
+                taskListener.getLogger().println("Connecting slave client.");
+                delegate.launch(slaveComputer, taskListener);
                 }
             } else {
 	            throw new IOException("VM \"" + virtualMachine.getName() + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found!");
@@ -188,64 +187,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public synchronized void afterDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
-
-        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + slaveComputer.getDisplayName() + "\") is to be shut down.");
         delegate.afterDisconnect(slaveComputer, taskListener);
-
-        try {
-
-            if (virtualMachine == null) {
-                taskListener.getLogger().println("No connection ready to the Hypervisor, connecting...");
-                lookupVirtualMachineHandle();
-                if (virtualMachine == null) // still null? no such vm!
-                    throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
-            }
-            VirtualMachineSlave slave = (VirtualMachineSlave)slaveComputer.getNode();
-
-
-            Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
-            Domain domain = computers.get(virtualMachine.getName());
-            if (domain != null) {
-                if (domain.getInfo().state.equals(DomainState.VIR_DOMAIN_RUNNING) || domain.getInfo().state.equals(DomainState.VIR_DOMAIN_BLOCKED)) {
-                    if (snapshotName != null && snapshotName.length() > 0) {
-                        taskListener.getLogger().println("Reverting to " + snapshotName + " and shutting down.");
-                        domain.revertToSnapshot(domain.snapshotLookupByName(snapshotName));
-                    } else {
-                        taskListener.getLogger().println("Shutting down.");
-
-                        System.err.println("method: " + slave.getShutdownMethod());
-                        if (slave.getShutdownMethod().equals("suspend")) {
-                            domain.suspend();
-                        } else if (slave.getShutdownMethod().equals("destroy")) {
-                            domain.destroy();
-                        } else {
-                            domain.shutdown();
-                        }
-                    }
-                } else {
-                    taskListener.getLogger().println("Already suspended, no shutdown required.");
-                }
-                VirtualMachineLauncher vmL = (VirtualMachineLauncher) ((SlaveComputer) slaveComputer).getLauncher();
-                Hypervisor vmC = vmL.findOurHypervisorInstance();
-                vmC.markVMOffline(slaveComputer.getDisplayName(), vmL.getVirtualMachineName());
-            } else {
-                // log to slave
-                taskListener.getLogger().println("\"" + virtualMachineName + "\" not found on Hypervisor, can not shut down!");
-
-                // log to jenkins
-                LogRecord rec = new LogRecord(Level.WARNING, "Can not shut down {0} on Hypervisor {1}, domain not found!");
-
-                rec.setParameters(new Object[]{virtualMachine.getName(), virtualMachine.getHypervisor().getHypervisorURI()});
-                LOGGER.log(rec);
-            }
-        } catch (Throwable t) {
-            taskListener.fatalError(t.getMessage(), t);
-
-            LogRecord rec = new LogRecord(Level.SEVERE, "Error while shutting down {0} on Hypervisor {1}.");
-            rec.setParameters(new Object[]{virtualMachine.getName(), virtualMachine.getHypervisor().getHypervisorURI()});
-            rec.setThrown(t);
-            LOGGER.log(rec);
-        }
     }
 
     @Override
@@ -255,6 +197,6 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public Descriptor<ComputerLauncher> getDescriptor() {
-       throw new UnsupportedOperationException();
+    	throw new UnsupportedOperationException();
     }
 }
