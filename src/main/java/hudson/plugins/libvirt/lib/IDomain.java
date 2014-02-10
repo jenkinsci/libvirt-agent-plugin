@@ -12,7 +12,7 @@ public interface IDomain {
 
     IDomainSnapshot snapshotLookupByName(String snapshotName) throws VirtException;
 
-    int revertToSnapshot(IDomainSnapshot aVoid) throws VirtException;
+    void revertToSnapshot(IDomainSnapshot aVoid) throws VirtException;
 
     void shutdown() throws VirtException;
 
@@ -20,5 +20,5 @@ public interface IDomain {
 
     boolean isNotBlockedAndNotRunning() throws VirtException;
 
-    int create() throws VirtException;
+    void create() throws VirtException;
 }

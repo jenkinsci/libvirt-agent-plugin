@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 
 
+import jenkins.model.Jenkins;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -88,7 +89,7 @@ public class PluginImpl extends Plugin {
     public void doComputerNameValues(StaplerRequest req, StaplerResponse rsp, @QueryParameter("value") String value) throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
         List<VirtualMachine> virtualMachines = null;
-        for (Cloud cloud : Hudson.getInstance().clouds) {
+        for (Cloud cloud : Jenkins.getInstance().clouds) {
             if (cloud instanceof Hypervisor) {
                 Hypervisor hypervisor = (Hypervisor) cloud;
                 if (value != null && value.equals(hypervisor.getHypervisorDescription())) {
@@ -101,7 +102,8 @@ public class PluginImpl extends Plugin {
             for (VirtualMachine vm : virtualMachines) {
                 m.add(new ListBoxModel.Option(vm.getName(), vm.getName()));
             }
-            m.get(0).selected = true;
+            if( m.size() > 0 )
+                m.get(0).selected = true;
         }
         m.writeTo(req, rsp);
     }

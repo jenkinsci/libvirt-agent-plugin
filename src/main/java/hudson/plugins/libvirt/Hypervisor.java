@@ -453,8 +453,9 @@ public class Hypervisor extends Cloud {
                 LOGGER.log(rec);
                 
                 IConnect hypervisorConnection = builder.build();
+                long version = hypervisorConnection.getVersion();
                 hypervisorConnection.close();
-                return FormValidation.ok("OK: " + hypervisorUri);
+                return FormValidation.ok("OK: " + hypervisorUri + ", version=" + version);
             } catch (VirtException e) {
                 LogRecord rec = new LogRecord(Level.WARNING, "Failed to check hypervisor connection to {0} as {1}/******");
                 rec.setThrown(e);

@@ -49,10 +49,10 @@ public class JLibVirtDomainImpl implements IDomain {
         }
     }
 
-    public int revertToSnapshot(IDomainSnapshot ds)  throws VirtException{
+    public void revertToSnapshot(IDomainSnapshot ds)  throws VirtException{
         try {
             DomainSnapshot snapshot = ((JLibVirtDomainSnapshotImpl)ds).getSnapshot();
-            return domain.revertToSnapshot(snapshot);
+            domain.revertToSnapshot(snapshot);
         } catch (Exception e) {
             throw new VirtException(e);
         }
@@ -84,9 +84,9 @@ public class JLibVirtDomainImpl implements IDomain {
         }
     }
 
-    public int create() throws VirtException {
+    public void create() throws VirtException {
         try {
-            return domain.create();
+            domain.create();
         } catch (Exception e) {
             throw new VirtException(e);
         }
