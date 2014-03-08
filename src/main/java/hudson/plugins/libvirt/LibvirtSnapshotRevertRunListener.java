@@ -1,11 +1,11 @@
 package hudson.plugins.libvirt;
 
 import hudson.Extension;
-import hudson.model.TaskListener;
-import hudson.model.Computer;
-import hudson.model.Node;
-import hudson.model.Run;
+import hudson.model.*;
 import hudson.model.listeners.RunListener;
+import hudson.plugins.libvirt.lib.IDomain;
+import hudson.plugins.libvirt.lib.IDomainSnapshot;
+import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.ComputerLauncher;
 
 import java.io.IOException;
@@ -20,7 +20,12 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
 
     @Override
     public void onStarted(Run<?, ?> r, TaskListener listener) {
-        Node node = r.getExecutor().getOwner().getNode();
+        Executor executor = r.getExecutor();
+
+        if( executor == null )
+            return;
+
+        Node node = executor.getOwner().getNode();
 
         if (node instanceof VirtualMachineSlave) {
             VirtualMachineSlave slave = (VirtualMachineSlave) node;
@@ -62,15 +67,15 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
             Hypervisor hypervisor = slaveLauncher.findOurHypervisorInstance();
 
             try {
-                Map<String, Domain> domains = hypervisor.getDomains();
+                Map<String, IDomain> domains = hypervisor.getDomains();
 
                 String vmName = slaveLauncher.getVirtualMachineName();
-                Domain domain = domains.get(vmName);
+                IDomain domain = domains.get(vmName);
                 if (domain != null) {
                     listener.getLogger().println("Preparing to revert " + vmName + " to snapshot " + snapshotName + ".");
 
                     try {
-                        DomainSnapshot snapshot = domain.snapshotLookupByName(snapshotName);
+                        IDomainSnapshot snapshot = domain.snapshotLookupByName(snapshotName);
                         try {
                             Computer computer = slave.getComputer();
                             try {
@@ -101,16 +106,16 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
                             } catch (InterruptedException e) {
                                 listener.fatalError("Interrupted while syncing IO: " + e);
                             }
-                        } catch (LibvirtException e) {
+                        } catch (VirtException e) {
                             listener.fatalError("No snapshot named " + snapshotName + " for VM: " + e);
                         }
-                    } catch (LibvirtException e) {
+                    } catch (VirtException e) {
                         listener.fatalError("No snapshot named " + snapshotName + " for VM: " + e);
                     }
                 } else {
                     listener.fatalError("No VM named " + vmName);
                 }
-            } catch (LibvirtException e) {
+            } catch (VirtException e) {
                 listener.fatalError("Can't get VM domains: " + e);
             }
         }

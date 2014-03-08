@@ -5,7 +5,7 @@ import com.nirima.libvirt.DomainSnapshot;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
 import hudson.plugins.libvirt.lib.VirtException;
-
+import org.libvirt.LibvirtException;
 
 
 /**
@@ -87,6 +87,22 @@ public class JLibVirtDomainImpl implements IDomain {
     public void create() throws VirtException {
         try {
             domain.create();
+        } catch (Exception e) {
+            throw new VirtException(e);
+        }
+    }
+
+    public void destroy() throws VirtException {
+        try {
+            domain.destroy();
+        } catch (Exception e) {
+            throw new VirtException(e);
+        }
+    }
+
+    public void suspend() throws VirtException {
+        try {
+            domain.suspend();
         } catch (Exception e) {
             throw new VirtException(e);
         }

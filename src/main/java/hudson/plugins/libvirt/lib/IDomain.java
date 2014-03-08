@@ -21,4 +21,8 @@ public interface IDomain {
     boolean isNotBlockedAndNotRunning() throws VirtException;
 
     void create() throws VirtException;
+
+    void destroy() throws VirtException;
+
+    void suspend() throws VirtException;
 }

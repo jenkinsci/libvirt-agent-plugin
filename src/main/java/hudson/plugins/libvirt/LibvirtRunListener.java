@@ -11,6 +11,9 @@ import hudson.model.Executor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import hudson.plugins.libvirt.lib.IDomain;
+import hudson.plugins.libvirt.lib.VirtException;
 import org.libvirt.Domain;
 import org.libvirt.LibvirtException;
 
@@ -50,10 +53,10 @@ public final class LibvirtRunListener extends RunListener<Run> {
 
                 for (int i = 0; i < 5; i++) {
                     try {
-                        Map<String, Domain> computers = virtualMachine.getHypervisor().getDomains();
-                        Domain domain = computers.get(virtualMachine.getName());
+                        Map<String, IDomain> computers = virtualMachine.getHypervisor().getDomains();
+                        IDomain domain = computers.get(virtualMachine.getName());
                         domain.create();
-                    } catch(LibvirtException e) {
+                    } catch(VirtException e) {
                         try {Thread.sleep(500); } catch (Exception e2) {}
                         continue;
                     }

@@ -89,4 +89,20 @@ public class LibVirtDomainImpl implements IDomain {
             throw new VirtException(e);
         }
     }
+
+    public void destroy() throws VirtException {
+        try {
+            domain.destroy();
+        } catch (LibvirtException e) {
+            throw new VirtException(e);
+        }
+    }
+
+    public void suspend() throws VirtException {
+        try {
+            domain.suspend();
+        } catch (LibvirtException e) {
+            throw new VirtException(e);
+        }
+    }
 }
