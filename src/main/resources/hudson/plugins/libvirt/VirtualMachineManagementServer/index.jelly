@@ -1,0 +1,67 @@
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout"  xmlns:f="/lib/form"
+        >
+    <l:layout title="${%Hypervisor hosts}" norefresh="true" permission="${it.requiredPermission}">
+        <l:header>
+            <script src="${rootURL}${it.getJsUrl('libvirt-manage.js')}" type="text/javascript"></script>
+            <style type="text/css">
+                tr.disablehover:hover {
+                background-color: white;
+                }
+            </style>
+        </l:header>
+        <l:side-panel>
+            <l:tasks>
+                <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}"/>
+            </l:tasks>
+        </l:side-panel>
+        <l:main-panel>
+            <j:set var="instance" value="${it}"/>
+            <j:set var="descriptor" value="${it.descriptor}"/>
+
+            <h1>${%Hypervisor} ${it.name}</h1>
+
+            <H2>Domains</H2>
+
+            <form method="post" action="controlSubmit" name="controlSubmit" id="control">
+                <input type="hidden" id="stopId" name="stopId" value=""/>
+
+            <table width="100%" border="1" cellpadding="2" cellspacing="0"
+                   class="pane bigtable"
+                   style="margin-top: 0">
+                <tr>
+
+                    <td class="pane-header">${%Name}</td>
+                    <td class="pane-header">${%Running}</td>
+                    <td class="pane-header">${%Snapshots}</td>
+                    <td class="pane-header"> - </td>
+
+                </tr>
+
+                <j:forEach var="res" items="${it.domains}">
+                    <tr>
+                        <td>${res.name}</td>
+                        <td>${res.isRunningOrBlocked()}</td>
+
+                        <td>
+                            <j:forEach var="snapshot" items="${res.snapshotListNames()}">
+                                <p>${snapshot}</p>
+                                <br/>
+                            </j:forEach>
+                        </td>
+
+                        <td>
+                            <input type="button" value="stop" onclick="stop('${res.name}')"></input>
+                        </td>
+
+                    </tr>
+                </j:forEach>
+
+
+            </table>
+
+
+            </form>
+
+        </l:main-panel>
+    </l:layout>
+</j:jelly>

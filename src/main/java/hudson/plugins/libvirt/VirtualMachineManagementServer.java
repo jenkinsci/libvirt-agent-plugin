@@ -1,0 +1,79 @@
+package hudson.plugins.libvirt;
+
+import hudson.Extension;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.Hudson;
+import hudson.plugins.libvirt.lib.IDomain;
+import hudson.plugins.libvirt.lib.VirtException;
+import hudson.plugins.libvirt.util.Consts;
+import jenkins.model.Jenkins;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+
+/**
+ * Created by magnayn on 22/02/2014.
+ */
+public class VirtualMachineManagementServer implements Describable<VirtualMachineManagementServer> {
+    final String host;
+    final Hypervisor theCloud;
+
+    public Descriptor<VirtualMachineManagementServer> getDescriptor() {
+        return Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
+    }
+
+    public String getUrl() {
+        return VirtualMachineManagement.get().getUrlName() + "/server/" + host;
+    }
+
+    public VirtualMachineManagementServer(String host) {
+        this.host = host;
+        theCloud = PluginImpl.getInstance().getServer(host);
+    }
+
+    public Collection getDomains() throws VirtException {
+
+        return theCloud.getDomains().values();
+    }
+
+
+    public String asTime(Long time) {
+        if( time == null )
+            return "";
+
+        long when = System.currentTimeMillis() - time;
+
+        Date dt = new Date(when);
+        return dt.toString();
+    }
+
+    public String getJsUrl(String jsName) {
+        return Consts.PLUGIN_JS_URL + jsName;
+    }
+
+    public void doControlSubmit(@QueryParameter("stopId") String stopId, StaplerRequest req, StaplerResponse rsp) throws ServletException,
+            IOException,
+            InterruptedException, VirtException {
+
+        theCloud.getDomains().get(stopId).shutdown();
+
+        rsp.sendRedirect(".");
+    }
+
+    @Extension
+    public static final class DescriptorImpl extends Descriptor<VirtualMachineManagementServer> {
+
+        @Override
+        public String getDisplayName() {
+            return "server ";
+        }
+
+
+    }
+}

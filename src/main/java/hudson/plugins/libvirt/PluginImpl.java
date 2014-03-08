@@ -21,6 +21,9 @@
  */
 package hudson.plugins.libvirt;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import hudson.Plugin;
 import hudson.model.Hudson;
 import hudson.slaves.Cloud;
@@ -28,10 +31,12 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 
 
@@ -45,6 +50,25 @@ public class PluginImpl extends Plugin {
 
     private static final java.util.logging.Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
 
+    private static PluginImpl instance;
+
+    /**
+     * Constructor.
+     */
+    public PluginImpl() {
+        instance = this;
+    }
+
+    /**
+     * Returns this singleton instance.
+     *
+     * @return the singleton.
+     */
+    public static PluginImpl getInstance() {
+        return instance;
+    }
+
+
     @Override
     public void start() throws Exception {
         LOGGER.log(Level.FINE, "Starting libvirt-slave plugin");
@@ -56,6 +80,32 @@ public class PluginImpl extends Plugin {
     @Override
     public void stop() throws Exception {
         LOGGER.log(Level.FINE, "Stopping libvirt-slave plugin.");
+    }
+
+    /**
+     * Get the list of Hypervisor servers.
+     *
+     * @return the list as a LinkedList of Hypervisor
+     */
+    public synchronized Collection<Hypervisor> getServers() {
+
+        Collection clouds = Collections2.filter(Jenkins.getInstance().clouds,
+                new Predicate<Cloud>() {
+                    public boolean apply(@Nullable Cloud input) {
+                        return input instanceof Hypervisor;
+                    }
+                });
+
+        return (Collection<Hypervisor>)clouds;
+    }
+
+    public Hypervisor getServer(final String host) {
+
+        return Iterables.find(getServers(), new Predicate<Hypervisor>() {
+            public boolean apply(@Nullable Hypervisor input) {
+                return host.equals(input.getHypervisorHost());
+            }
+        });
     }
 
 	public FormValidation doCheckStartupWaitingPeriodSeconds (@QueryParameter String secsValue) throws IOException, ServletException {
