@@ -502,6 +502,7 @@ public class Hypervisor extends Cloud {
             types.add("QEMU");
             types.add("XEN");
             types.add("LXC");
+            types.add("BHYVE");
             return types;
         }
     }
