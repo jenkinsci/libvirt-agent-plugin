@@ -7,8 +7,6 @@ import hudson.Extension;
 import hudson.model.*;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerProxy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -22,8 +20,6 @@ import static hudson.plugins.libvirt.util.Consts.PLUGIN_IMAGES_URL;
  */
 @Extension
 public class VirtualMachineManagement extends ManagementLink implements StaplerProxy, Describable<VirtualMachineManagement>, Saveable {
-
-    private static final Logger logger = LoggerFactory.getLogger(VirtualMachineManagement.class);
 
     @Override
     public String getIconFileName() {
