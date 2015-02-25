@@ -7,6 +7,7 @@ import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.ComputerLauncher;
+import hudson.slaves.OfflineCause;
 
 import java.io.IOException;
 import java.util.Map;
@@ -82,7 +83,7 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
                                 computer.getChannel().syncLocalIO();
                                 try {
                                     computer.getChannel().close();
-                                    computer.disconnect(null);
+                                    computer.disconnect(new OfflineCause.ByCLI("Stopping " + vmName + " to revert to snapshot " + snapshotName + "."));
                                     try {
                                         computer.waitUntilOffline();
 

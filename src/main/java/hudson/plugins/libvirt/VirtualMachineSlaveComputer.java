@@ -56,7 +56,11 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 		String virtualMachineName = slave.getVirtualMachineName();
 		VirtualMachineLauncher vmL = (VirtualMachineLauncher) getLauncher();
 		Hypervisor hypervisor = vmL.findOurHypervisorInstance();
-		logger.log(Level.INFO, "Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down. reason: "+cause+" ("+cause.getClass().getName()+")");
+		String reason = "";
+		if (cause != null) {
+			reason =  "reason: "+cause+" ("+cause.getClass().getName()+")";
+		}
+		logger.log(Level.INFO, "Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
 		taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down.");
 		try {			
             Map<String, IDomain> computers = hypervisor.getDomains();
