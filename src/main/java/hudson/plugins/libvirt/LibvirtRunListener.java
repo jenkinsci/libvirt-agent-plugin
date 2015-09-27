@@ -30,7 +30,11 @@ public final class LibvirtRunListener extends RunListener<Run> {
     @Override
     public void onFinalized(Run r) {
         super.onFinalized(r);
-        Computer computer = r.getExecutor().getOwner();
+        Executor executor = r.getExecutor();
+        if (executor == null) {
+            return;
+        }
+        Computer computer = executor.getOwner();
         Node node = computer.getNode();
 
 
