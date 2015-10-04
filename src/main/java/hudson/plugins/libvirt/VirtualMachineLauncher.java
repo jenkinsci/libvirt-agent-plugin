@@ -147,6 +147,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                         try {
                             delegate.launch(slaveComputer, taskListener);
                         } catch (IOException e) {
+                            taskListener.getLogger().println("unexpectedly caught exception when delegating launch of slave: " + e.getMessage());
                         }
 
                         if (slaveComputer.isOnline()) {
