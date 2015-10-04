@@ -89,15 +89,21 @@ public class PluginImpl extends Plugin {
      * @return the list as a LinkedList of Hypervisor
      */
     public synchronized Collection<Hypervisor> getServers() {
-
-        Collection clouds = Collections2.filter(Jenkins.getInstance().clouds,
+        Jenkins jenkins = Jenkins.getInstance();
+        if (null == jenkins) {
+            return new java.util.Vector<Hypervisor>();
+        }
+        Collection<? extends Cloud> clouds = jenkins.clouds;
+        @SuppressWarnings("unchecked")
+        Collection<Hypervisor> libvirtClouds =
+            (Collection<Hypervisor>) Collections2.filter(clouds,
                 new Predicate<Cloud>() {
                     public boolean apply(@Nullable final Cloud input) {
                         return input instanceof Hypervisor;
                     }
                 });
 
-        return (Collection<Hypervisor>)clouds;
+        return libvirtClouds;
     }
 
     public Hypervisor getServer(final String host) {
