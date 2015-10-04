@@ -12,9 +12,6 @@ import hudson.slaves.OfflineCause;
 import java.io.IOException;
 import java.util.Map;
 
-import org.libvirt.Domain;
-import org.libvirt.DomainSnapshot;
-import org.libvirt.LibvirtException;
 
 @Extension
 public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {

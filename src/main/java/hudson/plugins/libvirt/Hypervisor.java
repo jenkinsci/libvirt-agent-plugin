@@ -25,14 +25,11 @@ import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserListBoxModel;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
-import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.domains.SchemeRequirement;
 import com.google.common.base.Strings;
 import com.trilead.ssh2.Connection;
 import hudson.Extension;
-import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.ItemGroup;
 import hudson.model.Label;
@@ -40,7 +37,6 @@ import hudson.plugins.libvirt.lib.ConnectionBuilder;
 import hudson.plugins.libvirt.lib.IConnect;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
-import hudson.plugins.libvirt.lib.libvirt.LibVirtConnectImpl;
 import hudson.security.ACL;
 import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
@@ -76,7 +72,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class Hypervisor extends Cloud {
 
     private static final Logger LOGGER = Logger.getLogger(Hypervisor.class.getName());
-        
+
     private final String hypervisorType;
     private final String hypervisorHost;
     private final String hypervisorSystemUrl;
@@ -109,8 +105,9 @@ public class Hypervisor extends Cloud {
     }
 
     protected void ensureLists() {
-        if (currentOnline == null)
+        if (currentOnline == null) {
             currentOnline = new Hashtable<String, String>();
+        }
     }
 
     private ConnectionBuilder createBuilder() {
@@ -126,44 +123,43 @@ public class Hypervisor extends Cloud {
 
     private synchronized IConnect getOrCreateConnection() throws VirtException {
 
-    	if (connection == null || !connection.isConnected()) {
+        if (connection == null || !connection.isConnected()) {
 
             ConnectionBuilder builder = createBuilder();
 
-	        LOGGER.log(Level.INFO, "Trying to establish a connection to hypervisor URI: {0} as {1}/******",
-	                new Object[]{builder.constructHypervisorURI(), username});
-	        
-	        try {
-	            connection = builder.build();
+            LOGGER.log(Level.INFO, "Trying to establish a connection to hypervisor URI: {0} as {1}/******",
+                new Object[]{builder.constructHypervisorURI(), username});
 
-	            LOGGER.log(Level.INFO, "Established connection to hypervisor URI: {0} as {1}/******",
-	                    new Object[]{builder.constructHypervisorURI(), username});
-	        } catch (VirtException e) {
-	            LogRecord rec = new LogRecord(Level.SEVERE, "Failed to establish connection to hypervisor URI: {0} as {1}/******");
-	            rec.setThrown(e);
-	            rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
-	            LOGGER.log(rec);
-	        }
-    	} else {
-    		try {
-    			// the connection appears to be up but might actually be dead (e.g. due to a restart of libvirtd) 
-    			// lets try a simple function call and see if it turns out ok
-    			connection.getVersion();
-    		} catch (VirtException lve) {
+        try {
+            connection = builder.build();
+            LOGGER.log(Level.INFO, "Established connection to hypervisor URI: {0} as {1}/******",
+                new Object[]{builder.constructHypervisorURI(), username});
+            } catch (VirtException e) {
+                LogRecord rec = new LogRecord(Level.SEVERE, "Failed to establish connection to hypervisor URI: {0} as {1}/******");
+                rec.setThrown(e);
+                rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
+                LOGGER.log(rec);
+            }
+        } else {
+            try {
+                // the connection appears to be up but might actually be dead (e.g. due to a restart of libvirtd)
+                // lets try a simple function call and see if it turns out ok
+                connection.getVersion();
+            } catch (VirtException lve) {
                 ConnectionBuilder builder = createBuilder();
-    			LogRecord rec = new LogRecord(Level.WARNING, "Connection appears to be broken, trying to reconnect: {0} as {1}/******");
-	            rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
-	            LOGGER.log(rec);
-	            try {
+                LogRecord rec = new LogRecord(Level.WARNING, "Connection appears to be broken, trying to reconnect: {0} as {1}/******");
+                rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
+                LOGGER.log(rec);
+                try {
                     connection = builder.build();
-	            } catch (VirtException lve2) {
-	            	rec = new LogRecord(Level.SEVERE, "Failed to re-establish connection to hypervisor URI: {0} as {1}/******");
-		            rec.setThrown(lve2);
-		            rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
-		            LOGGER.log(rec);
-	            }
-    		}
-    	}
+                } catch (VirtException lve2) {
+                    rec = new LogRecord(Level.SEVERE, "Failed to re-establish connection to hypervisor URI: {0} as {1}/******");
+                    rec.setThrown(lve2);
+                    rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
+                    LOGGER.log(rec);
+                }
+            }
+        }
         return connection;
     }
 
@@ -240,7 +236,7 @@ public class Hypervisor extends Cloud {
                     rec.setThrown(e);
                     LOGGER.log(rec);
                 }
-            }      
+            }
         } else {
             LogRecord rec = new LogRecord(Level.SEVERE, "Cannot connect to Hypervisor {0} as {1}/******");
             rec.setParameters(new Object[]{hypervisorHost, username});
@@ -253,13 +249,13 @@ public class Hypervisor extends Cloud {
     /**
      * Returns a <code>List</code> of VMs configured on the hypervisor. This method always retrieves the current list of
      * VMs to ensure that newly available instances show up right away.
-     * 
+     *
      * @return the virtual machines
      */
     public synchronized List<VirtualMachine> getVirtualMachines() {
-    	List<VirtualMachine> vmList = new ArrayList<VirtualMachine>();
+        List<VirtualMachine> vmList = new ArrayList<VirtualMachine>();
         try {
-        	Map<String, IDomain> domains = getDomains();
+            Map<String, IDomain> domains = getDomains();
             for (String domainName : domains.keySet()) {
                 vmList.add(new VirtualMachine(this, domainName));
             }
@@ -274,25 +270,25 @@ public class Hypervisor extends Cloud {
 
     /**
      * Returns an array of snapshots names/ids of a given VM as found by libvirt.
-     * 
-     * @param virtualMachineName 	the name of the vm
-     * @return 						the array of snapshot ids (can be empty)
+     *
+     * @param virtualMachineName    the name of the vm
+     * @return                      the array of snapshot ids (can be empty)
      */
-    public synchronized String[] getSnapshots (String virtualMachineName) {
-    	try {
-	        for (IDomain domain : getDomains().values()) {
-	        	if (domain.getName().equals(virtualMachineName)) {
-	        		LogRecord rec = new LogRecord(Level.FINE, "Fetching snapshots for " + virtualMachineName + ": " + domain.snapshotNum());
-	        		LOGGER.log(rec);
-	        		return domain.snapshotListNames();
-	        	}
-	        }
-    	} catch (VirtException lve) {
-    		LogRecord rec = new LogRecord(Level.SEVERE, "Failed to fetch snapshot ids for VM {0} at datacenter {1} as {2}/******");
+    public synchronized String[] getSnapshots(String virtualMachineName) {
+        try {
+            for (IDomain domain : getDomains().values()) {
+                if (domain.getName().equals(virtualMachineName)) {
+                    LogRecord rec = new LogRecord(Level.FINE, "Fetching snapshots for " + virtualMachineName + ": " + domain.snapshotNum());
+                    LOGGER.log(rec);
+                    return domain.snapshotListNames();
+                }
+            }
+        } catch (VirtException lve) {
+            LogRecord rec = new LogRecord(Level.SEVERE, "Failed to fetch snapshot ids for VM {0} at datacenter {1} as {2}/******");
             rec.setThrown(lve);
             rec.setParameters(new Object[]{virtualMachineName, hypervisorHost, username});
             LOGGER.log(rec);
-    	}
+        }
         return new String[0];
     }
 
@@ -316,68 +312,71 @@ public class Hypervisor extends Cloud {
 
     public synchronized Boolean canMarkVMOnline(String slaveName, String vmName) {
         ensureLists();
-        
+
         // Don't allow more than max.
         if ((maxOnlineSlaves > 0) && (currentOnline.size() == maxOnlineSlaves))
             return Boolean.FALSE;
-        
+
         // Don't allow two slaves to the same VM to fire up.
         if (currentOnline.containsValue(vmName))
             return Boolean.FALSE;
-        
+
         // Don't allow two instances of the same slave, although Jenkins will
         // probably not encounter this.
         if (currentOnline.containsKey(slaveName))
             return Boolean.FALSE;
-        
+
         // Don't allow a misconfigured slave to try start
         if ("".equals(vmName) || "".equals(slaveName)) {
             LogRecord rec = new LogRecord(Level.WARNING, "Slave '"+slaveName+"' (using VM '"+vmName+"') appears to be misconfigured.");
             LOGGER.log(rec);
             return Boolean.FALSE;
         }
-        
+
         return Boolean.TRUE;
     }
-    
+
     public synchronized Boolean markVMOnline(String slaveName, String vmName) {
         ensureLists();
-        
+
         // If the combination is already in the list, it's good.
         if (currentOnline.containsKey(slaveName) && currentOnline.get(slaveName).equals(vmName))
             return Boolean.TRUE;
-        
+
         if (!canMarkVMOnline(slaveName, vmName))
             return Boolean.FALSE;
-        
+
         currentOnline.put(slaveName, vmName);
         currentOnlineSlaveCount++;
-        
+
         return Boolean.TRUE;
     }
 
     public synchronized void markVMOffline(String slaveName, String vmName) throws VirtException {
         ensureLists();
-        
-        if (currentOnline.remove(slaveName) != null)
+
+        if (currentOnline.remove(slaveName) != null) {
             currentOnlineSlaveCount--;
+        }
     }
 
     @Override
-	protected void finalize() throws Throwable {
-		if (connection != null)
-			connection.close();
-		super.finalize();
-	}
+    protected void finalize() throws Throwable {
+        if (connection != null) {
+            connection.close();
+        }
+        super.finalize();
+    }
 
-	@Override
+    @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl) super.getDescriptor();
     }
 
     public static StandardUsernameCredentials lookupSystemCredentials(String credentialsId) {
-        if(Strings.isNullOrEmpty(credentialsId))
+        if (Strings.isNullOrEmpty(credentialsId)) {
             return null;
+        }
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider
                         .lookupCredentials(StandardUsernameCredentials.class, Jenkins.getInstance(), ACL.SYSTEM,
@@ -415,7 +414,7 @@ public class Hypervisor extends Cloud {
             return super.configure(req, o);
         }
 
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup context) {
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context) {
 
             return new SSHUserListBoxModel().withMatching(SSHAuthenticator.matcher(Connection.class),
                     CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, context,

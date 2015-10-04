@@ -1,7 +1,7 @@
 /**
  *  Copyright (C) 2010, Byte-Code srl <http://www.byte-code.com>
  *  Copyright (C) 2012  Philipp Bartsch <tastybug@tastybug.com>
- *  
+ *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
@@ -22,19 +22,20 @@
 package hudson.plugins.libvirt;
 
 import hudson.model.TaskListener;
+
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerLauncher;
 import hudson.slaves.SlaveComputer;
+
+import jenkins.model.Jenkins;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -49,7 +50,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     private String snapshotName;
     private final int WAIT_TIME_MS;
     private final int timesToRetryOnFailure;
-    
+
     @DataBoundConstructor
     public VirtualMachineLauncher(ComputerLauncher delegate, String hypervisorDescription, String virtualMachineName, String snapshotName,
             int waitingTimeSecs, int timesToRetryOnFailure) {
@@ -58,7 +59,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
         this.hypervisorDescription = hypervisorDescription;
-        this.WAIT_TIME_MS = waitingTimeSecs*1000;
+        this.WAIT_TIME_MS = waitingTimeSecs * 1000;
         this.timesToRetryOnFailure = timesToRetryOnFailure;
         lookupVirtualMachineHandle();
     }
@@ -67,7 +68,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
         if (hypervisorDescription != null && virtualMachineName != null) {
             LOGGER.log(Level.FINE, "Grabbing hypervisor...");
             Hypervisor hypervisor = null;
-            for (Cloud cloud : Hudson.getInstance().clouds) {
+            for (Cloud cloud : Jenkins.getInstance().clouds) {
                 if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
                     hypervisor = (Hypervisor) cloud;
                     break;
@@ -82,7 +83,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             }
         }
     }
-    
+
     public ComputerLauncher getDelegate() {
         return delegate;
     }
@@ -104,7 +105,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     public Hypervisor findOurHypervisorInstance() throws RuntimeException {
         if (hypervisorDescription != null && virtualMachineName != null) {
             Hypervisor hypervisor = null;
-            for (Cloud cloud : Hudson.getInstance().clouds) {
+            for (Cloud cloud : Jenkins.getInstance().clouds) {
                 if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
                     hypervisor = (Hypervisor) cloud;
                     return hypervisor;
@@ -117,20 +118,21 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public void launch(SlaveComputer slaveComputer, TaskListener taskListener) throws IOException, InterruptedException {
-    	
-    	taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") is to be started.");
-    	try {
-	        if (virtualMachine == null) {
-	            taskListener.getLogger().println("No connection ready to the Hypervisor, connecting...");
-	            lookupVirtualMachineHandle();
-	            if (virtualMachine == null) // still null? no such vm!
-	            	throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
-	        }
-        
+
+        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") is to be started.");
+        try {
+            if (virtualMachine == null) {
+                taskListener.getLogger().println("No connection ready to the Hypervisor, connecting...");
+                lookupVirtualMachineHandle();
+                if (virtualMachine == null) { // still null? no such vm!
+                    throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
+                }
+            }
+
             Map<String, IDomain> computers = virtualMachine.getHypervisor().getDomains();
             IDomain domain = computers.get(virtualMachine.getName());
             if (domain != null) {
-                if( domain.isNotBlockedAndNotRunning() ) {
+                if (domain.isNotBlockedAndNotRunning()) {
                     taskListener.getLogger().println("Starting, waiting for " + WAIT_TIME_MS + "ms to let it fully boot up...");
                     domain.create();
                     Thread.sleep(WAIT_TIME_MS);
@@ -154,8 +156,8 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                             break;
                         }
 
-                        taskListener.getLogger().println("Not up yet, waiting for " + WAIT_TIME_MS + "ms more (" +
-                                                         attempts + "/" + timesToRetryOnFailure + " retries)...");
+                        taskListener.getLogger().println("Not up yet, waiting for " + WAIT_TIME_MS + "ms more ("
+                                                         + attempts + "/" + timesToRetryOnFailure + " retries)...");
                         Thread.sleep(WAIT_TIME_MS);
                     }
                 } else {
@@ -165,19 +167,19 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                 delegate.launch(slaveComputer, taskListener);
                 }
             } else {
-	            throw new IOException("VM \"" + virtualMachine.getName() + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found!");
+                throw new IOException("VM \"" + virtualMachine.getName() + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found!");
             }
         } catch (IOException e) {
             taskListener.fatalError(e.getMessage(), e);
-            
+
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while launching {0} on Hypervisor {1}.");
             rec.setParameters(new Object[]{virtualMachine.getName(), virtualMachine.getHypervisor().getHypervisorURI()});
             rec.setThrown(e);
             LOGGER.log(rec);
             throw e;
         } catch (Throwable t) {
-        	taskListener.fatalError(t.getMessage(), t);
-            
+            taskListener.fatalError(t.getMessage(), t);
+
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while launching {0} on Hypervisor {1}.");
             rec.setParameters(new Object[]{virtualMachine.getName(), virtualMachine.getHypervisor().getHypervisorURI()});
             rec.setThrown(t);
@@ -197,6 +199,6 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public Descriptor<ComputerLauncher> getDescriptor() {
-    	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 }

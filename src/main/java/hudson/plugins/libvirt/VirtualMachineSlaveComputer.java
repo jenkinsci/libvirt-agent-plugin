@@ -20,34 +20,29 @@
 
 package hudson.plugins.libvirt;
 
-import hudson.model.TaskListener;
-import hudson.model.Slave;
-import hudson.plugins.libvirt.lib.IDomain;
-import hudson.slaves.OfflineCause;
-import hudson.plugins.libvirt.lib.IConnect;
-import hudson.slaves.SlaveComputer;
-import hudson.util.StreamTaskListener;
-import hudson.util.io.ReopenableRotatingFileOutputStream;
-import hudson.model.Slave;
-
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.libvirt.Domain;
-import org.libvirt.DomainInfo.DomainState;
+import hudson.model.Slave;
+import hudson.model.TaskListener;
+import hudson.plugins.libvirt.lib.IDomain;
+import hudson.slaves.OfflineCause;
+import hudson.slaves.SlaveComputer;
+import hudson.util.StreamTaskListener;
+import hudson.util.io.ReopenableRotatingFileOutputStream;
 
 public class VirtualMachineSlaveComputer extends SlaveComputer {
 
 	private static final Logger logger = Logger.getLogger(VirtualMachineSlaveComputer.class.getName());
-			
+
 	private final TaskListener taskListener;
-	
+
     public VirtualMachineSlaveComputer(Slave slave) {
-        super(slave);    
-        this.taskListener = new StreamTaskListener(new ReopenableRotatingFileOutputStream(getLogFile(),10));
+        super(slave);
+        this.taskListener = new StreamTaskListener(new ReopenableRotatingFileOutputStream(getLogFile(), 10));
     }
 
 	@Override
@@ -58,11 +53,11 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 		Hypervisor hypervisor = vmL.findOurHypervisorInstance();
 		String reason = "";
 		if (cause != null) {
-			reason =  "reason: "+cause+" ("+cause.getClass().getName()+")";
+			reason =  "reason: " + cause + " (" + cause.getClass().getName() + ")";
 		}
-		logger.log(Level.INFO, "Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
+		logger.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
 		taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down.");
-		try {			
+		try {
             Map<String, IDomain> computers = hypervisor.getDomains();
             IDomain domain = computers.get(virtualMachineName);
             if (domain != null) {
@@ -89,9 +84,9 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 Hypervisor vmC = vmL.findOurHypervisorInstance();
                 vmC.markVMOffline(getDisplayName(), vmL.getVirtualMachineName());
             } else {
-            	// log to slave 
+            	// log to slave
             	taskListener.getLogger().println("\"" + virtualMachineName + "\" not found on Hypervisor, can not shut down!");
-            	
+
             	// log to jenkins
             	LogRecord rec = new LogRecord(Level.WARNING, "Can not shut down {0} on Hypervisor {1}, domain not found!");
                 rec.setParameters(new Object[]{virtualMachineName, hypervisor.getHypervisorURI()});
@@ -99,7 +94,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             }
         } catch (Throwable t) {
         	taskListener.fatalError(t.getMessage(), t);
-        	
+
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while shutting down {0} on Hypervisor {1}.");
             rec.setParameters(new Object[]{slave.getVirtualMachineName(), hypervisor.getHypervisorURI()});
             rec.setThrown(t);
@@ -107,5 +102,5 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         }
 		return super.disconnect(cause);
 	}
-    	
+
 }

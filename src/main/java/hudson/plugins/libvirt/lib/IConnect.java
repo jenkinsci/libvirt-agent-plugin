@@ -1,7 +1,5 @@
 package hudson.plugins.libvirt.lib;
 
-import org.libvirt.Domain;
-
 /**
  * Created by magnayn on 04/02/2014.
  */

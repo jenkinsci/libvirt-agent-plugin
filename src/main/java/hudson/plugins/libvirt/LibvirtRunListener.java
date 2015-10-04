@@ -5,30 +5,25 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import hudson.Extension;
-import hudson.model.AbstractBuild;
 import hudson.model.Computer;
 import hudson.model.Executor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
-import org.libvirt.Domain;
-import org.libvirt.LibvirtException;
 
 @Extension
-public final class LibvirtRunListener extends RunListener<Run> {
-    public LibvirtRunListener () {
+public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
+    public LibvirtRunListener (){
     }
 
     @Override
-    public void onStarted(Run r, TaskListener listener) {
+    public void onStarted(final Run<?, ?> r, final TaskListener listener) {
         super.onStarted(r, listener);
     }
 
     @Override
-    public void onFinalized(Run r) {
+    public void onFinalized(final Run<?, ?> r) {
         super.onFinalized(r);
         Executor executor = r.getExecutor();
         if (executor == null) {
@@ -39,7 +34,7 @@ public final class LibvirtRunListener extends RunListener<Run> {
 
 
         if (node instanceof VirtualMachineSlave) {
-            VirtualMachineSlave slave = (VirtualMachineSlave)node;
+            VirtualMachineSlave slave = (VirtualMachineSlave) node;
 
             if (slave.getRebootAfterRun()) {
 
@@ -52,7 +47,7 @@ public final class LibvirtRunListener extends RunListener<Run> {
                 } catch (Exception e) {
                 }
 
-                VirtualMachineLauncher launcher = (VirtualMachineLauncher)slave.getLauncher();
+                VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
                 VirtualMachine virtualMachine = launcher.getVirtualMachine();
 
                 for (int i = 0; i < 5; i++) {
@@ -60,16 +55,13 @@ public final class LibvirtRunListener extends RunListener<Run> {
                         Map<String, IDomain> computers = virtualMachine.getHypervisor().getDomains();
                         IDomain domain = computers.get(virtualMachine.getName());
                         domain.create();
-                    } catch(VirtException e) {
-                        try {Thread.sleep(500); } catch (Exception e2) {}
+                    } catch (VirtException e) {
+                        try { Thread.sleep(500); } catch (Exception e2) {}
                         continue;
                     }
                     break;
                 }
-
             }
         }
     }
 }
-
-

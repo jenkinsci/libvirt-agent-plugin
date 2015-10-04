@@ -27,7 +27,6 @@ import hudson.Util;
 import hudson.model.TaskListener;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.model.Slave;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerListener;
@@ -36,6 +35,8 @@ import hudson.slaves.ComputerLauncher;
 import hudson.slaves.RetentionStrategy;
 import hudson.slaves.SlaveComputer;
 import hudson.util.ListBoxModel;
+
+import jenkins.model.Jenkins;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,27 +48,29 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 public class VirtualMachineSlave extends Slave {
 
-    private String 				hypervisorDescription;
-    private String 				snapshotName;
-    private String 				virtualMachineName;
-    private int 				startupWaitingPeriodSeconds;
-    private String              shutdownMethod;
-    private boolean             rebootAfterRun;
-    private int                 startupTimesToRetryOnFailure;
-    private String              beforeJobSnapshotName;
+    static final long serialVersionUID = 1L;
+
+    private String      hypervisorDescription;
+    private String      snapshotName;
+    private String      virtualMachineName;
+    private int         startupWaitingPeriodSeconds;
+    private String      shutdownMethod;
+    private boolean     rebootAfterRun;
+    private int         startupTimesToRetryOnFailure;
+    private String      beforeJobSnapshotName;
 
 
     @DataBoundConstructor
     public VirtualMachineSlave(String name, String nodeDescription, String remoteFS, String numExecutors,
             Mode mode, String labelString, VirtualMachineLauncher launcher, ComputerLauncher delegateLauncher,
-            RetentionStrategy retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
+            RetentionStrategy<? extends Computer> retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
             String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds,
             String shutdownMethod, boolean rebootAfterRun, int startupTimesToRetryOnFailure, String beforeJobSnapshotName)
             throws
             Descriptor.FormException, IOException {
         super(name, nodeDescription, remoteFS, Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
                 launcher == null ? new VirtualMachineLauncher(delegateLauncher, hypervisorDescription, virtualMachineName, snapshotName, startupWaitingPeriodSeconds, startupTimesToRetryOnFailure) : launcher,
-                retentionStrategy, nodeProperties);        
+                retentionStrategy, nodeProperties);
         this.hypervisorDescription = hypervisorDescription;
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
@@ -123,7 +126,7 @@ public class VirtualMachineSlave extends Slave {
 
     @Extension
     public static class VirtualMachineComputerListener extends ComputerListener {
-        
+
         @Override
         public void preLaunch(Computer c, TaskListener taskListener) throws IOException, InterruptedException {
             /* We may be called on any slave type so check that we should
@@ -131,12 +134,13 @@ public class VirtualMachineSlave extends Slave {
             if (!(c.getNode() instanceof VirtualMachineSlave)) {
                 return;
             }
-            
+
             VirtualMachineLauncher vmL = (VirtualMachineLauncher) ((SlaveComputer) c).getLauncher();
             Hypervisor vmC = vmL.findOurHypervisorInstance();
-            
-            if (!vmC.markVMOnline(c.getDisplayName(), vmL.getVirtualMachineName()))
+
+            if (!vmC.markVMOnline(c.getDisplayName(), vmL.getVirtualMachineName())) {
                 throw new AbortException("Capacity threshold  (" + vmC.getMaxOnlineSlaves() + ") reached at hypervisor \"" + vmC.getHypervisorDescription() + "\", slave commissioning delayed.");
+	    }
         }
     }
 
@@ -146,8 +150,8 @@ public class VirtualMachineSlave extends Slave {
         private String hypervisorDescription;
         private String virtualMachineName;
         private String snapshotName;
-        
-        public DescriptorImpl() {            
+
+        public DescriptorImpl() {
             load();
         }
 
@@ -161,10 +165,11 @@ public class VirtualMachineSlave extends Slave {
         }
 
         public List<VirtualMachine> getDefinedVirtualMachines(String hypervisorDescription) {
-            List<VirtualMachine> virtualMachinesList = new ArrayList<VirtualMachine>();                       
+            List<VirtualMachine> virtualMachinesList = new ArrayList<VirtualMachine>();
             Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
-            if (hypervisor != null)
+            if (hypervisor != null) {
             	virtualMachinesList.addAll(hypervisor.getVirtualMachines());
+	    }
             Collections.sort(virtualMachinesList);
             return virtualMachinesList;
         }
@@ -180,14 +185,14 @@ public class VirtualMachineSlave extends Slave {
 
         public ListBoxModel doFillHypervisorDescriptionItems() {
             ListBoxModel items = new ListBoxModel();
-            for (Cloud cloud : Hudson.getInstance().clouds) {
+            for (Cloud cloud : Jenkins.getInstance().clouds) {
                 if (cloud instanceof Hypervisor) {
                     items.add(((Hypervisor) cloud).getHypervisorURI(), ((Hypervisor) cloud).getHypervisorDescription());
                 }
             }
             return items;
         }
-        
+
         public String getHypervisorDescription() {
             return hypervisorDescription;
         }
@@ -199,10 +204,10 @@ public class VirtualMachineSlave extends Slave {
         public String getSnapshotName() {
             return snapshotName;
         }
-        
-        private Hypervisor getHypervisorByDescription (String hypervisorDescription) {
+
+        private Hypervisor getHypervisorByDescription(String hypervisorDescription) {
         	if (hypervisorDescription != null && !hypervisorDescription.equals("")) {
-	        	for (Cloud cloud : Hudson.getInstance().clouds) {
+	        	for (Cloud cloud : Jenkins.getInstance().clouds) {
 	                if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
 	                    return (Hypervisor) cloud;
 	                }

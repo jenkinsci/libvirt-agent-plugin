@@ -5,7 +5,6 @@ import com.nirima.libvirt.DomainSnapshot;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
 import hudson.plugins.libvirt.lib.VirtException;
-import org.libvirt.LibvirtException;
 
 
 /**

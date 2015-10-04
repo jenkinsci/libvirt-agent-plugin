@@ -24,8 +24,8 @@ package hudson.plugins.libvirt;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
+
 import hudson.Plugin;
-import hudson.model.Hudson;
 import hudson.slaves.Cloud;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
@@ -41,6 +41,7 @@ import javax.servlet.ServletException;
 
 
 import jenkins.model.Jenkins;
+
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -91,7 +92,7 @@ public class PluginImpl extends Plugin {
 
         Collection clouds = Collections2.filter(Jenkins.getInstance().clouds,
                 new Predicate<Cloud>() {
-                    public boolean apply(@Nullable Cloud input) {
+                    public boolean apply(@Nullable final Cloud input) {
                         return input instanceof Hypervisor;
                     }
                 });
@@ -102,26 +103,26 @@ public class PluginImpl extends Plugin {
     public Hypervisor getServer(final String host) {
 
         return Iterables.find(getServers(), new Predicate<Hypervisor>() {
-            public boolean apply(@Nullable Hypervisor input) {
-                return host.equals(input.getHypervisorHost());
+            public boolean apply(@Nullable final Hypervisor input) {
+                return null != input && host.equals(input.getHypervisorHost());
             }
         });
     }
 
-	public FormValidation doCheckStartupWaitingPeriodSeconds (@QueryParameter String secsValue) throws IOException, ServletException {
-		try {
-			int v = Integer.parseInt(secsValue);
-		    if (v < 0) {
-		    	return FormValidation.error("Negative value..");
-		    } else if (v == 0) {
-		    	return FormValidation.warning("You declared this virtual machine to be ready right away. It probably needs a couple of seconds before it is ready to process jobs!");
-		    } else {
-		    	return FormValidation.ok();
-		    }
-		} catch (NumberFormatException e) {
-		    return FormValidation.error("Not a number..");
-		}
-	}
+        public FormValidation doCheckStartupWaitingPeriodSeconds(@QueryParameter String secsValue) throws IOException, ServletException {
+                try {
+                        int v = Integer.parseInt(secsValue);
+                    if (v < 0) {
+                        return FormValidation.error("Negative value..");
+                    } else if (v == 0) {
+                        return FormValidation.warning("You declared this virtual machine to be ready right away. It probably needs a couple of seconds before it is ready to process jobs!");
+                    } else {
+                        return FormValidation.ok();
+                    }
+                } catch (NumberFormatException e) {
+                    return FormValidation.error("Not a number..");
+                }
+        }
 
     public FormValidation doCheckStartupTimesToRetryOnFailure(@QueryParameter String retriesValue) throws IOException, ServletException {
         try {
@@ -152,8 +153,9 @@ public class PluginImpl extends Plugin {
             for (VirtualMachine vm : virtualMachines) {
                 m.add(new ListBoxModel.Option(vm.getName(), vm.getName()));
             }
-            if( m.size() > 0 )
+            if (m.size() > 0) {
                 m.get(0).selected = true;
+            }
         }
         m.writeTo(req, rsp);
     }
@@ -161,18 +163,17 @@ public class PluginImpl extends Plugin {
     public void doSnapshotNameValues(StaplerRequest req, StaplerResponse rsp, @QueryParameter("vm") String vm, @QueryParameter("hypervisor") String hypervisor) throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
         m.add(new ListBoxModel.Option("", ""));
-        for (Cloud cloud : Hudson.getInstance().clouds) {
+        for (Cloud cloud : Jenkins.getInstance().clouds) {
             if (cloud instanceof Hypervisor) {
                 Hypervisor hypHandle = (Hypervisor) cloud;
                 if (hypervisor != null && hypervisor.equals(hypHandle.getHypervisorURI())) {
-                	String[] ss  = hypHandle.getSnapshots(vm);
-                	for (String sshot : ss) {
-                		m.add(new ListBoxModel.Option(sshot, sshot));
-                	}
+                        String[] ss  = hypHandle.getSnapshots(vm);
+                        for (String sshot : ss) {
+                                m.add(new ListBoxModel.Option(sshot, sshot));
+                        }
                 }
             }
         }
-        
         m.writeTo(req, rsp);
     }
 }

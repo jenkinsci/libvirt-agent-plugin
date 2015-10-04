@@ -3,16 +3,18 @@ package hudson.plugins.libvirt;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.plugins.libvirt.util.Consts;
+
 import jenkins.model.Jenkins;
+
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import javax.servlet.ServletException;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -34,18 +36,18 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
 
     public VirtualMachineManagementServer(String host) {
         this.host = host;
-        theCloud = PluginImpl.getInstance().getServer(host);
+        this.theCloud = PluginImpl.getInstance().getServer(host);
     }
 
-    public Collection getDomains() throws VirtException {
-
-        return theCloud.getDomains().values();
+    public Collection<IDomain> getDomains() throws VirtException {
+        return this.theCloud.getDomains().values();
     }
 
 
     public String asTime(Long time) {
-        if( time == null )
+        if (time == null) {
             return "";
+        }
 
         long when = System.currentTimeMillis() - time;
 
