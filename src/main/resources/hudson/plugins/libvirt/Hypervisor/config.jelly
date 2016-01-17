@@ -10,9 +10,6 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <f:entry title="${%Hypervisor Host}" field="hypervisorHost" help="/plugin/libvirt-slave/help-libvirt-hypervisorHost.html">
         <f:textbox />
     </f:entry>
-    <f:entry title="${%Username}" field="username" help="/plugin/libvirt-slave/help-libvirt-username.html">
-        <f:textbox />
-    </f:entry>    
     <f:advanced>
         <f:entry title="${%SSH Port}" field="hypervisorSshPort" help="/plugin/libvirt-slave/help-libvirt-hypervisorSshPort.html">
             <f:textbox default="22"/>

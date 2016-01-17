@@ -15,7 +15,6 @@ public class ConnectionBuilder {
     private boolean readOnly = false;
 
     private String hypervisorType;
-    private String userName;
     private String hypervisorHost;
     private int    hypervisorPort = 22;
     private String hypervisorSysUrl;
@@ -27,11 +26,6 @@ public class ConnectionBuilder {
 
     public ConnectionBuilder hypervisorType(String hypervisorType) {
         this.hypervisorType = hypervisorType;
-        return this;
-    }
-
-    public ConnectionBuilder userName(String userName) {
-        this.userName = userName;
         return this;
     }
 
@@ -101,7 +95,7 @@ public class ConnectionBuilder {
     public String constructHypervisorURI () {
         // Fixing JENKINS-14617
         final String separator = (hypervisorSysUrl.contains("?")) ? "&" : "?";
-        return hypervisorType.toLowerCase() + "+" + protocol + userName + "@" + hypervisorHost + ":" + hypervisorPort + "/" + hypervisorSysUrl + separator + "no_tty=1";
+        return hypervisorType.toLowerCase() + "+" + protocol + this.credentials.getUsername() + "@" + hypervisorHost + ":" + hypervisorPort + "/" + hypervisorSysUrl + separator + "no_tty=1";
     }
 
     public String constructNativeHypervisorURI () {

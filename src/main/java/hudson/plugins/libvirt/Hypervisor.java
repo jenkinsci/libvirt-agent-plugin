@@ -77,7 +77,6 @@ public class Hypervisor extends Cloud {
     private final String hypervisorHost;
     private final String hypervisorSystemUrl;
     private final int hypervisorSshPort;
-    private final String username;
     private final int maxOnlineSlaves;
     private transient int currentOnlineSlaveCount = 0;
     private transient Hashtable<String, String> currentOnline;
@@ -87,8 +86,9 @@ public class Hypervisor extends Cloud {
 
 
     @DataBoundConstructor
-    public Hypervisor(String hypervisorType, String hypervisorHost, int hypervisorSshPort, String hypervisorSystemUrl, String username, int maxOnlineSlaves,
+    public Hypervisor(String hypervisorType, String hypervisorHost, int hypervisorSshPort, String hypervisorSystemUrl, int maxOnlineSlaves,
                       boolean useNativeJavaConnection, String credentialsId) {
+
         super("Hypervisor(libvirt)");
         this.hypervisorType = hypervisorType;
         this.hypervisorHost = hypervisorHost;
@@ -98,7 +98,6 @@ public class Hypervisor extends Cloud {
             this.hypervisorSystemUrl = "system";
         }
         this.hypervisorSshPort = hypervisorSshPort <= 0 ? 22 : hypervisorSshPort;
-        this.username = username;
         this.maxOnlineSlaves = maxOnlineSlaves;
         this.useNativeJavaConnection = useNativeJavaConnection;
         this.credentialsId = credentialsId;
@@ -113,7 +112,6 @@ public class Hypervisor extends Cloud {
     private ConnectionBuilder createBuilder() {
         return ConnectionBuilder.newBuilder()
                 .hypervisorType(hypervisorType)
-                .userName(username)
                 .withCredentials(lookupSystemCredentials(credentialsId))
                 .hypervisorHost(hypervisorHost)
                 .hypervisorPort(hypervisorSshPort)
@@ -128,16 +126,16 @@ public class Hypervisor extends Cloud {
             ConnectionBuilder builder = createBuilder();
 
             LOGGER.log(Level.INFO, "Trying to establish a connection to hypervisor URI: {0} as {1}/******",
-                new Object[]{builder.constructHypervisorURI(), username});
+                new Object[]{builder.constructHypervisorURI(), this.getthis.getUsernameOrEmpty()OrEmpty()});
 
         try {
             connection = builder.build();
             LOGGER.log(Level.INFO, "Established connection to hypervisor URI: {0} as {1}/******",
-                new Object[]{builder.constructHypervisorURI(), username});
+                new Object[]{builder.constructHypervisorURI(), this.getUsernameOrEmpty()});
             } catch (VirtException e) {
                 LogRecord rec = new LogRecord(Level.SEVERE, "Failed to establish connection to hypervisor URI: {0} as {1}/******");
                 rec.setThrown(e);
-                rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
+                rec.setParameters(new Object[]{builder.constructHypervisorURI(), this.getUsernameOrEmpty()});
                 LOGGER.log(rec);
             }
         } else {
@@ -148,14 +146,14 @@ public class Hypervisor extends Cloud {
             } catch (VirtException lve) {
                 ConnectionBuilder builder = createBuilder();
                 LogRecord rec = new LogRecord(Level.WARNING, "Connection appears to be broken, trying to reconnect: {0} as {1}/******");
-                rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
+                rec.setParameters(new Object[]{builder.constructHypervisorURI(), this.getUsernameOrEmpty()});
                 LOGGER.log(rec);
                 try {
                     connection = builder.build();
                 } catch (VirtException lve2) {
                     rec = new LogRecord(Level.SEVERE, "Failed to re-establish connection to hypervisor URI: {0} as {1}/******");
                     rec.setThrown(lve2);
-                    rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
+                    rec.setParameters(new Object[]{builder.constructHypervisorURI(), this.getUsernameOrEmpty()});
                     LOGGER.log(rec);
                 }
             }
@@ -182,12 +180,19 @@ public class Hypervisor extends Cloud {
     }
 
     public String getUsername() {
-        return username;
+        return lookupSystemCredentials(credentialsId).getUsername();
     }
 
     public boolean isUseNativeJavaConnection() {
         return useNativeJavaConnection;
     }
+
+	/**
+	 * @return the Output of getUsername() if not null, else an empty String
+	 */
+	public String getUsernameOrEmpty() {
+		return getUsername() != null ? getUsername() : "";
+	}
 
     public String getCredentialsId() {
         return credentialsId;
@@ -239,7 +244,7 @@ public class Hypervisor extends Cloud {
             }
         } else {
             LogRecord rec = new LogRecord(Level.SEVERE, "Cannot connect to Hypervisor {0} as {1}/******");
-            rec.setParameters(new Object[]{hypervisorHost, username});
+            rec.setParameters(new Object[]{hypervisorHost, getUsernameOrEmpty()});
             LOGGER.log(rec);
         }
 
@@ -262,7 +267,7 @@ public class Hypervisor extends Cloud {
         } catch (Exception e) {
             LogRecord rec = new LogRecord(Level.SEVERE, "Cannot connect to datacenter {0} as {1}/******");
             rec.setThrown(e);
-            rec.setParameters(new Object[]{hypervisorHost, username});
+            rec.setParameters(new Object[]{hypervisorHost, getUsernameOrEmpty()});
             LOGGER.log(rec);
         }
         return vmList;
@@ -286,7 +291,7 @@ public class Hypervisor extends Cloud {
         } catch (VirtException lve) {
             LogRecord rec = new LogRecord(Level.SEVERE, "Failed to fetch snapshot ids for VM {0} at datacenter {1} as {2}/******");
             rec.setThrown(lve);
-            rec.setParameters(new Object[]{virtualMachineName, hypervisorHost, username});
+            rec.setParameters(new Object[]{virtualMachineName, hypervisorHost, this.getUsernameOrEmpty()});
             LOGGER.log(rec);
         }
         return new String[0];
@@ -305,7 +310,7 @@ public class Hypervisor extends Cloud {
         StringBuilder sb = new StringBuilder();
         sb.append("Hypervisor");
         sb.append("{hypervisorUri='").append(hypervisorHost).append('\'');
-        sb.append(", username='").append(username).append('\'');
+        sb.append(", username='").append(this.getUsernameOrEmpty()).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -397,7 +402,7 @@ public class Hypervisor extends Cloud {
         private String hypervisorHost;
         private String hypervisorSystemUrl;
         private int hypervisorSshPort;
-        private String username;
+        private String credentialsId;
 
         public String getDisplayName() {
             return "Hypervisor (via libvirt)";
@@ -409,7 +414,7 @@ public class Hypervisor extends Cloud {
             hypervisorHost = o.getString("hypervisorHost");
             hypervisorSystemUrl = o.getString("hypervisorSystemUrl");
             hypervisorSshPort = o.getInt("hypervisorSshPort");
-            username = o.getString("username");
+            credentialsId = o.getString("credentialsId");
             save();
             return super.configure(req, o);
         }
@@ -423,7 +428,7 @@ public class Hypervisor extends Cloud {
 
         public FormValidation doTestConnection(
                 @QueryParameter String hypervisorType, @QueryParameter String hypervisorHost, @QueryParameter String hypervisorSshPort,
-                @QueryParameter String username, @QueryParameter String hypervisorSystemUrl,
+                @QueryParameter String hypervisorSystemUrl,
                 @QueryParameter boolean useNativeJavaConnection, @QueryParameter String credentialsId) throws Exception, ServletException {
             try {
                 if (hypervisorHost == null) {
@@ -432,13 +437,9 @@ public class Hypervisor extends Cloud {
                 if (hypervisorType == null) {
                     return FormValidation.error("Hypervisor type is not specified!");
                 }
-                if (username == null) {
-                    return FormValidation.error("Username is not specified!");
-                }
 
                 ConnectionBuilder builder = ConnectionBuilder.newBuilder()
                         .hypervisorType(hypervisorType)
-                        .userName(username)
                         .withCredentials(lookupSystemCredentials(credentialsId))
                         .hypervisorHost(hypervisorHost)
                         .hypervisorPort(Integer.parseInt(hypervisorSshPort))
@@ -458,19 +459,19 @@ public class Hypervisor extends Cloud {
             } catch (VirtException e) {
                 LogRecord rec = new LogRecord(Level.WARNING, "Failed to check hypervisor connection to {0} as {1}/******");
                 rec.setThrown(e);
-                rec.setParameters(new Object[]{hypervisorHost, username});
+                rec.setParameters(new Object[]{hypervisorHost, this.getUsernameOrEmpty()});
                 LOGGER.log(rec);
                 return FormValidation.error(e.getMessage());
             } catch (UnsatisfiedLinkError e) {
                 LogRecord rec = new LogRecord(Level.WARNING, "Failed to connect to hypervisor. Check libvirt installation on jenkins machine!");
                 rec.setThrown(e);
-                rec.setParameters(new Object[]{hypervisorHost, username});
+                rec.setParameters(new Object[]{hypervisorHost, this.getUsernameOrEmpty()});
                 LOGGER.log(rec);
                 return FormValidation.error(e.getMessage());
             } catch (Exception e) {
                 LogRecord rec = new LogRecord(Level.WARNING, "Failed to connect to hypervisor. Check libvirt installation on jenkins machine!");
                 rec.setThrown(e);
-                rec.setParameters(new Object[]{hypervisorHost, username});
+                rec.setParameters(new Object[]{hypervisorHost, this.getUsernameOrEmpty()});
                 LOGGER.log(rec);
                 return FormValidation.error(e.getMessage());
             }
@@ -493,7 +494,13 @@ public class Hypervisor extends Cloud {
         }
 
         public String getUsername() {
-            return username;
+            return lookupSystemCredentials(credentialsId).getUsername();
+        }
+        /**
+         *  @return the Output of getUsername() if not null, else an empty String
+         */
+        public String getUsernameOrEmpty(){
+            return getUsername() != null ? getUsername() : "";
         }
 
         public List<String> getHypervisorTypes() {
