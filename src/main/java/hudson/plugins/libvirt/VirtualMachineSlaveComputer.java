@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import hudson.model.Slave;
 import hudson.model.TaskListener;
 import hudson.plugins.libvirt.lib.IDomain;
+import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.OfflineCause;
 import hudson.slaves.SlaveComputer;
 import hudson.util.StreamTaskListener;
@@ -47,14 +48,28 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
 	@Override
 	public Future<?> disconnect(OfflineCause cause) {
-		VirtualMachineSlave slave = (VirtualMachineSlave) getNode();
+        String reason = "unknown";
+        if (cause != null) {
+            reason =  "reason: " + cause + " (" + cause.getClass().getName() + ")";
+        }
+
+        VirtualMachineSlave slave = (VirtualMachineSlave) getNode();
+		if (null == slave) {
+		    taskListener.getLogger().println("disconnect from undefined slave reason: " + reason);
+            logger.log(Level.SEVERE, "disconnect from null slave reason: " + reason);
+            return super.disconnect(cause);
+		}
 		String virtualMachineName = slave.getVirtualMachineName();
 		VirtualMachineLauncher vmL = (VirtualMachineLauncher) getLauncher();
-		Hypervisor hypervisor = vmL.findOurHypervisorInstance();
-		String reason = "";
-		if (cause != null) {
-			reason =  "reason: " + cause + " (" + cause.getClass().getName() + ")";
-		}
+		Hypervisor hypervisor;
+        try {
+            hypervisor = vmL.findOurHypervisorInstance();
+        } catch (VirtException e) {
+            taskListener.getLogger().println(e.getMessage());
+            logger.log(Level.SEVERE, "cannot find hypervisor instance on disconnect" + e.getMessage());
+            return super.disconnect(cause);
+        }
+
 		logger.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
 		taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down.");
 		try {
