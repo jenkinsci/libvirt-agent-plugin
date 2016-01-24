@@ -25,6 +25,7 @@ import hudson.model.TaskListener;
 
 import hudson.model.Descriptor;
 import hudson.plugins.libvirt.lib.IDomain;
+import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerLauncher;
 import hudson.slaves.SlaveComputer;
@@ -67,19 +68,19 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     private void lookupVirtualMachineHandle() {
         if (hypervisorDescription != null && virtualMachineName != null) {
             LOGGER.log(Level.FINE, "Grabbing hypervisor...");
-            Hypervisor hypervisor = null;
-            for (Cloud cloud : Jenkins.getInstance().clouds) {
-                if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
-                    hypervisor = (Hypervisor) cloud;
-                    break;
+            Hypervisor hypervisor;
+            try {
+                hypervisor = findOurHypervisorInstance();
+                LOGGER.log(Level.FINE, "Hypervisor found, searching for a matching virtual machine for \"" + virtualMachineName + "\"...");
+
+                for (VirtualMachine vm : hypervisor.getVirtualMachines()) {
+                    if (vm.getName().equals(virtualMachineName)) {
+                        virtualMachine = vm;
+                        break;
+                    }
                 }
-            }
-            LOGGER.log(Level.FINE, "Hypervisor found, searching for a matching virtual machine for \"" + virtualMachineName + "\"...");
-            for (VirtualMachine vm : hypervisor.getVirtualMachines()) {
-                if (vm.getName().equals(virtualMachineName)) {
-                    virtualMachine = vm;
-                    break;
-                }
+            } catch (VirtException e) {
+                LOGGER.log(Level.SEVERE, "no Hypervisor found, searching for a matching virtual machine for \"" + virtualMachineName + "\" " + e.getMessage());
             }
         }
     }
@@ -102,7 +103,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
         return true;
     }
 
-    public Hypervisor findOurHypervisorInstance() throws RuntimeException {
+    public Hypervisor findOurHypervisorInstance() throws VirtException {
         if (hypervisorDescription != null && virtualMachineName != null) {
             Hypervisor hypervisor = null;
             for (Cloud cloud : Jenkins.getInstance().clouds) {
@@ -113,7 +114,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             }
         }
         LOGGER.log(Level.SEVERE, "Could not find our libvirt cloud instance!");
-        throw new RuntimeException("Could not find our libvirt cloud instance!");
+        throw new VirtException("Could not find our libvirt cloud instance!");
     }
 
     @Override
