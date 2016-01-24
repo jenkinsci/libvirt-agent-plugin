@@ -59,19 +59,26 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
 
     private static void revertVMSnapshot(VirtualMachineSlave slave, String snapshotName, TaskListener listener) {
         ComputerLauncher launcher = slave.getLauncher();
-        if (launcher instanceof ComputerLauncher) {
+        if (launcher instanceof VirtualMachineLauncher) {
 
             VirtualMachineLauncher slaveLauncher = (VirtualMachineLauncher) launcher;
-            Hypervisor hypervisor = slaveLauncher.findOurHypervisorInstance();
+            String vmName = slaveLauncher.getVirtualMachineName();
+
+            listener.getLogger().println("Preparing to revert " + vmName + " to snapshot " + snapshotName + ".");
+
+            Hypervisor hypervisor = null;
+            try {
+                hypervisor = slaveLauncher.findOurHypervisorInstance();
+            } catch (VirtException e) {
+                listener.fatalError("reverting "+ vmName + " to " + snapshotName + " failed: " + e.getMessage());
+                return;
+            }
 
             try {
                 Map<String, IDomain> domains = hypervisor.getDomains();
-
-                String vmName = slaveLauncher.getVirtualMachineName();
                 IDomain domain = domains.get(vmName);
-                if (domain != null) {
-                    listener.getLogger().println("Preparing to revert " + vmName + " to snapshot " + snapshotName + ".");
 
+                if (domain != null) {
                     try {
                         IDomainSnapshot snapshot = domain.snapshotLookupByName(snapshotName);
                         try {
