@@ -25,6 +25,7 @@ import hudson.AbortException;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.TaskListener;
+import hudson.plugins.libvirt.lib.VirtException;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Slave;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -49,6 +51,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class VirtualMachineSlave extends Slave {
 
     static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(VirtualMachineSlave.class.getName());
 
     private String      hypervisorDescription;
     private String      snapshotName;
@@ -136,11 +139,15 @@ public class VirtualMachineSlave extends Slave {
             }
 
             VirtualMachineLauncher vmL = (VirtualMachineLauncher) ((SlaveComputer) c).getLauncher();
-            Hypervisor vmC = vmL.findOurHypervisorInstance();
-
-            if (!vmC.markVMOnline(c.getDisplayName(), vmL.getVirtualMachineName())) {
-                throw new AbortException("Capacity threshold  (" + vmC.getMaxOnlineSlaves() + ") reached at hypervisor \"" + vmC.getHypervisorDescription() + "\", slave commissioning delayed.");
-	    }
+            try {
+                Hypervisor vmC = vmL.findOurHypervisorInstance();
+                if (!vmC.markVMOnline(c.getDisplayName(), vmL.getVirtualMachineName())) {
+                    throw new AbortException("Capacity threshold  (" + vmC.getMaxOnlineSlaves() + ") reached at hypervisor \"" + vmC.getHypervisorDescription() + "\", slave commissioning delayed.");
+                }
+            } catch (VirtException e) {
+                LOGGER.log(Level.WARNING, "aborting slave launch due to:", e);
+                throw new AbortException(e.getMessage());
+            }
         }
     }
 
