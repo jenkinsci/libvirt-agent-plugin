@@ -28,9 +28,11 @@ import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerLauncher;
+import hudson.slaves.JNLPLauncher;
 import hudson.slaves.SlaveComputer;
 
 import jenkins.model.Jenkins;
+import jenkins.slaves.RemotingWorkDirSettings;
 
 import java.io.IOException;
 import java.util.Map;
@@ -202,5 +204,13 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     @Override
     public Descriptor<ComputerLauncher> getDescriptor() {
         throw new UnsupportedOperationException();
+    }
+    
+    public RemotingWorkDirSettings getWorkDirSettings() {
+    	return ((JNLPLauncher) delegate).getWorkDirSettings();
+    }
+    
+    public String getTunnel() {
+    	return ((JNLPLauncher) delegate).tunnel;
     }
 }

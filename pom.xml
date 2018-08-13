@@ -4,8 +4,12 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.580.3</version>
+        <version>3.6</version>
     </parent>
+    <properties>
+      <jenkins.version>2.108</jenkins.version>
+      <java.level>8</java.level>
+    </properties>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>libvirt-slave</artifactId>
     <version>1.8.6-SNAPSHOT</version>
