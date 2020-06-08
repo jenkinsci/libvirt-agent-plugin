@@ -54,7 +54,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -410,8 +409,6 @@ public class Hypervisor extends Cloud {
 
     @Extension
     public static final class DescriptorImpl extends Descriptor<Cloud> {
-
-        public final ConcurrentMap<String, Hypervisor> hypervisors = new ConcurrentHashMap<>();
         private String hypervisorType;
         private String hypervisorHost;
         private String hypervisorSystemUrl;
