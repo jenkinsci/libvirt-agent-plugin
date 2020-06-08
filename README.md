@@ -10,6 +10,8 @@ is to properly set up the Hypervisor first,
 followed by editing each node, pointing it to the reconfigured Hypervisor.
 It is not necessary to delete node configurations!
 
+See the [CHANGELOG](CHANGELOG.md) for a list of released versions.
+
 ### Description
 
 This plugin for Jenkins CI adds a way to control guest domains hosted on Xen or QEMU/KVM.
