@@ -177,7 +177,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             rec.setThrown(e);
             LOGGER.log(rec);
             throw e;
-        } catch (Throwable t) {
+        } catch (Exception t) {
             taskListener.fatalError(t.getMessage(), t);
 
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while launching {0} on Hypervisor {1}.");
