@@ -20,8 +20,9 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
     public void onStarted(Run<?, ?> r, TaskListener listener) {
         Executor executor = r.getExecutor();
 
-        if (executor == null)
+        if (executor == null) {
             return;
+        }
 
         Node node = executor.getOwner().getNode();
 
@@ -32,8 +33,9 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
 
             BeforeJobSnapshotJobProperty prop = r.getParent().getProperty(BeforeJobSnapshotJobProperty.class);
             String jobBeforeJobSnapshotName = null;
-            if (prop != null)
+            if (prop != null) {
                 jobBeforeJobSnapshotName = prop.getSnapshotName();
+            }
 
             String slaveBeforeJobSnapshotName = slave.getBeforeJobSnapshotName();
 
@@ -52,8 +54,9 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
                 }
             }
 
-            if (snapshotName != null)
+            if (snapshotName != null) {
                 revertVMSnapshot(slave, snapshotName, listener);
+            }
         }
     }
 

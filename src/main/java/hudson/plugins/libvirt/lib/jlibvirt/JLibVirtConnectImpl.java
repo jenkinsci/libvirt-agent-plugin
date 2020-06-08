@@ -20,8 +20,7 @@ public class JLibVirtConnectImpl implements IConnect {
     }
 
     public JLibVirtConnectImpl(String host, int port, String username, String password, String hypervisorUri, boolean b) throws VirtException {
-        try
-        {
+        try {
             this.connect = new Connect(host, port, username, password, hypervisorUri, b);
         } catch (Exception e) {
             throw new VirtException(e);
