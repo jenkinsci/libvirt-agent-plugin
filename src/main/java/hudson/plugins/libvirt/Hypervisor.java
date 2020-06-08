@@ -409,11 +409,11 @@ public class Hypervisor extends Cloud {
 
     @Extension
     public static final class DescriptorImpl extends Descriptor<Cloud> {
-        private String hypervisorType;
-        private String hypervisorHost;
-        private String hypervisorSystemUrl;
-        private int hypervisorSshPort;
-        private String username;
+        private String type;
+        private String hvHost;
+        private String systemUrl;
+        private int sshPort;
+        private String user;
 
         @Override
         public String getDisplayName() {
@@ -422,11 +422,11 @@ public class Hypervisor extends Cloud {
 
         @Override
         public boolean configure(StaplerRequest req, JSONObject o) throws FormException {
-            hypervisorType = o.getString("hypervisorType");
-            hypervisorHost = o.getString("hypervisorHost");
-            hypervisorSystemUrl = o.getString("hypervisorSystemUrl");
-            hypervisorSshPort = o.getInt("hypervisorSshPort");
-            username = o.getString("username");
+            type = o.getString("hypervisorType");
+            hvHost = o.getString("hypervisorHost");
+            systemUrl = o.getString("hypervisorSystemUrl");
+            sshPort = o.getInt("hypervisorSshPort");
+            user = o.getString("username");
             save();
             return super.configure(req, o);
         }
@@ -507,23 +507,23 @@ public class Hypervisor extends Cloud {
         }
 
         public String getHypervisorHost() {
-            return hypervisorHost;
+            return hvHost;
         }
 
         public int getHypervisorSshPort() {
-            return hypervisorSshPort;
+            return sshPort;
         }
 
         public String getHypervisorSystemUrl() {
-            return hypervisorSystemUrl;
+            return systemUrl;
         }
 
         public String getHypervisorType() {
-            return hypervisorType;
+            return type;
         }
 
         public String getUsername() {
-            return username;
+            return user;
         }
 
         public List<String> getHypervisorTypes() {
