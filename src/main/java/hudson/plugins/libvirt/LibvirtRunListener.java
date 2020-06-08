@@ -11,6 +11,7 @@ import java.util.Map;
 
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
+import java.io.IOException;
 
 @Extension
 public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
@@ -44,7 +45,7 @@ public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
                     computer.getChannel().close();
                     computer.disconnect(null);
                     computer.waitUntilOffline();
-                } catch (Exception e) {
+                } catch (IOException | InterruptedException e) {
                 }
 
                 VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
