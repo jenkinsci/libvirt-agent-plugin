@@ -162,6 +162,7 @@ public class VirtualMachineSlave extends Slave {
             load();
         }
 
+        @Override
         public String getDisplayName() {
             return "Slave virtual computer running on a virtualization platform (via libvirt)";
         }
