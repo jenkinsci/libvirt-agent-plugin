@@ -292,10 +292,12 @@ public class Hypervisor extends Cloud {
         return new String[0];
     }
 
+    @Override
     public Collection<NodeProvisioner.PlannedNode> provision(Label label, int i) {
         return Collections.emptySet();
     }
 
+    @Override
     public boolean canProvision(Label label) {
         return false;
     }
@@ -399,6 +401,7 @@ public class Hypervisor extends Cloud {
         private int hypervisorSshPort;
         private String username;
 
+        @Override
         public String getDisplayName() {
             return "Hypervisor (via libvirt)";
         }
