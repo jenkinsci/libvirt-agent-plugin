@@ -54,7 +54,11 @@ public class BeforeJobSnapshotJobProperty extends JobProperty<Job<?, ?>> {
     }
 
     public String getSnapshotName() {
-        return getSnapshotsEnabled() ? snapshotsEnabled.getSnapshotName() : null;
+        if (!getSnapshotsEnabled()) {
+            return null;
+        }
+
+        return snapshotsEnabled.getSnapshotName();
     }
 
     public EnableData getSnapshots() {

@@ -54,11 +54,20 @@ public class VirtualMachine implements Serializable, Comparable<VirtualMachine> 
 
         VirtualMachine that = (VirtualMachine) o;
 
-        if (hypervisor != null ? !hypervisor.equals(that.hypervisor) : that.hypervisor != null) {
+        if (hypervisor == null && that.hypervisor != null) {
             return false;
+        } else {
+            if (!hypervisor.equals(that.hypervisor)) {
+                return false;
+            }
         }
-        if (name != null ? !name.equals(that.name) : that.name != null) {
+
+        if (name == null && that.name != null) {
             return false;
+        } else {
+            if (!name.equals(that.name)) {
+                return false;
+            }
         }
 
         return true;
@@ -66,8 +75,16 @@ public class VirtualMachine implements Serializable, Comparable<VirtualMachine> 
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (hypervisor != null ? hypervisor.hashCode() : 0);
+        int result = 0;
+
+        if (name != null) {
+            result = result + 31 * name.hashCode();
+        }
+
+        if (hypervisor != null) {
+            result = result + hypervisor.hashCode();
+        }
+
         return result;
     }
 
