@@ -40,6 +40,7 @@ import hudson.plugins.libvirt.lib.ConnectionBuilder;
 import hudson.plugins.libvirt.lib.IConnect;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
+import static hudson.plugins.libvirt.util.Consts.SSH_PORT;
 import hudson.security.ACL;
 import hudson.security.AccessControlled;
 import hudson.slaves.Cloud;
@@ -100,7 +101,13 @@ public class Hypervisor extends Cloud {
         } else {
             this.hypervisorSystemUrl = "system";
         }
-        this.hypervisorSshPort = hypervisorSshPort <= 0 ? 22 : hypervisorSshPort;
+
+	if (hypervisorSshPort > 0) {
+            this.hypervisorSshPort = hypervisorSshPort;
+        } else {
+            this.hypervisorSshPort = SSH_PORT;
+        }
+
         this.username = username;
         this.maxOnlineSlaves = maxOnlineSlaves;
         this.useNativeJavaConnection = useNativeJavaConnection;

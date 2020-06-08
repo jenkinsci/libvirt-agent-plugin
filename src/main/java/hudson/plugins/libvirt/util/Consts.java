@@ -15,4 +15,10 @@ public final class Consts {
      * The base URL of the plugin javascripts.
      */
     public static final String PLUGIN_JS_URL = PLUGIN_URL + "js/";
+
+    public static final int SSH_PORT = 22;
+
+    private Consts() {
+      //not called
+    }
 }

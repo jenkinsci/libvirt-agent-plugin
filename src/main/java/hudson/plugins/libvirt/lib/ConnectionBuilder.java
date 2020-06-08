@@ -4,6 +4,7 @@ import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.plugins.libvirt.lib.jlibvirt.JLibVirtConnectImpl;
 import hudson.plugins.libvirt.lib.libvirt.LibVirtConnectImpl;
+import static hudson.plugins.libvirt.util.Consts.SSH_PORT;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -21,7 +22,7 @@ public class ConnectionBuilder {
     private String hypervisorType;
     private String userName;
     private String hypervisorHost;
-    private int    hypervisorPort = 22;
+    private int    hypervisorPort = SSH_PORT;
     private String hypervisorSysUrl;
 
     private StandardUsernameCredentials credentials;
