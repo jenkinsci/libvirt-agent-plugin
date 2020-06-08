@@ -108,6 +108,8 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
                                             listener.fatalError("Could not relaunch VM: " + e);
                                         } catch (InterruptedException e) {
                                             listener.fatalError("Could not relaunch VM: " + e);
+                                        } catch (NullPointerException e) {
+                                            listener.fatalError("Could not determine node.");
                                         }
                                     } catch (InterruptedException e) {
                                         listener.fatalError("Interrupted while waiting for computer to be offline: " + e);
@@ -117,6 +119,8 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
                                 }
                             } catch (InterruptedException e) {
                                 listener.fatalError("Interrupted while syncing IO: " + e);
+                            } catch (NullPointerException e) {
+                                listener.fatalError("Could not determine channel.");
                             }
                         } catch (VirtException e) {
                             listener.fatalError("No snapshot named " + snapshotName + " for VM: " + e);

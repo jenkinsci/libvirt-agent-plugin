@@ -59,7 +59,8 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
 
         @Override
         public String getDisplayName() {
-            return null; // unused
+            // unused, but needs to be non null
+            return "virtual machine management";
         }
     }
 
