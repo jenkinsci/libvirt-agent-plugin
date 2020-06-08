@@ -66,12 +66,10 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
         return new VirtualMachineManagementServer(serverName);
     }
 
-
     public Object getTarget() {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         return this;
     }
-
 
     public void save() throws IOException {
 
@@ -79,12 +77,6 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
 
 
     public Collection<String> getServerNames() {
-        return Collections2.transform(PluginImpl.getInstance().getServers(), new Function<Hypervisor, String>() {
-            public String apply(@Nullable Hypervisor input) {
-                return input.getHypervisorHost();
-            }
-        });
+        return Collections2.transform(PluginImpl.getInstance().getServers(), Hypervisor::getHypervisorHost);
     }
-
-
 }
