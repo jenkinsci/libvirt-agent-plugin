@@ -113,6 +113,7 @@ public class PluginImpl extends Plugin {
 
     public FormValidation doCheckStartupWaitingPeriodSeconds(@QueryParameter String secsValue)
             throws IOException, ServletException {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         try {
             int v = Integer.parseInt(secsValue);
             if (v < 0) {
@@ -130,6 +131,7 @@ public class PluginImpl extends Plugin {
 
     public FormValidation doCheckStartupTimesToRetryOnFailure(@QueryParameter String retriesValue)
             throws IOException, ServletException {
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         try {
             int v = Integer.parseInt(retriesValue);
             if (v < 0) {

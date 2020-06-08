@@ -497,6 +497,8 @@ public class Hypervisor extends Cloud {
                                                @QueryParameter boolean useNativeJavaConnection,
                                                @QueryParameter String credentialsId)
                 throws Exception, ServletException {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+
             try {
                 if (hypervisorHost == null) {
                     return FormValidation.error("Hypervisor Host is not specified!");
