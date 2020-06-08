@@ -22,14 +22,17 @@
 package hudson.plugins.libvirt;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
-import com.cloudbees.jenkins.plugins.sshcredentials.SSHUserListBoxModel;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernameListBoxModel;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.cloudbees.plugins.credentials.domains.HostnamePortRequirement;
 import com.cloudbees.plugins.credentials.domains.SchemeRequirement;
 import com.google.common.base.Strings;
 import com.trilead.ssh2.Connection;
 import hudson.Extension;
+import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.ItemGroup;
 import hudson.model.Label;
@@ -38,6 +41,7 @@ import hudson.plugins.libvirt.lib.IConnect;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.security.ACL;
+import hudson.security.AccessControlled;
 import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
 import hudson.util.FormValidation;
@@ -416,11 +420,34 @@ public class Hypervisor extends Cloud {
             return super.configure(req, o);
         }
 
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context) {
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context,
+                @QueryParameter String host,
+                @QueryParameter String port,
+                @QueryParameter String value) {
 
-            return new SSHUserListBoxModel().withMatching(SSHAuthenticator.matcher(Connection.class),
-                    CredentialsProvider.lookupCredentials(StandardUsernameCredentials.class, context,
-                            ACL.SYSTEM, new SchemeRequirement("ssh")));
+            AccessControlled _context = (context instanceof AccessControlled ? (AccessControlled) context :
+                    Jenkins.getInstance());
+            if (_context == null || !_context.hasPermission(Computer.CONFIGURE)) {
+                return new StandardUsernameListBoxModel()
+                        .includeCurrentValue(value);
+            }
+
+            try {
+                int portValue = Integer.parseInt(port);
+                return new StandardUsernameListBoxModel()
+                        .includeMatchingAs(
+                                ACL.SYSTEM,
+                                Jenkins.getActiveInstance(),
+                                StandardUsernameCredentials.class,
+                                Collections.<DomainRequirement>singletonList(
+                                        new HostnamePortRequirement(host, portValue)
+                                ),
+                                SSHAuthenticator.matcher(Connection.class))
+                        .includeCurrentValue(value);
+            } catch (NumberFormatException ex) {
+                return new StandardUsernameListBoxModel()
+                        .includeCurrentValue(value);
+            }
         }
 
         public FormValidation doTestConnection(
