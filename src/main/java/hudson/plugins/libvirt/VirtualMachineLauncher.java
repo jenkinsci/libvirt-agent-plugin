@@ -44,6 +44,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class VirtualMachineLauncher extends ComputerLauncher {
 
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineLauncher.class.getName());
+    private static final int MSEC_PER_SEC = 1000;
+
     private final ComputerLauncher delegate;
     private transient VirtualMachine virtualMachine;
     private final String hypervisorDescription;
@@ -60,7 +62,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
         this.hypervisorDescription = hypervisorDescription;
-        this.WAIT_TIME_MS = waitingTimeSecs * 1000;
+        this.WAIT_TIME_MS = waitingTimeSecs * MSEC_PER_SEC;
         this.timesToRetryOnFailure = timesToRetryOnFailure;
         lookupVirtualMachineHandle();
     }
