@@ -431,14 +431,19 @@ public class Hypervisor extends Cloud {
             return super.configure(req, o);
         }
 
-        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context,
+        public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> ctx,
                 @QueryParameter String host,
                 @QueryParameter String port,
                 @QueryParameter String value) {
+            AccessControlled context;
 
-            AccessControlled _context = context instanceof AccessControlled
-                    ? (AccessControlled) context : Jenkins.get();
-            if (!_context.hasPermission(Computer.CONFIGURE)) {
+            if (ctx instanceof AccessControlled) {
+                    context = (AccessControlled) ctx;
+            } else {
+                context = Jenkins.get();
+            }
+
+            if (!context.hasPermission(Computer.CONFIGURE)) {
                 return new StandardUsernameListBoxModel()
                         .includeCurrentValue(value);
             }
