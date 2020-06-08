@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,7 +79,7 @@ public class Hypervisor extends Cloud {
     private final String username;
     private final int maxOnlineSlaves;
     private transient int currentOnlineSlaveCount = 0;
-    private transient Hashtable<String, String> currentOnline;
+    private transient ConcurrentHashMap<String, String> currentOnline;
     private transient IConnect connection;
     private final boolean useNativeJavaConnection;
     private final String credentialsId;
@@ -106,7 +105,7 @@ public class Hypervisor extends Cloud {
 
     protected void ensureLists() {
         if (currentOnline == null) {
-            currentOnline = new Hashtable<>();
+            currentOnline = new ConcurrentHashMap<>();
         }
     }
 
