@@ -1,21 +1,22 @@
 /**
- *  Copyright (C) 2010, Byte-Code srl <http://www.byte-code.com>
- *  Copyright (C) 2012  Philipp Bartsch <tastybug@tastybug.com>
+ * Copyright (C) 2010, Byte-Code srl <http://www.byte-code.com>
+ * Copyright (C) 2012 Philipp Bartsch <tastybug@tastybug.com>
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Date: Mar 04, 2010
+ *
  * @author Marco Mornati<mmornati@byte-code.com>
  * @author Philipp Bartsch <tastybug@tastybug.com>
  */
@@ -62,18 +63,28 @@ public class VirtualMachineSlave extends Slave {
     private final int         startupTimesToRetryOnFailure;
     private final String      beforeJobSnapshotName;
 
-
     @DataBoundConstructor
-    public VirtualMachineSlave(String name, String nodeDescription, String remoteFS, String numExecutors,
-            Mode mode, String labelString, VirtualMachineLauncher launcher, ComputerLauncher delegateLauncher,
-            RetentionStrategy<? extends Computer> retentionStrategy, List<? extends NodeProperty<?>> nodeProperties,
-            String hypervisorDescription, String virtualMachineName, String snapshotName, int startupWaitingPeriodSeconds,
-            String shutdownMethod, boolean rebootAfterRun, int startupTimesToRetryOnFailure, String beforeJobSnapshotName)
+    public VirtualMachineSlave(String name, String nodeDescription, String remoteFS,
+                               String numExecutors, Mode mode, String labelString,
+                               VirtualMachineLauncher launcher,
+                               ComputerLauncher delegateLauncher,
+                               RetentionStrategy<? extends Computer> retentionStrategy,
+                               List<? extends NodeProperty<?>> nodeProperties,
+                               String hypervisorDescription, String virtualMachineName,
+                               String snapshotName, int startupWaitingPeriodSeconds,
+                               String shutdownMethod, boolean rebootAfterRun,
+                               int startupTimesToRetryOnFailure, String beforeJobSnapshotName)
             throws
             Descriptor.FormException, IOException {
-        super(name, nodeDescription, remoteFS, Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
-                launcher == null ? new VirtualMachineLauncher(delegateLauncher, hypervisorDescription, virtualMachineName, snapshotName, startupWaitingPeriodSeconds, startupTimesToRetryOnFailure) : launcher,
-                retentionStrategy, nodeProperties);
+        super(name, nodeDescription, remoteFS,
+              Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
+              launcher == null ? new VirtualMachineLauncher(delegateLauncher,
+                                                            hypervisorDescription,
+                                                            virtualMachineName,
+                                                            snapshotName,
+                                                            startupWaitingPeriodSeconds,
+                                                            startupTimesToRetryOnFailure) : launcher,
+               retentionStrategy, nodeProperties);
         this.hypervisorDescription = hypervisorDescription;
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
@@ -131,7 +142,8 @@ public class VirtualMachineSlave extends Slave {
     public static class VirtualMachineComputerListener extends ComputerListener {
 
         @Override
-        public void preLaunch(Computer c, TaskListener taskListener) throws IOException, InterruptedException {
+        public void preLaunch(Computer c, TaskListener taskListener)
+                throws IOException, InterruptedException {
             /* We may be called on any slave type so check that we should
              * be in here. */
             if (!(c.getNode() instanceof VirtualMachineSlave)) {
@@ -142,7 +154,10 @@ public class VirtualMachineSlave extends Slave {
             try {
                 Hypervisor vmC = vmL.findOurHypervisorInstance();
                 if (!vmC.markVMOnline(c.getDisplayName(), vmL.getVirtualMachineName())) {
-                    throw new AbortException("Capacity threshold  (" + vmC.getMaxOnlineSlaves() + ") reached at hypervisor \"" + vmC.getHypervisorDescription() + "\", slave commissioning delayed.");
+                    throw new AbortException("Capacity threshold  (" + vmC.getMaxOnlineSlaves()
+                                             + ") reached at hypervisor \""
+                                             + vmC.getHypervisorDescription()
+                                             + "\", slave commissioning delayed.");
                 }
             } catch (VirtException e) {
                 LOGGER.log(Level.WARNING, "aborting slave launch due to:", e);
@@ -177,7 +192,7 @@ public class VirtualMachineSlave extends Slave {
             Hypervisor hypervisor = getHypervisorByDescription(description);
             if (hypervisor != null) {
                 virtualMachinesList.addAll(hypervisor.getVirtualMachines());
-        }
+            }
             Collections.sort(virtualMachinesList);
             return virtualMachinesList;
         }
@@ -195,7 +210,8 @@ public class VirtualMachineSlave extends Slave {
             ListBoxModel items = new ListBoxModel();
             for (Cloud cloud : Jenkins.get().clouds) {
                 if (cloud instanceof Hypervisor) {
-                    items.add(((Hypervisor) cloud).getHypervisorURI(), ((Hypervisor) cloud).getHypervisorDescription());
+                    items.add(((Hypervisor) cloud).getHypervisorURI(),
+                              ((Hypervisor) cloud).getHypervisorDescription());
                 }
             }
             return items;
