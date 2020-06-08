@@ -32,6 +32,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
         return "libvirt-slave";
     }
 
+    @Override
     public String getDisplayName() {
         return Messages.DisplayName();
     }
@@ -45,7 +46,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
         return ManagementLink.all().get(VirtualMachineManagement.class);
     }
 
-
+    @Override
     public DescriptorImpl getDescriptor() {
         return Jenkins.get().getDescriptorByType(DescriptorImpl.class);
     }
@@ -66,11 +67,13 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
         return new VirtualMachineManagementServer(serverName);
     }
 
+    @Override
     public Object getTarget() {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         return this;
     }
 
+    @Override
     public void save() throws IOException {
 
     }
