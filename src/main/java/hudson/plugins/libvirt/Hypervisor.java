@@ -319,7 +319,7 @@ public class Hypervisor extends Cloud {
         ensureLists();
 
         // Don't allow more than max.
-        if ((maxOnlineSlaves > 0) && (currentOnline.size() == maxOnlineSlaves))
+        if (maxOnlineSlaves > 0 && currentOnline.size() == maxOnlineSlaves)
             return Boolean.FALSE;
 
         // Don't allow two slaves to the same VM to fire up.
