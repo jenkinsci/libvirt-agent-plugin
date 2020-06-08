@@ -216,7 +216,7 @@ public class Hypervisor extends Cloud {
                     try {
                         domain = con.domainLookupByName(c);
                         domains.put(domain.getName(), domain);
-                    } catch (Exception e) {
+                    } catch (VirtException e) {
                         LogRecord rec = new LogRecord(Level.WARNING, "Error retrieving information for domain with name: {0}.");
                         rec.setParameters(new Object[]{c});
                         rec.setThrown(e);
@@ -229,7 +229,7 @@ public class Hypervisor extends Cloud {
                 try {
                     domain = con.domainLookupByID(c);
                     domains.put(domain.getName(), domain);
-                } catch (Exception e) {
+                } catch (VirtException e) {
                     LogRecord rec = new LogRecord(Level.WARNING, "Error retrieving information for domain with id: {0}.");
                     rec.setParameters(new Object[]{c});
                     rec.setThrown(e);
@@ -258,7 +258,7 @@ public class Hypervisor extends Cloud {
             for (String domainName : domains.keySet()) {
                 vmList.add(new VirtualMachine(this, domainName));
             }
-        } catch (Exception e) {
+        } catch (VirtException e) {
             LogRecord rec = new LogRecord(Level.SEVERE, "Cannot connect to datacenter {0} as {1}/******");
             rec.setThrown(e);
             rec.setParameters(new Object[]{hypervisorHost, username});
@@ -463,13 +463,7 @@ public class Hypervisor extends Cloud {
                 rec.setParameters(new Object[]{hypervisorHost, username});
                 LOGGER.log(rec);
                 return FormValidation.error(e.getMessage());
-            } catch (UnsatisfiedLinkError e) {
-                LogRecord rec = new LogRecord(Level.WARNING, "Failed to connect to hypervisor. Check libvirt installation on jenkins machine!");
-                rec.setThrown(e);
-                rec.setParameters(new Object[]{hypervisorHost, username});
-                LOGGER.log(rec);
-                return FormValidation.error(e.getMessage());
-            } catch (Exception e) {
+            } catch (UnsatisfiedLinkError | Exception e) {
                 LogRecord rec = new LogRecord(Level.WARNING, "Failed to connect to hypervisor. Check libvirt installation on jenkins machine!");
                 rec.setThrown(e);
                 rec.setParameters(new Object[]{hypervisorHost, username});
