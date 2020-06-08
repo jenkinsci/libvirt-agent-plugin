@@ -76,15 +76,25 @@ public class VirtualMachineSlave extends Slave {
                                int startupTimesToRetryOnFailure, String beforeJobSnapshotName)
             throws
             Descriptor.FormException, IOException {
-        super(name, nodeDescription, remoteFS,
-              Util.tryParseNumber(numExecutors, 1).intValue(), mode, labelString,
+        super(name, remoteFS,
               launcher == null ? new VirtualMachineLauncher(delegateLauncher,
                                                             hypervisorDescription,
                                                             virtualMachineName,
                                                             snapshotName,
                                                             startupWaitingPeriodSeconds,
-                                                            startupTimesToRetryOnFailure) : launcher,
-               retentionStrategy, nodeProperties);
+                                                            startupTimesToRetryOnFailure) : launcher);
+
+        Number executors = Util.tryParseNumber(numExecutors, 1);
+        if (executors == null) {
+            this.setNumExecutors(1);
+        } else {
+            this.setNumExecutors(executors.intValue());
+        }
+        this.setNodeDescription(nodeDescription);
+        this.setMode(mode);
+        this.setLabelString(labelString);
+        this.setRetentionStrategy(retentionStrategy);
+        this.setNodeProperties(nodeProperties);
         this.hypervisorDescription = hypervisorDescription;
         this.virtualMachineName = virtualMachineName;
         this.snapshotName = snapshotName;
