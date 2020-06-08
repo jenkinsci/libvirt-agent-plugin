@@ -107,7 +107,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 rec.setParameters(new Object[]{virtualMachineName, hypervisor.getHypervisorURI()});
                 logger.log(rec);
             }
-        } catch (Throwable t) {
+        } catch (VirtException t) {
             taskListener.fatalError(t.getMessage(), t);
 
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while shutting down {0} on Hypervisor {1}.");
