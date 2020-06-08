@@ -193,7 +193,7 @@ public class VirtualMachineSlave extends Slave {
 
         public ListBoxModel doFillHypervisorDescriptionItems() {
             ListBoxModel items = new ListBoxModel();
-            for (Cloud cloud : Jenkins.getInstance().clouds) {
+            for (Cloud cloud : Jenkins.get().clouds) {
                 if (cloud instanceof Hypervisor) {
                     items.add(((Hypervisor) cloud).getHypervisorURI(), ((Hypervisor) cloud).getHypervisorDescription());
                 }
@@ -215,8 +215,9 @@ public class VirtualMachineSlave extends Slave {
 
         private Hypervisor getHypervisorByDescription(String hypervisorDescription) {
             if (hypervisorDescription != null && !hypervisorDescription.equals("")) {
-                for (Cloud cloud : Jenkins.getInstance().clouds) {
-                    if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
+                for (Cloud cloud : Jenkins.get().clouds) {
+                    if (cloud instanceof Hypervisor
+			&& ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
                         return (Hypervisor) cloud;
                     }
                 }

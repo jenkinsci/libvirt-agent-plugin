@@ -32,6 +32,7 @@ import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,10 +90,7 @@ public class PluginImpl extends Plugin {
      * @return the list as a LinkedList of Hypervisor
      */
     public synchronized Collection<Hypervisor> getServers() {
-        Jenkins jenkins = Jenkins.getInstance();
-        if (null == jenkins) {
-            return new java.util.Vector<Hypervisor>();
-        }
+        Jenkins jenkins = Jenkins.get();
         Collection<? extends Cloud> clouds = jenkins.clouds;
         @SuppressWarnings("unchecked")
         Collection<Hypervisor> libvirtClouds =
@@ -146,7 +144,7 @@ public class PluginImpl extends Plugin {
     public void doComputerNameValues(StaplerRequest req, StaplerResponse rsp, @QueryParameter("value") String value) throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
         List<VirtualMachine> virtualMachines = null;
-        for (Cloud cloud : Jenkins.getInstance().clouds) {
+        for (Cloud cloud : Jenkins.get().clouds) {
             if (cloud instanceof Hypervisor) {
                 Hypervisor hypervisor = (Hypervisor) cloud;
                 if (value != null && value.equals(hypervisor.getHypervisorDescription())) {
@@ -169,7 +167,7 @@ public class PluginImpl extends Plugin {
     public void doSnapshotNameValues(StaplerRequest req, StaplerResponse rsp, @QueryParameter("vm") String vm, @QueryParameter("hypervisor") String hypervisor) throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
         m.add(new ListBoxModel.Option("", ""));
-        for (Cloud cloud : Jenkins.getInstance().clouds) {
+        for (Cloud cloud : Jenkins.get().clouds) {
             if (cloud instanceof Hypervisor) {
                 Hypervisor hypHandle = (Hypervisor) cloud;
                 if (hypervisor != null && hypervisor.equals(hypHandle.getHypervisorURI())) {

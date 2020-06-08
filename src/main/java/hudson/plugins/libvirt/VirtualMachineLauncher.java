@@ -105,11 +105,9 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     public Hypervisor findOurHypervisorInstance() throws VirtException {
         if (hypervisorDescription != null && virtualMachineName != null) {
-            Hypervisor hypervisor = null;
-            for (Cloud cloud : Jenkins.getInstance().clouds) {
+            for (Cloud cloud : Jenkins.get().clouds) {
                 if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
-                    hypervisor = (Hypervisor) cloud;
-                    return hypervisor;
+                    return (Hypervisor) cloud;
                 }
             }
         }

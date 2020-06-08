@@ -46,7 +46,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
 
 
     public DescriptorImpl getDescriptor() {
-        return Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
+        return Jenkins.get().getDescriptorByType(DescriptorImpl.class);
     }
 
     /**
@@ -67,7 +67,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
 
 
     public Object getTarget() {
-        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         return this;
     }
 
