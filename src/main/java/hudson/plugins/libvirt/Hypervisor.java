@@ -212,7 +212,7 @@ public class Hypervisor extends Cloud {
         if (con != null) {
             for (String c : con.listDefinedDomains()) {
                 if (c != null && !c.equals("")) {
-                    IDomain domain = null;
+                    IDomain domain;
                     try {
                         domain = con.domainLookupByName(c);
                         domains.put(domain.getName(), domain);
@@ -225,7 +225,7 @@ public class Hypervisor extends Cloud {
                 }
             }
             for (int c : con.listDomains()) {
-                IDomain domain = null;
+                IDomain domain;
                 try {
                     domain = con.domainLookupByID(c);
                     domains.put(domain.getName(), domain);
