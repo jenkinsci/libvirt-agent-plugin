@@ -82,7 +82,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
             public String apply(@Nullable Hypervisor input) {
                 return input.getHypervisorHost();
             }
-        } );
+        });
     }
 
 

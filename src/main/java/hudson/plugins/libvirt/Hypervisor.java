@@ -333,7 +333,8 @@ public class Hypervisor extends Cloud {
 
         // Don't allow a misconfigured slave to try start
         if ("".equals(vmName) || "".equals(slaveName)) {
-            LogRecord rec = new LogRecord(Level.WARNING, "Slave '"+slaveName+"' (using VM '"+vmName+"') appears to be misconfigured.");
+            LogRecord rec = new LogRecord(Level.WARNING,
+                    "Slave '" + slaveName + "' (using VM '" + vmName + "') appears to be misconfigured.");
             LOGGER.log(rec);
             return Boolean.FALSE;
         }
@@ -426,8 +427,8 @@ public class Hypervisor extends Cloud {
                 @QueryParameter String port,
                 @QueryParameter String value) {
 
-            AccessControlled _context = context instanceof AccessControlled ? (AccessControlled) context :
-                    Jenkins.get();
+            AccessControlled _context = context instanceof AccessControlled
+                    ? (AccessControlled) context : Jenkins.get();
             if (!_context.hasPermission(Computer.CONFIGURE)) {
                 return new StandardUsernameListBoxModel()
                         .includeCurrentValue(value);
@@ -476,7 +477,7 @@ public class Hypervisor extends Cloud {
                 LogRecord rec = new LogRecord(Level.FINE, "Testing connection to hypervisor: {0}");
                 rec.setParameters(new Object[]{hypervisorUri});
                 LOGGER.log(rec);
-                
+
                 IConnect hypervisorConnection = builder.build();
                 long version = hypervisorConnection.getVersion();
                 hypervisorConnection.close();

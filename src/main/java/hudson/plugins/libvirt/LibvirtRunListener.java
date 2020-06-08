@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @Extension
 public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
-    public LibvirtRunListener (){
+    public LibvirtRunListener() {
     }
 
     @Override
@@ -57,7 +57,10 @@ public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
                         IDomain domain = computers.get(virtualMachine.getName());
                         domain.create();
                     } catch (VirtException e) {
-                        try { Thread.sleep(500); } catch (Exception e2) {}
+                        try {
+                            Thread.sleep(500);
+                        } catch (Exception e2) {
+                        }
                         continue;
                     }
                     break;

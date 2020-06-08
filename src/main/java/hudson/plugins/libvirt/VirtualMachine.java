@@ -42,7 +42,7 @@ public class VirtualMachine implements Serializable, Comparable<VirtualMachine> 
     public Hypervisor getHypervisor() {
         return hypervisor;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

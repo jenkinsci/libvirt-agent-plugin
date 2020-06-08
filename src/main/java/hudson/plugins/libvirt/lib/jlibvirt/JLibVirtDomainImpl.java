@@ -40,7 +40,7 @@ public class JLibVirtDomainImpl implements IDomain {
         }
     }
 
-    public IDomainSnapshot snapshotLookupByName(String snapshotName)  throws VirtException{
+    public IDomainSnapshot snapshotLookupByName(String snapshotName) throws VirtException {
         try {
             return new JLibVirtDomainSnapshotImpl(domain.snapshotLookupByName(snapshotName));
         } catch (Exception e) {
@@ -48,16 +48,16 @@ public class JLibVirtDomainImpl implements IDomain {
         }
     }
 
-    public void revertToSnapshot(IDomainSnapshot ds)  throws VirtException{
+    public void revertToSnapshot(IDomainSnapshot ds) throws VirtException {
         try {
-            DomainSnapshot snapshot = ((JLibVirtDomainSnapshotImpl)ds).getSnapshot();
+            DomainSnapshot snapshot = ((JLibVirtDomainSnapshotImpl) ds).getSnapshot();
             domain.revertToSnapshot(snapshot);
         } catch (Exception e) {
             throw new VirtException(e);
         }
     }
 
-    public void shutdown()  throws VirtException{
+    public void shutdown() throws VirtException {
         try {
             domain.shutdown();
         } catch (Exception e) {
