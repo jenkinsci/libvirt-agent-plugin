@@ -71,7 +71,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             Hypervisor hypervisor;
             try {
                 hypervisor = findOurHypervisorInstance();
-                LOGGER.log(Level.FINE, "Hypervisor found, searching for a matching virtual machine for \"" + virtualMachineName + "\"...");
+                LOGGER.log(Level.FINE, "Hypervisor found, searching for a matching virtual machine for \"{0}\"...", virtualMachineName);
 
                 for (VirtualMachine vm : hypervisor.getVirtualMachines()) {
                     if (vm.getName().equals(virtualMachineName)) {
@@ -80,7 +80,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                     }
                 }
             } catch (VirtException e) {
-                LOGGER.log(Level.SEVERE, "no Hypervisor found, searching for a matching virtual machine for \"" + virtualMachineName + "\" " + e.getMessage());
+                LOGGER.log(Level.SEVERE, "no Hypervisor found, searching for a matching virtual machine for \"{0}\" {1}", new Object[]{virtualMachineName, e.getMessage()});
             }
         }
     }
