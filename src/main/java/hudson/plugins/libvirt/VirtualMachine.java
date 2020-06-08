@@ -54,16 +54,20 @@ public class VirtualMachine implements Serializable, Comparable<VirtualMachine> 
 
         VirtualMachine that = (VirtualMachine) o;
 
-        if (hypervisor == null && that.hypervisor != null) {
-            return false;
+        if (hypervisor == null) {
+            if (that.hypervisor != null) {
+                return false;
+            }
         } else {
             if (!hypervisor.equals(that.hypervisor)) {
                 return false;
             }
         }
 
-        if (name == null && that.name != null) {
-            return false;
+        if (name == null) {
+            if (that.name != null) {
+                return false;
+            }
         } else {
             if (!name.equals(that.name)) {
                 return false;
