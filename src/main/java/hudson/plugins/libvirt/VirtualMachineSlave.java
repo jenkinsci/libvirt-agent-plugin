@@ -53,14 +53,14 @@ public class VirtualMachineSlave extends Slave {
     static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineSlave.class.getName());
 
-    private String      hypervisorDescription;
-    private String      snapshotName;
-    private String      virtualMachineName;
-    private int         startupWaitingPeriodSeconds;
-    private String      shutdownMethod;
-    private boolean     rebootAfterRun;
-    private int         startupTimesToRetryOnFailure;
-    private String      beforeJobSnapshotName;
+    private final String      hypervisorDescription;
+    private final String      snapshotName;
+    private final String      virtualMachineName;
+    private final int         startupWaitingPeriodSeconds;
+    private final String      shutdownMethod;
+    private final boolean     rebootAfterRun;
+    private final int         startupTimesToRetryOnFailure;
+    private final String      beforeJobSnapshotName;
 
 
     @DataBoundConstructor
