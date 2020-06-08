@@ -121,11 +121,11 @@ public class VirtualMachineSlave extends Slave {
     }
 
     @Override
-	public Computer createComputer() {
-		return new VirtualMachineSlaveComputer(this);
-	}
+    public Computer createComputer() {
+        return new VirtualMachineSlaveComputer(this);
+    }
 
-	public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
+    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
     @Extension
     public static class VirtualMachineComputerListener extends ComputerListener {
@@ -175,17 +175,17 @@ public class VirtualMachineSlave extends Slave {
             List<VirtualMachine> virtualMachinesList = new ArrayList<VirtualMachine>();
             Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
             if (hypervisor != null) {
-            	virtualMachinesList.addAll(hypervisor.getVirtualMachines());
-	    }
+                virtualMachinesList.addAll(hypervisor.getVirtualMachines());
+        }
             Collections.sort(virtualMachinesList);
             return virtualMachinesList;
         }
 
         public String[] getDefinedSnapshots(String hypervisorDescription, String virtualMachineName) {
-        	Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
+            Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
             if (hypervisor != null) {
-            	String[] snapS = hypervisor.getSnapshots(virtualMachineName);
-            	return snapS;
+                String[] snapS = hypervisor.getSnapshots(virtualMachineName);
+                return snapS;
             }
             return new String[0];
         }
@@ -213,13 +213,13 @@ public class VirtualMachineSlave extends Slave {
         }
 
         private Hypervisor getHypervisorByDescription(String hypervisorDescription) {
-        	if (hypervisorDescription != null && !hypervisorDescription.equals("")) {
-	        	for (Cloud cloud : Jenkins.getInstance().clouds) {
-	                if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
-	                    return (Hypervisor) cloud;
-	                }
-	            }
-        	}
+            if (hypervisorDescription != null && !hypervisorDescription.equals("")) {
+                for (Cloud cloud : Jenkins.getInstance().clouds) {
+                    if (cloud instanceof Hypervisor && ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
+                        return (Hypervisor) cloud;
+                    }
+                }
+            }
             return null;
         }
     }
