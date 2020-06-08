@@ -19,7 +19,7 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
             <f:textbox default="22"/>
         </f:entry>
         <f:entry title="${%URI parameters}" field="hypervisorSystemUrl" help="/plugin/libvirt-slave/help-libvirt-hypervisorUrl.html">
-            <f:textbox default="system"/>
+            <f:textbox default="system?no_tty=1"/>
         </f:entry>
         <f:entry title="${%Concurrent Slaves Capacity}" help="/plugin/libvirt-slave/help-libvirt-maxOnlineSlaves.html">
             <f:textbox clazz="required number" field="maxOnlineSlaves" />
