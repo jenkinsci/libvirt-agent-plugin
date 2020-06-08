@@ -169,9 +169,9 @@ public class VirtualMachineSlave extends Slave {
     @Extension
     public static final class DescriptorImpl extends SlaveDescriptor {
 
-        private String hypervisorDescription;
-        private String virtualMachineName;
-        private String snapshotName;
+        private static final String DESCRIPTION = " A hypervisor description";
+        private static final String VMNAME = "A VM name";
+        private static final String SNAPSHOT = "A snapshot";
 
         public DescriptorImpl() {
             load();
@@ -218,15 +218,15 @@ public class VirtualMachineSlave extends Slave {
         }
 
         public String getHypervisorDescription() {
-            return hypervisorDescription;
+            return DESCRIPTION;
         }
 
         public String getVirtualMachineName() {
-            return virtualMachineName;
+            return VMNAME;
         }
 
         public String getSnapshotName() {
-            return snapshotName;
+            return SNAPSHOT;
         }
 
         private Hypervisor getHypervisorByDescription(String description) {
