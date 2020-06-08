@@ -1,14 +1,15 @@
 package hudson.plugins.libvirt;
 
 
-import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.model.ManagementLink;
+import hudson.model.Saveable;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.StaplerProxy;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 

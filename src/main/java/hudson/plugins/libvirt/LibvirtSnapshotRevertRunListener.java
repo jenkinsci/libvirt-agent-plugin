@@ -1,7 +1,11 @@
 package hudson.plugins.libvirt;
 
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.Computer;
+import hudson.model.Executor;
+import hudson.model.Node;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
