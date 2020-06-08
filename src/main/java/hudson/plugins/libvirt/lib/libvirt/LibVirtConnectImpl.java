@@ -18,8 +18,7 @@ public class LibVirtConnectImpl implements IConnect {
     }
 
     public LibVirtConnectImpl(String hypervisorUri, boolean b) throws VirtException {
-        try
-        {
+        try {
             this.connect = new Connect(hypervisorUri, b);
         } catch (LibvirtException e) {
             throw new VirtException(e);

@@ -319,17 +319,20 @@ public class Hypervisor extends Cloud {
         ensureLists();
 
         // Don't allow more than max.
-        if (maxOnlineSlaves > 0 && currentOnline.size() == maxOnlineSlaves)
+        if (maxOnlineSlaves > 0 && currentOnline.size() == maxOnlineSlaves) {
             return Boolean.FALSE;
+        }
 
         // Don't allow two slaves to the same VM to fire up.
-        if (currentOnline.containsValue(vmName))
+        if (currentOnline.containsValue(vmName)) {
             return Boolean.FALSE;
+        }
 
         // Don't allow two instances of the same slave, although Jenkins will
         // probably not encounter this.
-        if (currentOnline.containsKey(slaveName))
+        if (currentOnline.containsKey(slaveName)) {
             return Boolean.FALSE;
+        }
 
         // Don't allow a misconfigured slave to try start
         if ("".equals(vmName) || "".equals(slaveName)) {
@@ -346,11 +349,13 @@ public class Hypervisor extends Cloud {
         ensureLists();
 
         // If the combination is already in the list, it's good.
-        if (currentOnline.containsKey(slaveName) && currentOnline.get(slaveName).equals(vmName))
+        if (currentOnline.containsKey(slaveName) && currentOnline.get(slaveName).equals(vmName)) {
             return Boolean.TRUE;
+        }
 
-        if (!canMarkVMOnline(slaveName, vmName))
+        if (!canMarkVMOnline(slaveName, vmName)) {
             return Boolean.FALSE;
+        }
 
         currentOnline.put(slaveName, vmName);
         currentOnlineSlaveCount++;
