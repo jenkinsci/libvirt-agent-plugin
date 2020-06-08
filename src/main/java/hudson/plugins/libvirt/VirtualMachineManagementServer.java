@@ -23,8 +23,8 @@ import java.util.Date;
  * Created by magnayn on 22/02/2014.
  */
 public class VirtualMachineManagementServer implements Describable<VirtualMachineManagementServer> {
-    final String host;
-    final Hypervisor theCloud;
+    private final String host;
+    private final Hypervisor theCloud;
 
     public Descriptor<VirtualMachineManagementServer> getDescriptor() {
         return Jenkins.get().getDescriptorByType(DescriptorImpl.class);

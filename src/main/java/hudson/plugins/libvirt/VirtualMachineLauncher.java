@@ -44,11 +44,11 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class VirtualMachineLauncher extends ComputerLauncher {
 
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineLauncher.class.getName());
-    private ComputerLauncher delegate;
+    private final ComputerLauncher delegate;
     private transient VirtualMachine virtualMachine;
-    private String hypervisorDescription;
-    private String virtualMachineName;
-    private String snapshotName;
+    private final String hypervisorDescription;
+    private final String virtualMachineName;
+    private final String snapshotName;
     private final int WAIT_TIME_MS;
     private final int timesToRetryOnFailure;
 
