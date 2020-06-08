@@ -38,27 +38,27 @@
     </f:entry>
 
     <f:entry title="${%Description}" help="/help/system-config/master-slave/description.html">
-        <f:textbox field="nodeDescription"/>
+        <f:textbox checkMethod="post" field="nodeDescription"/>
     </f:entry>
 
     <f:entry title="${%Startup Idle (sec)}" field="startupWaitingPeriodSeconds" help="/plugin/libvirt-slave/help-libvirt-waitingperiod.html">
-        <f:textbox default="60" checkUrl="'${rootURL}/plugin/libvirt-slave/checkStartupWaitingPeriodSeconds?secsValue='+this.value"/>
+        <f:textbox checkMethod="post" default="60" checkUrl="'${rootURL}/plugin/libvirt-slave/checkStartupWaitingPeriodSeconds?secsValue='+this.value"/>
     </f:entry>
 
     <f:entry title="${%Times to Retry Startup}" field="startupTimesToRetryOnFailure" help="/plugin/libvirt-slave/help-libvirt-timesToRetryOnFailure.html">
-        <f:textbox default="0" checkUrl="'${rootURL}/plugin/libvirt-slave/checkStartupTimesToRetryOnFailure?retriesValue='+this.value"/>
+        <f:textbox checkMethod="post" default="0" checkUrl="'${rootURL}/plugin/libvirt-slave/checkStartupTimesToRetryOnFailure?retriesValue='+this.value"/>
     </f:entry>
 
     <f:entry title="${%# of executors}" field="numExecutors">
-        <f:textbox/>
+        <f:textbox checkMethod="post"/>
     </f:entry>
 
     <f:entry title="${%Remote FS root}" field="remoteFS">
-        <f:textbox/>
+        <f:textbox checkMethod="post"/>
     </f:entry>
 
     <f:entry title="${%Labels}" field="labelString">
-        <f:textbox/>
+        <f:textbox checkMethod="post"/>
     </f:entry>
 
     <f:entry title="${%Shutdown Method}" field="shutdownMethod" help="/plugin/libvirt-slave/help-libvirt-shutdownMethod.html">
@@ -76,7 +76,7 @@
     </f:entry>
 
     <f:entry title="${%Reboot this slave after each build}" field="rebootAfterRun">
-        <f:checkbox/>
+        <f:checkbox checkMethod="post"/>
     </f:entry>
 
 
