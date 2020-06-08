@@ -20,7 +20,7 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
     public void onStarted(Run<?, ?> r, TaskListener listener) {
         Executor executor = r.getExecutor();
 
-        if( executor == null )
+        if (executor == null)
             return;
 
         Node node = executor.getOwner().getNode();
@@ -47,8 +47,8 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
                     listener.getLogger().println("Got snapshot " + slaveBeforeJobSnapshotName + " from slave/node configuration");
                     snapshotName = slaveBeforeJobSnapshotName;
                 } else {
-                    listener.getLogger().println("Favouring snapshot from previously identified source over " +
-                                                 slaveBeforeJobSnapshotName + " from slave/node configuration");
+                    listener.getLogger().println("Favouring snapshot from previously identified source over "
+                                                 + slaveBeforeJobSnapshotName + " from slave/node configuration");
                 }
             }
 
@@ -70,7 +70,7 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
             try {
                 hypervisor = slaveLauncher.findOurHypervisorInstance();
             } catch (VirtException e) {
-                listener.fatalError("reverting "+ vmName + " to " + snapshotName + " failed: " + e.getMessage());
+                listener.fatalError("reverting " + vmName + " to " + snapshotName + " failed: " + e.getMessage());
                 return;
             }
 

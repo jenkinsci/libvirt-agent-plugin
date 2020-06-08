@@ -13,6 +13,7 @@ import java.util.logging.Logger;
  */
 public class ConnectionBuilder {
     private static final Logger LOGGER = Logger.getLogger(ConnectionBuilder.class.getName());
+
     private boolean useNativeJava = false;
     private String uri;
     private boolean readOnly = false;
@@ -74,11 +75,9 @@ public class ConnectionBuilder {
 
     public IConnect build() throws VirtException {
 
-        if( useNativeJava ) {
-
-            if( uri == null )
+        if (useNativeJava) {
+            if (uri == null)
                 uri = constructNativeHypervisorURI();
-
 
             StandardUsernamePasswordCredentials standardUsernamePasswordCredentials = (StandardUsernamePasswordCredentials) credentials;
             return new JLibVirtConnectImpl(hypervisorHost,
@@ -89,42 +88,42 @@ public class ConnectionBuilder {
         }
         else
         {
-            if( uri == null )
+            if (uri == null)
                 uri = constructHypervisorURI();
             return new LibVirtConnectImpl(uri, readOnly);
         }
     }
 
-    public String constructHypervisorURI () {
-	String Url = hypervisorType.toLowerCase() + "://";
-	// Fixing JENKINS-14617
-	if (userName != null && !userName.isEmpty())
-	    Url += userName + "@";
+    public String constructHypervisorURI() {
+        String Url = hypervisorType.toLowerCase() + "://";
+        // Fixing JENKINS-14617
+        if (userName != null && !userName.isEmpty())
+            Url += userName + "@";
 
-	Url += hypervisorHost;
-	if (hypervisorPort != 0)
-	    Url += ":" + hypervisorPort;
+        Url += hypervisorHost;
+        if (hypervisorPort != 0)
+            Url += ":" + hypervisorPort;
 
-	if (hypervisorSysUrl != null && !hypervisorSysUrl.isEmpty())
-	    Url += "/" + hypervisorSysUrl;
+        if (hypervisorSysUrl != null && !hypervisorSysUrl.isEmpty())
+            Url += "/" + hypervisorSysUrl;
 
-	LogRecord rec = new LogRecord(Level.INFO, "hypervisor: {0}");
-	rec.setParameters(new Object[]{Url});
-	LOGGER.log(rec);
+        LogRecord rec = new LogRecord(Level.INFO, "hypervisor: {0}");
+        rec.setParameters(new Object[]{Url});
+        LOGGER.log(rec);
 
-	return Url;
+        return Url;
     }
 
-    public String constructNativeHypervisorURI () {
-	String Url;
-	// Fixing JENKINS-14617
-	Url = hypervisorType.toLowerCase() + ":///" + hypervisorSysUrl;
+    public String constructNativeHypervisorURI() {
+        String Url;
+        // Fixing JENKINS-14617
+        Url = hypervisorType.toLowerCase() + ":///" + hypervisorSysUrl;
 
-	LogRecord rec = new LogRecord(Level.INFO, "nativeHypervisor: {0}");
-	rec.setParameters(new Object[]{Url});
-	LOGGER.log(rec);
+        LogRecord rec = new LogRecord(Level.INFO, "nativeHypervisor: {0}");
+        rec.setParameters(new Object[]{Url});
+        LOGGER.log(rec);
 
-	return Url;
+        return Url;
     }
 
 }
