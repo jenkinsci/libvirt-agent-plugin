@@ -22,9 +22,7 @@ package hudson.plugins.libvirt;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import java.io.Serializable;
-
-public class VirtualMachine implements Serializable, Comparable<VirtualMachine> {
+public class VirtualMachine implements Comparable<VirtualMachine> {
 
     private final String name;
     private final Hypervisor hypervisor;
