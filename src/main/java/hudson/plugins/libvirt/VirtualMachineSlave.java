@@ -172,9 +172,9 @@ public class VirtualMachineSlave extends Slave {
             return true;
         }
 
-        public List<VirtualMachine> getDefinedVirtualMachines(String hypervisorDescription) {
+        public List<VirtualMachine> getDefinedVirtualMachines(String description) {
             List<VirtualMachine> virtualMachinesList = new ArrayList<VirtualMachine>();
-            Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
+            Hypervisor hypervisor = getHypervisorByDescription(description);
             if (hypervisor != null) {
                 virtualMachinesList.addAll(hypervisor.getVirtualMachines());
         }
@@ -182,10 +182,10 @@ public class VirtualMachineSlave extends Slave {
             return virtualMachinesList;
         }
 
-        public String[] getDefinedSnapshots(String hypervisorDescription, String virtualMachineName) {
-            Hypervisor hypervisor = getHypervisorByDescription(hypervisorDescription);
+        public String[] getDefinedSnapshots(String description, String vmName) {
+            Hypervisor hypervisor = getHypervisorByDescription(description);
             if (hypervisor != null) {
-                String[] snapS = hypervisor.getSnapshots(virtualMachineName);
+                String[] snapS = hypervisor.getSnapshots(vmName);
                 return snapS;
             }
             return new String[0];
@@ -213,11 +213,11 @@ public class VirtualMachineSlave extends Slave {
             return snapshotName;
         }
 
-        private Hypervisor getHypervisorByDescription(String hypervisorDescription) {
-            if (hypervisorDescription != null && !hypervisorDescription.equals("")) {
+        private Hypervisor getHypervisorByDescription(String description) {
+            if (description != null && !description.equals("")) {
                 for (Cloud cloud : Jenkins.get().clouds) {
                     if (cloud instanceof Hypervisor
-			&& ((Hypervisor) cloud).getHypervisorDescription().equals(hypervisorDescription)) {
+			&& ((Hypervisor) cloud).getHypervisorDescription().equals(description)) {
                         return (Hypervisor) cloud;
                     }
                 }
