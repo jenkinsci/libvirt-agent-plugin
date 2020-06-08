@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <div>
   This plugin enables libvirt-controlled build slaves (including start before build, shutdown after build).
 </div>
