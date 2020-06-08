@@ -106,7 +106,7 @@ public class Hypervisor extends Cloud {
 
     protected void ensureLists() {
         if (currentOnline == null) {
-            currentOnline = new Hashtable<String, String>();
+            currentOnline = new Hashtable<>();
         }
     }
 
@@ -206,7 +206,7 @@ public class Hypervisor extends Cloud {
     }
 
     public synchronized Map<String, IDomain> getDomains() throws VirtException {
-        Map<String, IDomain> domains = new HashMap<String, IDomain>();
+        Map<String, IDomain> domains = new HashMap<>();
         IConnect con = getOrCreateConnection();
         LogRecord info = new LogRecord(Level.FINE, "Getting hypervisor domains.");
         LOGGER.log(info);
@@ -253,7 +253,7 @@ public class Hypervisor extends Cloud {
      * @return the virtual machines
      */
     public synchronized List<VirtualMachine> getVirtualMachines() {
-        List<VirtualMachine> vmList = new ArrayList<VirtualMachine>();
+        List<VirtualMachine> vmList = new ArrayList<>();
         try {
             Map<String, IDomain> domains = getDomains();
             for (String domainName : domains.keySet()) {
@@ -394,7 +394,7 @@ public class Hypervisor extends Cloud {
     @Extension
     public static final class DescriptorImpl extends Descriptor<Cloud> {
 
-        public final ConcurrentMap<String, Hypervisor> hypervisors = new ConcurrentHashMap<String, Hypervisor>();
+        public final ConcurrentMap<String, Hypervisor> hypervisors = new ConcurrentHashMap<>();
         private String hypervisorType;
         private String hypervisorHost;
         private String hypervisorSystemUrl;
@@ -500,7 +500,7 @@ public class Hypervisor extends Cloud {
         }
 
         public List<String> getHypervisorTypes() {
-            List<String> types = new ArrayList<String>();
+            List<String> types = new ArrayList<>();
             types.add("QEMU");
             types.add("XEN");
             types.add("LXC");
