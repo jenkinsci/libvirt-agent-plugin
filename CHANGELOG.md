@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.8.6
+
+Unreleased
+
+-   Fix [SECURITY-1014 (1)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(1))
+-   Fix [SECURITY-1014 (2)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(2))
+
 ### 1.8.5
 
 Release date: _Apr 01, 2015_
