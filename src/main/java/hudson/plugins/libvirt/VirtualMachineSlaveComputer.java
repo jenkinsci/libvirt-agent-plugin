@@ -37,7 +37,7 @@ import hudson.util.io.ReopenableRotatingFileOutputStream;
 
 public class VirtualMachineSlaveComputer extends SlaveComputer {
 
-    private static final Logger logger = Logger.getLogger(VirtualMachineSlaveComputer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(VirtualMachineSlaveComputer.class.getName());
 
     private final TaskListener taskListener;
 
@@ -56,7 +56,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         VirtualMachineSlave slave = (VirtualMachineSlave) getNode();
         if (null == slave) {
             taskListener.getLogger().println("disconnect from undefined slave reason: " + reason);
-            logger.log(Level.SEVERE, "disconnect from null slave reason: " + reason);
+            LOGGER.log(Level.SEVERE, "disconnect from null slave reason: " + reason);
             return super.disconnect(cause);
         }
         String virtualMachineName = slave.getVirtualMachineName();
@@ -66,11 +66,11 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             hypervisor = vmL.findOurHypervisorInstance();
         } catch (VirtException e) {
             taskListener.getLogger().println(e.getMessage());
-            logger.log(Level.SEVERE, "cannot find hypervisor instance on disconnect" + e.getMessage());
+            LOGGER.log(Level.SEVERE, "cannot find hypervisor instance on disconnect" + e.getMessage());
             return super.disconnect(cause);
         }
 
-        logger.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
+        LOGGER.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
         taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down.");
         try {
             Map<String, IDomain> computers = hypervisor.getDomains();
@@ -105,7 +105,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 // log to jenkins
                 LogRecord rec = new LogRecord(Level.WARNING, "Can not shut down {0} on Hypervisor {1}, domain not found!");
                 rec.setParameters(new Object[]{virtualMachineName, hypervisor.getHypervisorURI()});
-                logger.log(rec);
+                LOGGER.log(rec);
             }
         } catch (VirtException t) {
             taskListener.fatalError(t.getMessage(), t);
@@ -113,7 +113,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while shutting down {0} on Hypervisor {1}.");
             rec.setParameters(new Object[]{slave.getVirtualMachineName(), hypervisor.getHypervisorURI()});
             rec.setThrown(t);
-            logger.log(rec);
+            LOGGER.log(rec);
         }
         return super.disconnect(cause);
     }

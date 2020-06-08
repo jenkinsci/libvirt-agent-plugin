@@ -99,38 +99,38 @@ public class ConnectionBuilder {
     }
 
     public String constructHypervisorURI() {
-        String Url = hypervisorType.toLowerCase() + "://";
+        String url = hypervisorType.toLowerCase() + "://";
         // Fixing JENKINS-14617
         if (userName != null && !userName.isEmpty()) {
-            Url += userName + "@";
+            url += userName + "@";
         }
 
-        Url += hypervisorHost;
+        url += hypervisorHost;
         if (hypervisorPort != 0) {
-            Url += ":" + hypervisorPort;
+            url += ":" + hypervisorPort;
         }
 
         if (hypervisorSysUrl != null && !hypervisorSysUrl.isEmpty()) {
-            Url += "/" + hypervisorSysUrl;
+            url += "/" + hypervisorSysUrl;
         }
 
         LogRecord rec = new LogRecord(Level.INFO, "hypervisor: {0}");
-        rec.setParameters(new Object[]{Url});
+        rec.setParameters(new Object[]{url});
         LOGGER.log(rec);
 
-        return Url;
+        return url;
     }
 
     public String constructNativeHypervisorURI() {
-        String Url;
+        String url;
         // Fixing JENKINS-14617
-        Url = hypervisorType.toLowerCase() + ":///" + hypervisorSysUrl;
+        url = hypervisorType.toLowerCase() + ":///" + hypervisorSysUrl;
 
         LogRecord rec = new LogRecord(Level.INFO, "nativeHypervisor: {0}");
-        rec.setParameters(new Object[]{Url});
+        rec.setParameters(new Object[]{url});
         LOGGER.log(rec);
 
-        return Url;
+        return url;
     }
 
 }
