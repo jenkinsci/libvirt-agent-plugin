@@ -3,7 +3,7 @@
     <f:entry field="hypervisorDescription" title="${%Hypervisor}" help="/plugin/libvirt-slave/help-libvirt-hypervisorUri.html">
 	   <f:select onchange="updateListBox(document.getElementsByName('virtualMachineName')[0],'${rootURL}/plugin/libvirt-slave/computerNameValues?value='+encode(this.value))"/>
 	</f:entry>
-    
+
     <f:entry title="${%Virtual Machine}" field="virtualMachineName" help="/plugin/libvirt-slave/help-libvirt-computerName.html">
         <select class="setting-input" name="virtualMachineName" value="${instance.virtualMachineName}" onchange="snapshotsList='${rootURL}/plugin/libvirt-slave/snapshotNameValues?vm='+encode(this.value)+'&amp;hypervisor='+encode(document.getElementsByName('_.hypervisorDescription')[0].options[document.getElementsByName('_.hypervisorDescription')[0].selectedIndex].text); updateListBox(document.getElementsByName('snapshotName')[0], snapshotsList); updateListBox(document.getElementsByName('beforeJobSnapshotName')[0], snapshotsList)">
             <j:forEach var="vc" items="${descriptor.getDefinedVirtualMachines(it.hypervisorDescription)}" varStatus="loop">
