@@ -89,7 +89,7 @@ Once the node is created, you'll see the configuration page as shown below:
 Here you can configure the following details:
 
 -   **Hypervisor**: here you select one of the clouds that you
-    configuration at the central Configure Jenkins page
+    configure at the central Configure Jenkins page
 -   **Virtual Machine**: select one of the virtual machines that you want to use as a slave
 -   **Revert Snapshot**: optionally you can select an existing snapshot of the virtual machine
     that you want the slave to be reverted to once it is being shut down
