@@ -6,7 +6,7 @@
                      help="/plugin/libvirt-slave/help-libvirt-jobUseSnapshots.html">
 
         <f:entry title="${%Before Run Snapshot}" field="snapshotName" help="/plugin/libvirt-slave/help-libvirt-beforeJobSnapshotJobProperty.html">
-            <f:textbox class="setting-input" name="snapshotName" value="${instance.snapshotName}" />
+            <f:textbox checkMethod="post" class="setting-input" name="snapshotName" value="${instance.snapshotName}" />
         </f:entry>
 
     </f:optionalBlock>
