@@ -1,21 +1,22 @@
 /**
- *  Copyright (C) 2010, Byte-Code srl <http://www.byte-code.com>
- *  Copyright (C) 2012  Philipp Bartsch <tastybug@tastybug.com>
+ * Copyright (C) 2010, Byte-Code srl <http://www.byte-code.com>
+ * Copyright (C) 2012 Philipp Bartsch <tastybug@tastybug.com>
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Date: Mar 04, 2010
+ *
  * @author Marco Mornati<mmornati@byte-code.com>
  * @author Philipp Bartsch <tastybug@tastybug.com>
  */
@@ -88,9 +89,10 @@ public class Hypervisor extends Cloud {
     private final boolean useNativeJavaConnection;
     private final String credentialsId;
 
-
     @DataBoundConstructor
-    public Hypervisor(String hypervisorType, String hypervisorHost, int hypervisorSshPort, String hypervisorSystemUrl, String username, int maxOnlineSlaves,
+    public Hypervisor(String hypervisorType, String hypervisorHost,
+                      int hypervisorSshPort, String hypervisorSystemUrl,
+                      String username, int maxOnlineSlaves,
                       boolean useNativeJavaConnection, String credentialsId) {
         super("Hypervisor(libvirt)");
         this.hypervisorType = hypervisorType;
@@ -136,15 +138,19 @@ public class Hypervisor extends Cloud {
 
             ConnectionBuilder builder = createBuilder();
 
-            LOGGER.log(Level.INFO, "Trying to establish a connection to hypervisor URI: {0} as {1}/******",
-                new Object[]{builder.constructHypervisorURI(), username});
+            LOGGER.log(Level.INFO,
+                       "Trying to establish a connection to hypervisor URI: {0} as {1}/******",
+                    new Object[]{builder.constructHypervisorURI(), username});
 
-        try {
-            connection = builder.build();
-            LOGGER.log(Level.INFO, "Established connection to hypervisor URI: {0} as {1}/******",
-                new Object[]{builder.constructHypervisorURI(), username});
+            try {
+                connection = builder.build();
+                LOGGER.log(Level.INFO,
+                           "Established connection to hypervisor URI: {0} as {1}/******",
+                        new Object[]{builder.constructHypervisorURI(), username});
             } catch (VirtException e) {
-                LogRecord rec = new LogRecord(Level.SEVERE, "Failed to establish connection to hypervisor URI: {0} as {1}/******");
+                LogRecord rec =
+                        new LogRecord(Level.SEVERE,
+                                      "Failed to establish connection to hypervisor URI: {0} as {1}/******");
                 rec.setThrown(e);
                 rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
                 LOGGER.log(rec);
@@ -156,13 +162,16 @@ public class Hypervisor extends Cloud {
                 connection.getVersion();
             } catch (VirtException lve) {
                 ConnectionBuilder builder = createBuilder();
-                LogRecord rec = new LogRecord(Level.WARNING, "Connection appears to be broken, trying to reconnect: {0} as {1}/******");
+                LogRecord rec =
+                        new LogRecord(Level.WARNING,
+                                      "Connection appears to be broken, trying to reconnect: {0} as {1}/******");
                 rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
                 LOGGER.log(rec);
                 try {
                     connection = builder.build();
                 } catch (VirtException lve2) {
-                    rec = new LogRecord(Level.SEVERE, "Failed to re-establish connection to hypervisor URI: {0} as {1}/******");
+                    rec = new LogRecord(Level.SEVERE,
+                                        "Failed to re-establish connection to hypervisor URI: {0} as {1}/******");
                     rec.setThrown(lve2);
                     rec.setParameters(new Object[]{builder.constructHypervisorURI(), username});
                     LOGGER.log(rec);
@@ -171,8 +180,6 @@ public class Hypervisor extends Cloud {
         }
         return connection;
     }
-
-
 
     public String getHypervisorHost() {
         return hypervisorHost;
@@ -227,7 +234,9 @@ public class Hypervisor extends Cloud {
                         domain = con.domainLookupByName(c);
                         domains.put(domain.getName(), domain);
                     } catch (VirtException e) {
-                        LogRecord rec = new LogRecord(Level.WARNING, "Error retrieving information for domain with name: {0}.");
+                        LogRecord rec =
+                                new LogRecord(Level.WARNING,
+                                              "Error retrieving information for domain with name: {0}.");
                         rec.setParameters(new Object[]{c});
                         rec.setThrown(e);
                         LOGGER.log(rec);
@@ -240,14 +249,18 @@ public class Hypervisor extends Cloud {
                     domain = con.domainLookupByID(c);
                     domains.put(domain.getName(), domain);
                 } catch (VirtException e) {
-                    LogRecord rec = new LogRecord(Level.WARNING, "Error retrieving information for domain with id: {0}.");
+                    LogRecord rec =
+                            new LogRecord(Level.WARNING,
+                                          "Error retrieving information for domain with id: {0}.");
                     rec.setParameters(new Object[]{c});
                     rec.setThrown(e);
                     LOGGER.log(rec);
                 }
             }
         } else {
-            LogRecord rec = new LogRecord(Level.SEVERE, "Cannot connect to Hypervisor {0} as {1}/******");
+            LogRecord rec =
+                    new LogRecord(Level.SEVERE,
+                                  "Cannot connect to Hypervisor {0} as {1}/******");
             rec.setParameters(new Object[]{hypervisorHost, username});
             LOGGER.log(rec);
         }
@@ -256,8 +269,9 @@ public class Hypervisor extends Cloud {
     }
 
     /**
-     * Returns a <code>List</code> of VMs configured on the hypervisor. This method always retrieves the current list of
-     * VMs to ensure that newly available instances show up right away.
+     * Returns a <code>List</code> of VMs configured on the hypervisor. This
+     * method always retrieves the current list of VMs to ensure that newly
+     * available instances show up right away.
      *
      * @return the virtual machines
      */
@@ -269,7 +283,9 @@ public class Hypervisor extends Cloud {
                 vmList.add(new VirtualMachine(this, domainName));
             }
         } catch (VirtException e) {
-            LogRecord rec = new LogRecord(Level.SEVERE, "Cannot connect to datacenter {0} as {1}/******");
+            LogRecord rec =
+                    new LogRecord(Level.SEVERE,
+                                  "Cannot connect to datacenter {0} as {1}/******");
             rec.setThrown(e);
             rec.setParameters(new Object[]{hypervisorHost, username});
             LOGGER.log(rec);
@@ -278,22 +294,27 @@ public class Hypervisor extends Cloud {
     }
 
     /**
-     * Returns an array of snapshots names/ids of a given VM as found by libvirt.
+     * Returns an array of snapshots names/ids of a given VM as found by
+     * libvirt.
      *
-     * @param virtualMachineName    the name of the vm
-     * @return                      the array of snapshot ids (can be empty)
+     * @param virtualMachineName the name of the vm
+     * @return the array of snapshot ids (can be empty)
      */
     public synchronized String[] getSnapshots(String virtualMachineName) {
         try {
             for (IDomain domain : getDomains().values()) {
                 if (domain.getName().equals(virtualMachineName)) {
-                    LogRecord rec = new LogRecord(Level.FINE, "Fetching snapshots for " + virtualMachineName + ": " + domain.snapshotNum());
+                    LogRecord rec =
+                            new LogRecord(Level.FINE,
+                                          "Fetching snapshots for " + virtualMachineName + ": " + domain.snapshotNum());
                     LOGGER.log(rec);
                     return domain.snapshotListNames();
                 }
             }
         } catch (VirtException lve) {
-            LogRecord rec = new LogRecord(Level.SEVERE, "Failed to fetch snapshot ids for VM {0} at datacenter {1} as {2}/******");
+            LogRecord rec =
+                    new LogRecord(Level.SEVERE,
+                                  "Failed to fetch snapshot ids for VM {0} at datacenter {1} as {2}/******");
             rec.setThrown(lve);
             rec.setParameters(new Object[]{virtualMachineName, hypervisorHost, username});
             LOGGER.log(rec);
@@ -342,8 +363,9 @@ public class Hypervisor extends Cloud {
 
         // Don't allow a misconfigured slave to try start
         if ("".equals(vmName) || "".equals(slaveName)) {
-            LogRecord rec = new LogRecord(Level.WARNING,
-                    "Slave '" + slaveName + "' (using VM '" + vmName + "') appears to be misconfigured.");
+            LogRecord rec = new LogRecord(Level.WARNING, "Slave '" + slaveName
+                                          + "' (using VM '" + vmName
+                                          + "') appears to be misconfigured.");
             LOGGER.log(rec);
             return Boolean.FALSE;
         }
@@ -369,7 +391,8 @@ public class Hypervisor extends Cloud {
         return Boolean.TRUE;
     }
 
-    public synchronized void markVMOffline(String slaveName, String vmName) throws VirtException {
+    public synchronized void markVMOffline(String slaveName, String vmName)
+            throws VirtException {
         ensureLists();
 
         if (currentOnline.remove(slaveName) != null) {
@@ -421,7 +444,8 @@ public class Hypervisor extends Cloud {
         }
 
         @Override
-        public boolean configure(StaplerRequest req, JSONObject o) throws FormException {
+        public boolean configure(StaplerRequest req, JSONObject o)
+                throws FormException {
             type = o.getString("hypervisorType");
             hvHost = o.getString("hypervisorHost");
             systemUrl = o.getString("hypervisorSystemUrl");
@@ -438,7 +462,7 @@ public class Hypervisor extends Cloud {
             AccessControlled context;
 
             if (ctx instanceof AccessControlled) {
-                    context = (AccessControlled) ctx;
+                context = (AccessControlled) ctx;
             } else {
                 context = Jenkins.get();
             }
@@ -465,10 +489,14 @@ public class Hypervisor extends Cloud {
             }
         }
 
-        public FormValidation doTestConnection(
-                @QueryParameter String hypervisorType, @QueryParameter String hypervisorHost, @QueryParameter String hypervisorSshPort,
-                @QueryParameter String username, @QueryParameter String hypervisorSystemUrl,
-                @QueryParameter boolean useNativeJavaConnection, @QueryParameter String credentialsId) throws Exception, ServletException {
+        public FormValidation doTestConnection(@QueryParameter String hypervisorType,
+                                               @QueryParameter String hypervisorHost,
+                                               @QueryParameter String hypervisorSshPort,
+                                               @QueryParameter String username,
+                                               @QueryParameter String hypervisorSystemUrl,
+                                               @QueryParameter boolean useNativeJavaConnection,
+                                               @QueryParameter String credentialsId)
+                throws Exception, ServletException {
             try {
                 if (hypervisorHost == null) {
                     return FormValidation.error("Hypervisor Host is not specified!");
@@ -488,7 +516,9 @@ public class Hypervisor extends Cloud {
 
                 String hypervisorUri = builder.constructHypervisorURI();
 
-                LogRecord rec = new LogRecord(Level.FINE, "Testing connection to hypervisor: {0}");
+                LogRecord rec =
+                        new LogRecord(Level.FINE,
+                                      "Testing connection to hypervisor: {0}");
                 rec.setParameters(new Object[]{hypervisorUri});
                 LOGGER.log(rec);
 
@@ -497,13 +527,18 @@ public class Hypervisor extends Cloud {
                 hypervisorConnection.close();
                 return FormValidation.ok("OK: " + hypervisorUri + ", version=" + version);
             } catch (VirtException e) {
-                LogRecord rec = new LogRecord(Level.WARNING, "Failed to check hypervisor connection to {0} as {1}/******");
+                LogRecord rec =
+                        new LogRecord(Level.WARNING,
+                                      "Failed to check hypervisor connection to {0} as {1}/******");
                 rec.setThrown(e);
                 rec.setParameters(new Object[]{hypervisorHost, username});
                 LOGGER.log(rec);
                 return FormValidation.error(e.getMessage());
             } catch (UnsatisfiedLinkError | Exception e) {
-                LogRecord rec = new LogRecord(Level.WARNING, "Failed to connect to hypervisor. Check libvirt installation on jenkins machine!");
+                LogRecord rec =
+                        new LogRecord(Level.WARNING,
+                                      "Failed to connect to hypervisor. "
+                                    + "Check libvirt installation on jenkins machine!");
                 rec.setThrown(e);
                 rec.setParameters(new Object[]{hypervisorHost, username});
                 LOGGER.log(rec);
