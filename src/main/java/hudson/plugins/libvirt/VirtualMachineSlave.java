@@ -188,7 +188,7 @@ public class VirtualMachineSlave extends Slave {
         }
 
         public List<VirtualMachine> getDefinedVirtualMachines(String description) {
-            List<VirtualMachine> virtualMachinesList = new ArrayList<VirtualMachine>();
+            List<VirtualMachine> virtualMachinesList = new ArrayList<>();
             Hypervisor hypervisor = getHypervisorByDescription(description);
             if (hypervisor != null) {
                 virtualMachinesList.addAll(hypervisor.getVirtualMachines());
