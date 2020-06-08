@@ -27,7 +27,7 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
     final Hypervisor theCloud;
 
     public Descriptor<VirtualMachineManagementServer> getDescriptor() {
-        return Jenkins.getInstance().getDescriptorByType(DescriptorImpl.class);
+        return Jenkins.get().getDescriptorByType(DescriptorImpl.class);
     }
 
     public String getUrl() {

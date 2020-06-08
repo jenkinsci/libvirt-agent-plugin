@@ -384,7 +384,8 @@ public class Hypervisor extends Cloud {
         }
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider
-                        .lookupCredentials(StandardUsernameCredentials.class, Jenkins.getInstance(), ACL.SYSTEM,
+                        .lookupCredentials(StandardUsernameCredentials.class,
+                                           Jenkins.get(), ACL.SYSTEM,
                                 new SchemeRequirement("ssh")),
                 CredentialsMatchers.withId(credentialsId)
         );
@@ -425,9 +426,9 @@ public class Hypervisor extends Cloud {
                 @QueryParameter String port,
                 @QueryParameter String value) {
 
-            AccessControlled _context = (context instanceof AccessControlled ? (AccessControlled) context :
-                    Jenkins.getInstance());
-            if (_context == null || !_context.hasPermission(Computer.CONFIGURE)) {
+            AccessControlled _context = context instanceof AccessControlled ? (AccessControlled) context :
+                    Jenkins.get();
+            if (!_context.hasPermission(Computer.CONFIGURE)) {
                 return new StandardUsernameListBoxModel()
                         .includeCurrentValue(value);
             }
@@ -435,9 +436,8 @@ public class Hypervisor extends Cloud {
             try {
                 int portValue = Integer.parseInt(port);
                 return new StandardUsernameListBoxModel()
-                        .includeMatchingAs(
-                                ACL.SYSTEM,
-                                Jenkins.getActiveInstance(),
+                        .includeMatchingAs(ACL.SYSTEM,
+                                Jenkins.get(),
                                 StandardUsernameCredentials.class,
                                 Collections.<DomainRequirement>singletonList(
                                         new HostnamePortRequirement(host, portValue)
