@@ -33,7 +33,7 @@ import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.OfflineCause;
 import hudson.slaves.SlaveComputer;
 import hudson.util.StreamTaskListener;
-import hudson.util.io.ReopenableRotatingFileOutputStream;
+import hudson.util.io.RewindableRotatingFileOutputStream;
 
 public class VirtualMachineSlaveComputer extends SlaveComputer {
 
@@ -43,7 +43,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
     public VirtualMachineSlaveComputer(Slave slave) {
         super(slave);
-        this.taskListener = new StreamTaskListener(new ReopenableRotatingFileOutputStream(getLogFile(), 10));
+        this.taskListener = new StreamTaskListener(new RewindableRotatingFileOutputStream(getLogFile(), 10));
     }
 
     @Override
