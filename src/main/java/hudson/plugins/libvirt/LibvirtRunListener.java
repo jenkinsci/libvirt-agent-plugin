@@ -15,6 +15,9 @@ import java.io.IOException;
 
 @Extension
 public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
+    private static final int RETRY_MAX = 5;
+    private static final int RETRY_WAIT_MS = 500;
+
     public LibvirtRunListener() {
     }
 
@@ -51,14 +54,14 @@ public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
                 VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
                 VirtualMachine virtualMachine = launcher.getVirtualMachine();
 
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < RETRY_MAX; i++) {
                     try {
                         Map<String, IDomain> computers = virtualMachine.getHypervisor().getDomains();
                         IDomain domain = computers.get(virtualMachine.getName());
                         domain.create();
                     } catch (VirtException e) {
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(RETRY_WAIT_MS);
                         } catch (Exception e2) {
                         }
                         continue;
