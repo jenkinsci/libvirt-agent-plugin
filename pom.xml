@@ -26,14 +26,14 @@
     </organization>
     <developers>
         <developer>
-            <id>tastybug</id>
-            <name>Philipp Bartsch</name>
-            <email>tastybug@tastybug.com</email>
+            <id>bgermann</id>
+            <name>Bastian Germann</name>
+            <email>bage@linutronix.de</email>
         </developer>
         <developer>
-            <id>mmornati</id>
-            <name>Marco Mornati</name>
-            <email>mmornati@byte-code.com</email>
+            <id>gkr</id>
+            <name>G. Kr.</name>
+            <email>gkr@gkr.i24.cc</email>
         </developer>
         <developer>
             <id>magnayn</id>
