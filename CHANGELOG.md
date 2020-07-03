@@ -9,6 +9,8 @@ Unreleased
 -   Fix [JENKINS-32944](https://issues.jenkins-ci.org/browse/JENKINS-32944):
     if only one hypervisor, there are no virtual machines selectable
     (Thanks to Benedikt Heine for the contribution)
+-   Fix [JENKINS-50427](https://issues.jenkins-ci.org/browse/JENKINS-50427):
+    Libvirt Slaves Plugin needs updating to 2.x
 
 ### 1.8.5
 
