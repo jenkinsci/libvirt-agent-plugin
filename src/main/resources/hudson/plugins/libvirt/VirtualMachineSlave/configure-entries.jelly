@@ -75,7 +75,7 @@
         </select>
     </f:entry>
 
-    <f:entry title="${%Reboot this slave after each build}" field="rebootAfterRun">
+    <f:entry title="${%Reboot this agent after each build}" field="rebootAfterRun">
         <f:checkbox checkMethod="post"/>
     </f:entry>
 

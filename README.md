@@ -1,8 +1,8 @@
-# Libvirt Slaves
+# Libvirt Agents
 
-Add Libvirt Hypervisor slave support to Jenkins
+Add libvirt hypervisor agent support to Jenkins
 
-libvirt-slaves 1.8 uses a newer libvirt java binding.
+Libvirt Agents 1.8 uses a newer libvirt java binding.
 If you are upgrading from an earlier version of this plugin,
 you will have to reconfigure your hypervisor settings
 and thus also all libvirt-controlled nodes!
@@ -17,8 +17,8 @@ See the [CHANGELOG](CHANGELOG.md) for a list of released versions.
 ### Description
 
 This plugin for Jenkins CI adds a way to control guest domains hosted on Xen or QEMU/KVM.
-You configure a Jenkins Slave, selecting the guest domain and hypervisor.
-When you need to build a job on a specific Slave,
+You configure a Jenkins Agent, selecting the guest domain and hypervisor.
+When you need to build a job on a specific Agent,
 its guest domain is started, then the job is run.
 When the build process is finished, the guest domain is shut down,
 ready to be used again as required.
@@ -50,17 +50,17 @@ The required parameters to setup are:
 -   **URI parameter**: by default xen and kvm expose the control API using *system*.
     If, for any reasons, you don't have this default value or need to provide further parameters,
     you can set those here
--   **Concurrent Slaves Capacity**: If you are running a setup where slaves are being shut down once they are idling
-    and you want to control how many concurrent slave can be run by Jenkins on the particular hypervisor,
+-   **Concurrent Agents Capacity**: If you are running a setup where agents are being shut down once they are idling
+    and you want to control how many concurrent agents can be run by Jenkins on the particular hypervisor,
     you can set this threshold here.
     Providing 0, the default value, disables the threshold.
     Please note that a threshold will not fail build jobs,
-    Jenkins will simply reissue the slave commissioning once the hypervisor is again running below its threshold,
-    thus delaying the start up of slaves
+    Jenkins will simply reissue the agent commissioning once the hypervisor is again running below its threshold,
+    thus delaying the start up of agents
 
 The connection to Hypervisor will be done using ssh, so you don't need to setup libvirt,
 exposing your services on tcp that could be a security hole in your infrastructure.
-Here an example of connection string will be used by Libvirt Slaves Plugin to create a connection with the hypervisor:
+Here an example of connection string will be used by Libvirt Agents Plugin to create a connection with the hypervisor:
 
      xen+ssh://username@hostname:port/system
 
@@ -76,7 +76,7 @@ that means Jenkins could not establish a connection if password request will be 
 
 To verify all you parameters you can click on *Test Connection* button and check the output reported.
 
-##### Slaves
+##### Agents
 
 Now you can setup your nodes in Jenkins and use them to build your projects.
 
@@ -90,11 +90,11 @@ Here you can configure the following details:
 
 -   **Hypervisor**: here you select one of the clouds that you
     configure at the central Configure Jenkins page
--   **Virtual Machine**: select one of the virtual machines that you want to use as a slave
+-   **Virtual Machine**: select one of the virtual machines that you want to use as an agent
 -   **Revert Snapshot**: optionally you can select an existing snapshot of the virtual machine
-    that you want the slave to be reverted to once it is being shut down
+    that you want the agent to be reverted to once it is being shut down
 -   **Startup Idle**: this optional value (default is 60) allows you to specify an idle timer in seconds.
     Once the virtual machine has been started,
-    Jenkins will wait that long before starting the actual slave service on the virtual host.
+    Jenkins will wait that long before starting the actual agent service on the virtual host.
     If your hypervisor is super quick, set a low value,
     if it takes a while to get that VM up, increase the timer.

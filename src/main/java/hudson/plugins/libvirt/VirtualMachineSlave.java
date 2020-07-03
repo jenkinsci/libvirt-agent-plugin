@@ -154,7 +154,7 @@ public class VirtualMachineSlave extends Slave {
         @Override
         public void preLaunch(Computer c, TaskListener taskListener)
                 throws IOException, InterruptedException {
-            /* We may be called on any slave type so check that we should
+            /* We may be called on any agent type so check that we should
              * be in here. */
             if (!(c.getNode() instanceof VirtualMachineSlave)) {
                 return;
@@ -167,10 +167,10 @@ public class VirtualMachineSlave extends Slave {
                     throw new AbortException("Capacity threshold  (" + vmC.getMaxOnlineSlaves()
                                              + ") reached at hypervisor \""
                                              + vmC.getHypervisorDescription()
-                                             + "\", slave commissioning delayed.");
+                                             + "\", agent commissioning delayed.");
                 }
             } catch (VirtException e) {
-                LOGGER.log(Level.WARNING, "aborting slave launch due to:", e);
+                LOGGER.log(Level.WARNING, "aborting agent launch due to:", e);
                 throw new AbortException(e.getMessage());
             }
         }
@@ -189,7 +189,7 @@ public class VirtualMachineSlave extends Slave {
 
         @Override
         public String getDisplayName() {
-            return "Slave virtual computer running on a virtualization platform (via libvirt)";
+            return "Agent virtual computer running on a virtualization platform (via libvirt)";
         }
 
         @Override

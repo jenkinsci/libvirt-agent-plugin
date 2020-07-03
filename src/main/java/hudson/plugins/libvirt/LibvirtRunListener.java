@@ -43,7 +43,7 @@ public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
             if (slave.getRebootAfterRun()) {
 
                 try {
-                    System.err.println("NukeSlaveListener about to disconnect. the next error bitching about a slave disconnecting is normal");
+                    System.err.println("NukeSlaveListener about to disconnect. The next error about an agent disconnecting is normal");
                     computer.getChannel().syncLocalIO();
                     computer.getChannel().close();
                     computer.disconnect(null);

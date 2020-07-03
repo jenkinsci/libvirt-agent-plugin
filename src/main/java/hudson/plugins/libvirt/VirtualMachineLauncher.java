@@ -120,13 +120,13 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     @Override
     public void launch(SlaveComputer slaveComputer, TaskListener taskListener) throws IOException, InterruptedException {
 
-        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") is to be started.");
+        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (agent title \"" + slaveComputer.getDisplayName() + "\") is to be started.");
         try {
             if (virtualMachine == null) {
                 taskListener.getLogger().println("No connection ready to the Hypervisor, connecting...");
                 lookupVirtualMachineHandle();
                 if (virtualMachine == null) { // still null? no such vm!
-                    throw new Exception("Virtual machine \"" + virtualMachineName + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
+                    throw new Exception("Virtual machine \"" + virtualMachineName + "\" (agent title \"" + slaveComputer.getDisplayName() + "\") not found on the specified hypervisor!");
                 }
             }
 
@@ -142,19 +142,19 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                     while (true) {
                         attempts++;
 
-                        taskListener.getLogger().println("Connecting slave client.");
+                        taskListener.getLogger().println("Connecting agent client.");
 
                         // This call doesn't seem to actually throw anything, but we'll catch IOException just in case
                         try {
                             delegate.launch(slaveComputer, taskListener);
                         } catch (IOException e) {
-                            taskListener.getLogger().println("unexpectedly caught exception when delegating launch of slave: " + e.getMessage());
+                            taskListener.getLogger().println("unexpectedly caught exception when delegating launch of agent: " + e.getMessage());
                         }
 
                         if (slaveComputer.isOnline()) {
                             break;
                         } else if (attempts >= timesToRetryOnFailure) {
-                            taskListener.getLogger().println("Maximum retries reached. Failed to start slave client.");
+                            taskListener.getLogger().println("Maximum retries reached. Failed to start agent client.");
                             break;
                         }
 
@@ -165,11 +165,11 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                 } else {
                     taskListener.getLogger().println("Already running, no startup required.");
 
-                taskListener.getLogger().println("Connecting slave client.");
+                taskListener.getLogger().println("Connecting agent client.");
                 delegate.launch(slaveComputer, taskListener);
                 }
             } else {
-                throw new IOException("VM \"" + virtualMachine.getName() + "\" (slave title \"" + slaveComputer.getDisplayName() + "\") not found!");
+                throw new IOException("VM \"" + virtualMachine.getName() + "\" (agent title \"" + slaveComputer.getDisplayName() + "\") not found!");
             }
         } catch (IOException e) {
             taskListener.fatalError(e.getMessage(), e);

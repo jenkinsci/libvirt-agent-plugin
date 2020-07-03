@@ -11,8 +11,8 @@
     <artifactId>libvirt-slave</artifactId>
     <version>1.8.6-SNAPSHOT</version>
     <packaging>hpi</packaging>
-    <name>Jenkins Libvirt Slaves plugin</name>
-    <description>This plugin allows Jenkins to use libvirt-based slaves.</description>
+    <name>Jenkins Libvirt Agents plugin</name>
+    <description>This plugin allows Jenkins to use libvirt-based agents.</description>
     <url>https://github.com/jenkinsci/libvirt-slave-plugin</url>
     <licenses>
         <license>

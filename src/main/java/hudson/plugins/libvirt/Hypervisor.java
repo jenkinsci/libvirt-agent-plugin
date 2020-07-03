@@ -363,7 +363,7 @@ public class Hypervisor extends Cloud {
 
         // Don't allow a misconfigured slave to try start
         if ("".equals(vmName) || "".equals(slaveName)) {
-            LogRecord rec = new LogRecord(Level.WARNING, "Slave '" + slaveName
+            LogRecord rec = new LogRecord(Level.WARNING, "Agent '" + slaveName
                                           + "' (using VM '" + vmName
                                           + "') appears to be misconfigured.");
             LOGGER.log(rec);

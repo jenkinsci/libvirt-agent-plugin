@@ -55,8 +55,8 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
         VirtualMachineSlave slave = (VirtualMachineSlave) getNode();
         if (null == slave) {
-            taskListener.getLogger().println("disconnect from undefined slave reason: " + reason);
-            LOGGER.log(Level.SEVERE, "disconnect from null slave reason: " + reason);
+            taskListener.getLogger().println("disconnect from undefined agent reason: " + reason);
+            LOGGER.log(Level.SEVERE, "disconnect from null agent reason: " + reason);
             return super.disconnect(cause);
         }
         String virtualMachineName = slave.getVirtualMachineName();
@@ -70,8 +70,8 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             return super.disconnect(cause);
         }
 
-        LOGGER.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down." + reason);
-        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (slave \"" + getDisplayName() + "\") is to be shut down.");
+        LOGGER.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down." + reason);
+        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
         try {
             Map<String, IDomain> computers = hypervisor.getDomains();
             IDomain domain = computers.get(virtualMachineName);
@@ -99,7 +99,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 Hypervisor vmC = vmL.findOurHypervisorInstance();
                 vmC.markVMOffline(getDisplayName(), vmL.getVirtualMachineName());
             } else {
-                // log to slave
+                // log to agent
                 taskListener.getLogger().println("\"" + virtualMachineName + "\" not found on Hypervisor, can not shut down!");
 
                 // log to jenkins
