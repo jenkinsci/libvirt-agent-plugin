@@ -6,6 +6,9 @@ Unreleased
 
 -   Fix [SECURITY-1014 (1)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(1))
 -   Fix [SECURITY-1014 (2)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(2))
+-   Fix [JENKINS-23205](https://issues.jenkins-ci.org/browse/JENKINS-23205):
+    NPE Causes Jenkins Job to Fail
+    (Thanks to Sebastian Menski for the contribution)
 -   Fix [JENKINS-32944](https://issues.jenkins-ci.org/browse/JENKINS-32944):
     if only one hypervisor, there are no virtual machines selectable
     (Thanks to Benedikt Heine for the contribution)
