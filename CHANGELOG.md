@@ -12,6 +12,8 @@ Unreleased
 -   Fix [JENKINS-32944](https://issues.jenkins-ci.org/browse/JENKINS-32944):
     if only one hypervisor, there are no virtual machines selectable
     (Thanks to Benedikt Heine for the contribution)
+-   Fix [JENKINS-35564](https://issues.jenkins-ci.org/browse/JENKINS-35564):
+    Upgrade to Credentials 2.1.0+ API for populating credentials drop-down
 -   Fix [JENKINS-40675](https://issues.jenkins-ci.org/browse/JENKINS-40675):
     libvirt-slave-plugin prevents Jenkins from restarting because of java.lang.NullPointerExcetion
 -   Fix [JENKINS-50427](https://issues.jenkins-ci.org/browse/JENKINS-50427):
