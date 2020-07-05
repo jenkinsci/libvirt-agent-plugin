@@ -9,6 +9,8 @@ Unreleased
 -   Fix [JENKINS-23205](https://issues.jenkins-ci.org/browse/JENKINS-23205):
     NPE Causes Jenkins Job to Fail
     (Thanks to Sebastian Menski for the contribution)
+-   Fix [JENKINS-25034](https://issues.jenkins-ci.org/browse/JENKINS-25034):
+    Credentials metadata leak in Hypervisor
 -   Fix [JENKINS-32944](https://issues.jenkins-ci.org/browse/JENKINS-32944):
     if only one hypervisor, there are no virtual machines selectable
     (Thanks to Benedikt Heine for the contribution)
