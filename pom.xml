@@ -51,6 +51,9 @@
         <java.level>8</java.level>
         <jenkins.version>2.190.1</jenkins.version>
         <slf4jVersion>1.7.30</slf4jVersion>
+        <spotbugs.effort>Max</spotbugs.effort>
+        <spotbugs.failOnError>false</spotbugs.failOnError>
+        <spotbugs.threshold>Low</spotbugs.threshold>
     </properties>
     <repositories>
         <repository>
@@ -147,26 +150,6 @@
                     <failOnViolation>false</failOnViolation>
                     <verbose>true</verbose>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>4.0.0</version>
-                <configuration>
-                    <effort>MAX</effort>
-                    <threshold>Low</threshold>
-                    <excludeFilterFile>src/spotbugs/excludesFilter.xml</excludeFilterFile>
-                    <failOnError>false</failOnError>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>spotbugs-verify</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
