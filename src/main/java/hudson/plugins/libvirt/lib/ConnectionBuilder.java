@@ -1,7 +1,6 @@
 package hudson.plugins.libvirt.lib;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
-import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.plugins.libvirt.lib.libvirt.LibVirtConnectImpl;
 import static hudson.plugins.libvirt.util.Consts.SSH_PORT;
 import java.util.logging.Level;
