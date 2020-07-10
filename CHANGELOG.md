@@ -30,6 +30,29 @@ Release date: _Apr 01, 2015_
 -   Fix [JENKINS-12523](https://issues.jenkins-ci.org/browse/JENKINS-12523):
     Could not initialize class org.libvirt.Connect
 
+### 1.8.4
+
+Release date: _Apr 13, 2014_
+
+-   Add bhyve support
+    (Thanks to Roman Bogorodskiy for the contribution)
+
+### 1.8.3
+
+Release date: _Apr 10, 2014_
+
+-   Add LXC support
+    (Thanks to Arvid E. Picciani for the contribution)
+-   Add shutdown and reboot support
+    (Thanks to Arvid E. Picciani for the contribution)
+-   Add job-level snapshots
+    (Thanks to Alex Szczuczko for the contribution)
+-   Fix shutdown handling
+    (Thanks to Predrag Knezevic for the contribution)
+-   Introduce Java-only libvirt binding jLibVirt
+-   Introduce list view of a hypervisor's running domains
+-   Bumped required core to 1.546
+
 ### 1.8.1
 
 Release date: _Mar 21, 2013_
