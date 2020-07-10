@@ -49,7 +49,7 @@
     </scm>
     <properties>
         <java.level>8</java.level>
-        <jenkins.version>2.222.1</jenkins.version>
+        <jenkins.version>2.190.1</jenkins.version>
         <slf4jVersion>1.7.30</slf4jVersion>
     </properties>
     <repositories>
