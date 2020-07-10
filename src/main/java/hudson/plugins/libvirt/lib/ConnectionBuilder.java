@@ -2,7 +2,6 @@ package hudson.plugins.libvirt.lib;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernameCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import hudson.plugins.libvirt.lib.jlibvirt.JLibVirtConnectImpl;
 import hudson.plugins.libvirt.lib.libvirt.LibVirtConnectImpl;
 import static hudson.plugins.libvirt.util.Consts.SSH_PORT;
 import java.util.logging.Level;
@@ -15,7 +14,6 @@ import java.util.logging.Logger;
 public class ConnectionBuilder {
     private static final Logger LOGGER = Logger.getLogger(ConnectionBuilder.class.getName());
 
-    private boolean useNativeJava = false;
     private String uri;
     private boolean readOnly = false;
 
@@ -71,31 +69,12 @@ public class ConnectionBuilder {
         return this;
     }
 
-    public ConnectionBuilder useNativeJava(boolean b) {
-        this.useNativeJava = b;
-        return this;
-    }
-
     public IConnect build() throws VirtException {
-
-        if (useNativeJava) {
-            if (uri == null) {
-                uri = constructNativeHypervisorURI();
-            }
-
-            StandardUsernamePasswordCredentials standardUsernamePasswordCredentials = (StandardUsernamePasswordCredentials) credentials;
-            return new JLibVirtConnectImpl(hypervisorHost,
-                    hypervisorPort,
-                    credentials.getUsername(),
-                    standardUsernamePasswordCredentials.getPassword().getPlainText(),
-                    uri, readOnly);
-        } else {
-            if (uri == null) {
-                uri = constructHypervisorURI();
-            }
-
-            return new LibVirtConnectImpl(uri, readOnly);
+        if (uri == null) {
+            uri = constructHypervisorURI();
         }
+
+        return new LibVirtConnectImpl(uri, readOnly);
     }
 
     public String constructHypervisorURI() {
@@ -120,17 +99,4 @@ public class ConnectionBuilder {
 
         return url;
     }
-
-    public String constructNativeHypervisorURI() {
-        String url;
-        // Fixing JENKINS-14617
-        url = hypervisorType.toLowerCase() + ":///" + hypervisorSysUrl;
-
-        LogRecord rec = new LogRecord(Level.INFO, "nativeHypervisor: {0}");
-        rec.setParameters(new Object[]{url});
-        LOGGER.log(rec);
-
-        return url;
-    }
-
 }

@@ -50,7 +50,6 @@
     <properties>
         <java.level>8</java.level>
         <jenkins.version>2.190.1</jenkins.version>
-        <slf4jVersion>1.7.30</slf4jVersion>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>false</spotbugs.failOnError>
         <spotbugs.threshold>Low</spotbugs.threshold>
@@ -147,17 +146,6 @@
             <groupId>org.libvirt</groupId>
             <artifactId>libvirt</artifactId>
             <version>0.5.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.nirima.jlibvirt</groupId>
-            <artifactId>jlibvirt</artifactId>
-            <version>0.2.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

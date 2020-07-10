@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.9.0
+
+Unreleased
+
+-   Fix [JENKINS-27640](https://issues.jenkins-ci.org/browse/JENKINS-27640) by removing jLibVirt:
+    net.schmizz.sshj.userauth.UserAuthException: Exhausted available authentication methods
+
 ### 1.8.6
 
 Release date: _Jul 6, 2020_

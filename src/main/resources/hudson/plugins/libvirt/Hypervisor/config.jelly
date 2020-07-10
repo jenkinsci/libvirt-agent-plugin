@@ -25,13 +25,9 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
             <f:textbox checkMethod="post" clazz="required number" field="maxOnlineSlaves" />
         </f:entry>
 
-        <f:entry title="${%Use Native Java libvirt client}" field="useNativeJavaConnection">
-            <f:checkbox checkMethod="post"/>
-        </f:entry>
-
         <f:entry title="${%Native Credentials}" field="credentialsId">
             <c:select/>
         </f:entry>
     </f:advanced>
-    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="hypervisorType,hypervisorHost,username,hypervisorSshPort,hypervisorSystemUrl,useNativeJavaConnection,credentialsId"/>
+    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="hypervisorType,hypervisorHost,username,hypervisorSshPort,hypervisorSystemUrl,credentialsId"/>
 </j:jelly>
