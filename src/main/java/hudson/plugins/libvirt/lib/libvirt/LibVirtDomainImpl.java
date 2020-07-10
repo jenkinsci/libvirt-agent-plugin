@@ -68,7 +68,7 @@ public class LibVirtDomainImpl implements IDomain {
 
     public boolean isRunningOrBlocked() throws VirtException {
         try {
-            return (domain.getInfo().state.equals(DomainInfo.DomainState.VIR_DOMAIN_RUNNING) || domain.getInfo().state.equals(DomainInfo.DomainState.VIR_DOMAIN_BLOCKED));
+            return domain.getInfo().state.equals(DomainInfo.DomainState.VIR_DOMAIN_RUNNING) || domain.getInfo().state.equals(DomainInfo.DomainState.VIR_DOMAIN_BLOCKED);
         } catch (LibvirtException e) {
             throw new VirtException(e);
         }
@@ -76,7 +76,7 @@ public class LibVirtDomainImpl implements IDomain {
 
     public boolean isNotBlockedAndNotRunning() throws VirtException {
         try {
-            return (domain.getInfo().state != DomainInfo.DomainState.VIR_DOMAIN_BLOCKED && domain.getInfo().state != DomainInfo.DomainState.VIR_DOMAIN_RUNNING);
+            return domain.getInfo().state != DomainInfo.DomainState.VIR_DOMAIN_BLOCKED && domain.getInfo().state != DomainInfo.DomainState.VIR_DOMAIN_RUNNING;
         } catch (LibvirtException e) {
             throw new VirtException(e);
         }

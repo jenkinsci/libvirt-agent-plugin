@@ -243,7 +243,7 @@ public class VirtualMachineSlave extends Slave {
             if (description != null && !description.equals("")) {
                 for (Cloud cloud : Jenkins.get().clouds) {
                     if (cloud instanceof Hypervisor
-			&& ((Hypervisor) cloud).getHypervisorDescription().equals(description)) {
+                        && ((Hypervisor) cloud).getHypervisorDescription().equals(description)) {
                         return (Hypervisor) cloud;
                     }
                 }
