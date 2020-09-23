@@ -45,6 +45,7 @@ import jenkins.model.Jenkins;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.verb.POST;
 
 public class PluginImpl extends Plugin {
 
@@ -110,6 +111,7 @@ public class PluginImpl extends Plugin {
         });
     }
 
+    @POST
     public FormValidation doCheckStartupWaitingPeriodSeconds(@QueryParameter String secsValue)
             throws IOException, ServletException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
@@ -128,6 +130,7 @@ public class PluginImpl extends Plugin {
         }
     }
 
+    @POST
     public FormValidation doCheckStartupTimesToRetryOnFailure(@QueryParameter String retriesValue)
             throws IOException, ServletException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);

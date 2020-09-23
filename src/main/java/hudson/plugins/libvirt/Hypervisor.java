@@ -69,6 +69,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  * Represents a virtual datacenter.
@@ -482,6 +483,7 @@ public class Hypervisor extends Cloud {
             }
         }
 
+        @POST
         public FormValidation doTestConnection(@QueryParameter String hypervisorType,
                                                @QueryParameter String hypervisorHost,
                                                @QueryParameter String hypervisorSshPort,
