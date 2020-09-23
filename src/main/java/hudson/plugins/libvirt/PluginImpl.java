@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 import jenkins.model.Jenkins;
 
@@ -151,6 +152,12 @@ public class PluginImpl extends Plugin {
             throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
         List<VirtualMachine> virtualMachines = null;
+
+        if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+            rsp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         for (Cloud cloud : Jenkins.get().clouds) {
             if (cloud instanceof Hypervisor) {
                 Hypervisor hypervisor = (Hypervisor) cloud;
@@ -173,6 +180,12 @@ public class PluginImpl extends Plugin {
                                      @QueryParameter("hypervisor") String hypervisor)
             throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
+
+        if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+            rsp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         m.add(new ListBoxModel.Option("", ""));
         for (Cloud cloud : Jenkins.get().clouds) {
             if (cloud instanceof Hypervisor) {

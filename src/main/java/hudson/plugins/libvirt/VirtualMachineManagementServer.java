@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by magnayn on 22/02/2014.
@@ -62,6 +63,11 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
     public void doControlSubmit(@QueryParameter("stopId") String stopId, StaplerRequest req, StaplerResponse rsp) throws ServletException,
             IOException,
             InterruptedException, VirtException {
+
+        if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+            rsp.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         theCloud.getDomains().get(stopId).shutdown();
 
