@@ -2,17 +2,19 @@
 
 ### 1.9.0
 
-Unreleased
+Release date: _Sep 28, 2020_
 
+-   Fix [SECURITY-1014 (2)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(2))
 -   Fix [JENKINS-27640](https://issues.jenkins-ci.org/browse/JENKINS-27640) by removing jLibVirt:
     net.schmizz.sshj.userauth.UserAuthException: Exhausted available authentication methods
+-   Fix [JENKINS-63027](https://issues.jenkins-ci.org/browse/JENKINS-63027):
+    Libvirt-agent plugin is not populating the credentials drop-down
 
 ### 1.8.6
 
 Release date: _Jul 6, 2020_
 
 -   Fix [SECURITY-1014 (1)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(1))
--   Fix [SECURITY-1014 (2)](https://www.jenkins.io/security/advisory/2019-10-23/#SECURITY-1014%20(2))
 -   Fix [JENKINS-23205](https://issues.jenkins-ci.org/browse/JENKINS-23205):
     NPE Causes Jenkins Job to Fail
     (Thanks to Sebastian Menski for the contribution)
