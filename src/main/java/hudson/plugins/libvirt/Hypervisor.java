@@ -407,13 +407,13 @@ public class Hypervisor extends Cloud {
         return (DescriptorImpl) super.getDescriptor();
     }
 
-    public static StandardUsernameCredentials lookupSystemCredentials(String credentialsId) {
+    public static StandardCredentials lookupSystemCredentials(String credentialsId) {
         if (Strings.isNullOrEmpty(credentialsId)) {
             return null;
         }
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider
-                        .lookupCredentials(StandardUsernameCredentials.class,
+                        .lookupCredentials(StandardCredentials.class,
                                            Jenkins.get(), ACL.SYSTEM,
                                 new SchemeRequirement("ssh")),
                 CredentialsMatchers.withId(credentialsId)
