@@ -624,6 +624,7 @@ public class Hypervisor extends Cloud {
             types.add("LXC+SSH");
             types.add("BHYVE");
             types.add("BHYVE+SSH");
+            types.add("R4D");
             return types;
         }
     }
