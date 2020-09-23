@@ -9,6 +9,7 @@ Release date: _Sep 28, 2020_
     net.schmizz.sshj.userauth.UserAuthException: Exhausted available authentication methods
 -   Fix [JENKINS-63027](https://issues.jenkins-ci.org/browse/JENKINS-63027):
     Libvirt-agent plugin is not populating the credentials drop-down
+-   Add r4d hypervisor support
 
 ### 1.8.6
 
