@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.9.1
+
+Unreleased
+
+-   Fix [JENKINS-64698](https://issues.jenkins.io/browse/JENKINS-64698A):
+    Cannot create a libvirt agent
+    (Thanks to Benoit Guerin for the contribution)
+
 ### 1.9.0
 
 Release date: _Sep 28, 2020_
