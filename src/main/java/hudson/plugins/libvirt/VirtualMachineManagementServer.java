@@ -12,6 +12,7 @@ import jenkins.model.Jenkins;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.verb.POST;
 
 import javax.servlet.ServletException;
 
@@ -60,6 +61,7 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
         return Consts.PLUGIN_JS_URL + jsName;
     }
 
+    @POST
     public void doControlSubmit(@QueryParameter("stopId") String stopId, StaplerRequest req, StaplerResponse rsp) throws ServletException,
             IOException,
             InterruptedException, VirtException {

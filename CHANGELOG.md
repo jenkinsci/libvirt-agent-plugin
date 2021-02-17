@@ -7,6 +7,9 @@ Unreleased
 -   Fix [JENKINS-64698](https://issues.jenkins.io/browse/JENKINS-64698A):
     Cannot create a libvirt agent
     (Thanks to Benoit Guerin for the contribution)
+-   Fix SECURITY-1764:
+    Missing CSRF protection allows to shutdown cloud nodes
+    (Thanks to Wadeck Follonier for the report)
 
 ### 1.9.0
 
