@@ -218,6 +218,7 @@ public class VirtualMachineSlave extends Slave {
 
         public ListBoxModel doFillHypervisorDescriptionItems() {
             ListBoxModel items = new ListBoxModel();
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             for (Cloud cloud : Jenkins.get().clouds) {
                 if (cloud instanceof Hypervisor) {
                     items.add(((Hypervisor) cloud).getHypervisorURI(),
