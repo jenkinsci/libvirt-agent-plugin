@@ -52,7 +52,9 @@
                         </td>
 
                         <td>
-                            <input type="button" value="stop" onclick="stop('${res.name}')"></input>
+                            <j:if test="${res.isRunningOrBlocked()}">
+                                <input type="button" value="stop" onclick="stop('${res.name}')"></input>
+                            </j:if>
                         </td>
 
                     </tr>
