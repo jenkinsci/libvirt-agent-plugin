@@ -16,8 +16,6 @@ public final class Consts {
      */
     public static final String PLUGIN_JS_URL = PLUGIN_URL + "js/";
 
-    public static final int SSH_PORT = 22;
-
     private Consts() {
       //not called
     }

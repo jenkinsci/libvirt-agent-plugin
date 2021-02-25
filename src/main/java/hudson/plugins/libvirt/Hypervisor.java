@@ -42,7 +42,6 @@ import hudson.plugins.libvirt.lib.ConnectionBuilder;
 import hudson.plugins.libvirt.lib.IConnect;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
-import static hudson.plugins.libvirt.util.Consts.SSH_PORT;
 import hudson.security.ACL;
 import hudson.slaves.Cloud;
 import hudson.slaves.NodeProvisioner;
@@ -83,7 +82,7 @@ public class Hypervisor extends Cloud {
     private final String hypervisorType;
     private final String hypervisorHost;
     private final String hypervisorSystemUrl;
-    private final int hypervisorSshPort;
+    private int hypervisorSshPort;
     private final String username;
     private final int maxOnlineSlaves;
     private transient int currentOnlineSlaveCount = 0;
@@ -107,8 +106,6 @@ public class Hypervisor extends Cloud {
 
         if (hypervisorSshPort > 0) {
             this.hypervisorSshPort = hypervisorSshPort;
-        } else {
-            this.hypervisorSshPort = SSH_PORT;
         }
 
         this.username = username;

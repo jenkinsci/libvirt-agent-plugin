@@ -15,8 +15,8 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
         <f:textbox checkMethod="post"/>
     </f:entry>
     <f:advanced>
-        <f:entry title="${%SSH Port}" field="hypervisorSshPort" help="/plugin/libvirt-slave/help-libvirt-hypervisorSshPort.html">
-            <f:textbox checkMethod="post" default="22"/>
+        <f:entry title="${%Port}" field="hypervisorSshPort" help="/plugin/libvirt-slave/help-libvirt-hypervisorSshPort.html">
+            <f:textbox checkMethod="post" default="0"/>
         </f:entry>
         <f:entry title="${%URI parameters}" field="hypervisorSystemUrl" help="/plugin/libvirt-slave/help-libvirt-hypervisorUrl.html">
             <f:textbox checkMethod="post" default="system?no_tty=1"/>
