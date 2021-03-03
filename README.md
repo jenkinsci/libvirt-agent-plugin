@@ -43,11 +43,11 @@ To create a new Hypervisor you need to add a new "Cloud" in the Jenkins "Manage 
 
 The required parameters to setup are:
 
--   **Hypervisor Type**: QEMU / XEN to respect the Hypervisor you have in your system
+-   **Hypervisor Type**: The Hypervisor you have in your system
 -   **Hypervisor Host**: Hostname or IP address to contact your hypervisor
--   **Username**: username to use for connection.
--   **Port**: ssh port, if in your hypervisor machine is different than 22
--   **URI parameter**: by default xen and kvm expose the control API using *system*.
+-   **Username**: Username to use for connection
+-   **Port**: The TCP connection port. Each transport has a default.
+-   **URI parameter**: By default xen and kvm expose the control API using *system*.
     If, for any reasons, you don't have this default value or need to provide further parameters,
     you can set those here
 -   **Concurrent Agents Capacity**: If you are running a setup where agents are being shut down once they are idling
@@ -58,23 +58,17 @@ The required parameters to setup are:
     Jenkins will simply reissue the agent commissioning once the hypervisor is again running below its threshold,
     thus delaying the start up of agents
 
-The connection to Hypervisor will be done using ssh, so you don't need to setup libvirt,
-exposing your services on tcp that could be a security hole in your infrastructure.
 Here an example of connection string will be used by Libvirt Agents Plugin to create a connection with the hypervisor:
 
      xen+ssh://username@hostname:port/system
 
-you can test you connection typing, from your Jenkins Server:
+you can test your connection typing, from your Jenkins Server:
 
      virsh connect xen+ssh://username@hostname:port/system
 
-An important thing is the RSA public key exchange between Jenkins Server and Hypervisor Machine:
-you need to add to .ssh/known\_hosts file the rsa.pub file of your jenkins user.
-This because, for an actual limitation in libvirt java library,
-it's impossible to provide via code the ssh password,
-that means Jenkins could not establish a connection if password request will be prompted.
+You will have to set up public key authentication for the connection that can be used by the Jenkins service user.
 
-To verify all you parameters you can click on *Test Connection* button and check the output reported.
+To verify all your parameters you can click on *Test Connection* button and check the output reported.
 
 ##### Agents
 
@@ -88,12 +82,11 @@ Once the node is created, you'll see the configuration page as shown below:
 
 Here you can configure the following details:
 
--   **Hypervisor**: here you select one of the clouds that you
-    configure at the central Configure Jenkins page
--   **Virtual Machine**: select one of the virtual machines that you want to use as an agent
--   **Revert Snapshot**: optionally you can select an existing snapshot of the virtual machine
+-   **Hypervisor**: Select one of the clouds that you configure at the central Configure Jenkins page
+-   **Virtual Machine**: Select one of the virtual machines that you want to use as an agent
+-   **Revert Snapshot**: Optionally, you can select an existing snapshot of the virtual machine
     that you want the agent to be reverted to once it is being shut down
--   **Startup Idle**: this optional value (default is 60) allows you to specify an idle timer in seconds.
+-   **Startup Idle**: This optional value (default is 60) allows you to specify an idle timer in seconds.
     Once the virtual machine has been started,
     Jenkins will wait that long before starting the actual agent service on the virtual host.
     If your hypervisor is super quick, set a low value,
