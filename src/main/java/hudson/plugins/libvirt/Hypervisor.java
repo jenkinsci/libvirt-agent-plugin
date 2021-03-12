@@ -623,6 +623,8 @@ public class Hypervisor extends Cloud {
             types.add("BHYVE+SSH");
             types.add("OPENVZ");
             types.add("OPENVZ+SSH");
+            types.add("VZ");
+            types.add("VZ+SSH");
             types.add("R4D");
             return types;
         }
