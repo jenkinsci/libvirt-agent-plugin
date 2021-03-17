@@ -1,10 +1,17 @@
 # Changelog
 
+### 1.9.2
+
+Unrelease
+
+-   Fix [JENKINS-50552](https://issues.jenkins.io/browse/JENKINS-50552):
+    Pipeline projects do not trigger libvirt VM snapshot reverts.
+
 ### 1.9.1
 
 Release date: _Mar 4, 2021_
 
--   Fix [JENKINS-64698](https://issues.jenkins.io/browse/JENKINS-64698A):
+-   Fix [JENKINS-64698](https://issues.jenkins.io/browse/JENKINS-64698):
     Cannot create a libvirt agent
     (Thanks to Benoit Guerin for the contribution)
 -   Fix SECURITY-1764:

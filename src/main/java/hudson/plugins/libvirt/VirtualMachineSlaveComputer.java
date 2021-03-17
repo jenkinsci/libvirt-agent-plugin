@@ -20,15 +20,15 @@
 
 package hudson.plugins.libvirt;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import hudson.model.Executor;
+import hudson.model.Queue;
 import hudson.model.Slave;
 import hudson.model.TaskListener;
-import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.OfflineCause;
 import hudson.slaves.SlaveComputer;
@@ -73,40 +73,10 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         LOGGER.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down." + reason);
         taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
         try {
-            Map<String, IDomain> computers = hypervisor.getDomains();
-            IDomain domain = computers.get(virtualMachineName);
-            if (domain != null) {
-                if (domain.isRunningOrBlocked()) {
-                    String snapshotName = slave.getSnapshotName();
-                    if (snapshotName != null && snapshotName.length() > 0) {
-                        taskListener.getLogger().println("Reverting to " + snapshotName + " and shutting down.");
-                        domain.revertToSnapshot(domain.snapshotLookupByName(snapshotName));
-                    } else {
-                        taskListener.getLogger().println("Shutting down.");
-
-                        System.err.println("method: " + slave.getShutdownMethod());
-                        if (slave.getShutdownMethod().equals("suspend")) {
-                            domain.suspend();
-                        } else if (slave.getShutdownMethod().equals("destroy")) {
-                            domain.destroy();
-                        } else {
-                        domain.shutdown();
-                    }
-                    }
-                } else {
-                    taskListener.getLogger().println("Already suspended, no shutdown required.");
-                }
-                Hypervisor vmC = vmL.findOurHypervisorInstance();
-                vmC.markVMOffline(getDisplayName(), vmL.getVirtualMachineName());
-            } else {
-                // log to agent
-                taskListener.getLogger().println("\"" + virtualMachineName + "\" not found on Hypervisor, can not shut down!");
-
-                // log to jenkins
-                LogRecord rec = new LogRecord(Level.WARNING, "Can not shut down {0} on Hypervisor {1}, domain not found!");
-                rec.setParameters(new Object[]{virtualMachineName, hypervisor.getHypervisorURI()});
-                LOGGER.log(rec);
-            }
+            ComputerUtils.disconnect(virtualMachineName, this, taskListener);
+            ComputerUtils.stop(vmL.getVirtualMachine(), slave.getShutdownMethod(), taskListener);
+            ComputerUtils.revertToSnapshot(vmL.getVirtualMachine(), slave.getSnapshotName(), taskListener);
+            hypervisor.markVMOffline(getDisplayName(), vmL.getVirtualMachineName());
         } catch (VirtException t) {
             taskListener.fatalError(t.getMessage(), t);
 
@@ -118,4 +88,31 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         return super.disconnect(cause);
     }
 
+    @Override
+    public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
+        super.taskCompleted(executor, task, durationMS);
+        VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
+        if (slave != null && slave.getRebootAfterRun()) {
+            LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+            taskListener.getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner());
+            VirtualMachine virtualMachine = ((VirtualMachineLauncher) slave.getLauncher()).getVirtualMachine();
+            ComputerUtils.stop(virtualMachine, slave.getShutdownMethod(), taskListener);
+            ComputerUtils.revertToSnapshot(virtualMachine, slave.getSnapshotName(), taskListener);
+        }
+    }
+
+    @Override
+    public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
+        super.taskCompletedWithProblems(executor, task, durationMS, problems);
+        VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
+        if (slave != null && slave.getRebootAfterRun()) {
+            LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+            taskListener.getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner());
+            VirtualMachine virtualMachine = ((VirtualMachineLauncher) slave.getLauncher()).getVirtualMachine();
+            ComputerUtils.stop(virtualMachine, slave.getShutdownMethod(), taskListener);
+            ComputerUtils.revertToSnapshot(virtualMachine, slave.getSnapshotName(), taskListener);
+        }
+    }
 }
