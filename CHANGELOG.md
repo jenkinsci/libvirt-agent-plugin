@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.9.2
+
+Unreleased
+
+-   Fix [JENKINS-50552](https://issues.jenkins.io/browse/JENKINS-50552):
+    Pipeline projects do not trigger libvirt VM snapshot reverts
+    (Thanks to Benoit Guerin for the contribution)
+
 ### 1.9.1
 
 Release date: _Mar 4, 2021_

@@ -80,7 +80,6 @@ public class VirtualMachineSlave extends Slave {
               launcher == null ? new VirtualMachineLauncher(delegateLauncher,
                                                             hypervisorDescription,
                                                             virtualMachineName,
-                                                            snapshotName,
                                                             startupWaitingPeriodSeconds,
                                                             startupTimesToRetryOnFailure) : launcher);
 

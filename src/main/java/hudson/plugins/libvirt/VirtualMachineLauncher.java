@@ -24,7 +24,6 @@ package hudson.plugins.libvirt;
 import hudson.model.TaskListener;
 
 import hudson.model.Descriptor;
-import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerLauncher;
@@ -33,7 +32,6 @@ import hudson.slaves.SlaveComputer;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -50,17 +48,15 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     private transient VirtualMachine virtualMachine;
     private final String hypervisorDescription;
     private final String virtualMachineName;
-    private final String snapshotName;
     private final int waitTimeMs;
     private final int timesToRetryOnFailure;
 
     @DataBoundConstructor
-    public VirtualMachineLauncher(ComputerLauncher delegate, String hypervisorDescription, String virtualMachineName, String snapshotName,
+    public VirtualMachineLauncher(ComputerLauncher delegate, String hypervisorDescription, String virtualMachineName,
             int waitingTimeSecs, int timesToRetryOnFailure) {
         super();
         this.delegate = delegate;
         this.virtualMachineName = virtualMachineName;
-        this.snapshotName = snapshotName;
         this.hypervisorDescription = hypervisorDescription;
         this.waitTimeMs = waitingTimeSecs * MSEC_PER_SEC;
         this.timesToRetryOnFailure = timesToRetryOnFailure;
@@ -132,46 +128,33 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                 }
             }
 
-            Map<String, IDomain> computers = virtualMachine.getHypervisor().getDomains();
-            IDomain domain = computers.get(virtualMachine.getName());
-            if (domain != null) {
-                if (domain.isNotBlockedAndNotRunning()) {
-                    taskListener.getLogger().println("Starting, waiting for " + waitTimeMs + "ms to let it fully boot up...");
-                    domain.create();
-                    Thread.sleep(waitTimeMs);
+            ComputerUtils.start(virtualMachine, taskListener);
+            taskListener.getLogger().println("Waiting for " + waitTimeMs + "ms to let it fully boot up...");
+            Thread.sleep(waitTimeMs);
 
-                    int attempts = 0;
-                    while (true) {
-                        attempts++;
-
-                        taskListener.getLogger().println("Connecting agent client.");
-
-                        // This call doesn't seem to actually throw anything, but we'll catch IOException just in case
-                        try {
-                            delegate.launch(slaveComputer, taskListener);
-                        } catch (IOException e) {
-                            taskListener.getLogger().println("unexpectedly caught exception when delegating launch of agent: " + e.getMessage());
-                        }
-
-                        if (slaveComputer.isOnline()) {
-                            break;
-                        } else if (attempts >= timesToRetryOnFailure) {
-                            taskListener.getLogger().println("Maximum retries reached. Failed to start agent client.");
-                            break;
-                        }
-
-                        taskListener.getLogger().println("Not up yet, waiting for " + waitTimeMs + "ms more ("
-                                                         + attempts + "/" + timesToRetryOnFailure + " retries)...");
-                        Thread.sleep(waitTimeMs);
-                    }
-                } else {
-                    taskListener.getLogger().println("Already running, no startup required.");
+            int attempts = 0;
+            while (true) {
+                attempts++;
 
                 taskListener.getLogger().println("Connecting agent client.");
-                delegate.launch(slaveComputer, taskListener);
+
+                // This call doesn't seem to actually throw anything, but we'll catch IOException just in case
+                try {
+                    delegate.launch(slaveComputer, taskListener);
+                } catch (IOException e) {
+                    taskListener.getLogger().println("unexpectedly caught exception when delegating launch of agent: " + e.getMessage());
                 }
-            } else {
-                throw new IOException("VM \"" + virtualMachine.getName() + "\" (agent title \"" + slaveComputer.getDisplayName() + "\") not found!");
+
+                if (slaveComputer.isOnline()) {
+                    break;
+                } else if (attempts >= timesToRetryOnFailure) {
+                    taskListener.getLogger().println("Maximum retries reached. Failed to start agent client.");
+                    break;
+                }
+
+                taskListener.getLogger().println("Not up yet, waiting for " + waitTimeMs + "ms more ("
+                                                 + attempts + "/" + timesToRetryOnFailure + " retries)...");
+                Thread.sleep(waitTimeMs);
             }
         } catch (IOException e) {
             taskListener.fatalError(e.getMessage(), e);
