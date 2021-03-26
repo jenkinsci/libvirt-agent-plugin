@@ -4,10 +4,10 @@
 
 Release date: _Mar 4, 2021_
 
--   Fix [JENKINS-64698](https://issues.jenkins.io/browse/JENKINS-64698A):
+-   Fix [JENKINS-64698](https://issues.jenkins.io/browse/JENKINS-64698):
     Cannot create a libvirt agent
     (Thanks to Benoit Guerin for the contribution)
--   Fix SECURITY-1764:
+-   Fix [SECURITY-1764](https://www.jenkins.io/security/advisory/2021-03-18/#SECURITY-1764):
     Missing CSRF protection allows to shutdown cloud nodes
     (Thanks to Wadeck Follonier for the report)
 
