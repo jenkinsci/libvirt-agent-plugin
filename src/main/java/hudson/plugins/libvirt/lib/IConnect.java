@@ -3,7 +3,7 @@ package hudson.plugins.libvirt.lib;
 /**
  * Created by magnayn on 04/02/2014.
  */
-public interface IConnect {
+public interface IConnect extends AutoCloseable {
     long getVersion() throws VirtException;
 
     int[] listDomains() throws VirtException;
@@ -14,6 +14,7 @@ public interface IConnect {
 
     IDomain domainLookupByID(int c) throws VirtException;
 
+    @Override
     void close() throws VirtException;
 
     boolean isConnected() throws VirtException;

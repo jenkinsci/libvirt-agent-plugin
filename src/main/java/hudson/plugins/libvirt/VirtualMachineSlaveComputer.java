@@ -88,9 +88,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         return super.disconnect(cause);
     }
 
-    @Override
-    public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
-        super.taskCompleted(executor, task, durationMS);
+    private void afterTaskCompleted(Executor executor) {
         VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
         if (slave != null && slave.getRebootAfterRun()) {
             LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
@@ -103,16 +101,14 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
     }
 
     @Override
+    public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
+        super.taskCompleted(executor, task, durationMS);
+        afterTaskCompleted(executor);
+    }
+
+    @Override
     public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
         super.taskCompletedWithProblems(executor, task, durationMS, problems);
-        VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
-        if (slave != null && slave.getRebootAfterRun()) {
-            LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-            taskListener.getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner());
-            VirtualMachine virtualMachine = ((VirtualMachineLauncher) slave.getLauncher()).getVirtualMachine();
-            ComputerUtils.stop(virtualMachine, slave.getShutdownMethod(), taskListener);
-            ComputerUtils.revertToSnapshot(virtualMachine, slave.getSnapshotName(), taskListener);
-        }
+        afterTaskCompleted(executor);
     }
 }

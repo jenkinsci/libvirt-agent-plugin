@@ -2,6 +2,7 @@ package hudson.plugins.libvirt.lib;
 
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.plugins.libvirt.lib.libvirt.LibVirtConnectImpl;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -20,8 +21,6 @@ public class ConnectionBuilder {
     private String hypervisorHost;
     private int    hypervisorPort;
     private String hypervisorSysUrl;
-
-    private StandardCredentials credentials;
 
     public static ConnectionBuilder newBuilder() {
         return new ConnectionBuilder();
@@ -53,7 +52,7 @@ public class ConnectionBuilder {
     }
 
     public ConnectionBuilder withCredentials(StandardCredentials standardCredentials) {
-        this.credentials = standardCredentials;
+        // TODO implement credentials
         return this;
     }
 
@@ -76,7 +75,7 @@ public class ConnectionBuilder {
     }
 
     public String constructHypervisorURI() {
-        String url = hypervisorType.toLowerCase() + "://";
+        String url = hypervisorType.toLowerCase(Locale.ENGLISH) + "://";
         // Fixing JENKINS-14617
         if (userName != null && !userName.isEmpty()) {
             url += userName + "@";

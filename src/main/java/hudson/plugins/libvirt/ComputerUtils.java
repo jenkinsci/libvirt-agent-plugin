@@ -74,15 +74,14 @@ public final class ComputerUtils {
                 try {
                     log(listener, "Starting " + virtualMachine.getName() + "...");
                     domain.create();
+                    break;
                 } catch (final VirtException e) {
                     try {
                         Thread.sleep(RETRY_WAIT_MS);
                     } catch (final InterruptedException e2) {
                         // ignore
                     }
-                    continue;
                 }
-                break;
             }
         }
     }
@@ -119,15 +118,14 @@ public final class ComputerUtils {
                     } else {
                         domain.shutdown();
                     }
+                    break;
                 } catch (final VirtException e) {
                     try {
                         Thread.sleep(RETRY_WAIT_MS);
                     } catch (final InterruptedException e2) {
                         // ignore
                     }
-                    continue;
                 }
-                break;
             }
         }
     }

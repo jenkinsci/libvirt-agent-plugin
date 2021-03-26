@@ -22,7 +22,6 @@
  */
 package hudson.plugins.libvirt;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 
@@ -50,7 +49,7 @@ import org.kohsuke.stapler.verb.POST;
 
 public class PluginImpl extends Plugin {
 
-    private static final java.util.logging.Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
 
     private static PluginImpl instance;
 
@@ -83,33 +82,20 @@ public class PluginImpl extends Plugin {
         LOGGER.log(Level.FINE, "Stopping libvirt-slave plugin.");
     }
 
-    /**
-     * Get the list of Hypervisor servers.
-     *
-     * @return the list as a LinkedList of Hypervisor
-     */
     public synchronized Collection<Hypervisor> getServers() {
         Jenkins jenkins = Jenkins.get();
         Collection<? extends Cloud> clouds = jenkins.clouds;
-        @SuppressWarnings("unchecked")
-        Collection<Hypervisor> libvirtClouds
-                = (Collection<Hypervisor>) Collections2.filter(clouds,
-                        new Predicate<Cloud>() {
-                    public boolean apply(@Nullable final Cloud input) {
-                        return input instanceof Hypervisor;
-                    }
-                });
+        Collection<Hypervisor> libvirtClouds = (Collection<Hypervisor>) Collections2.filter(
+                clouds, (@Nullable final Cloud input) -> input instanceof Hypervisor
+        );
 
         return libvirtClouds;
     }
 
     public Hypervisor getServer(final String host) {
-
-        return Iterables.find(getServers(), new Predicate<Hypervisor>() {
-            public boolean apply(@Nullable final Hypervisor input) {
-                return null != input && host.equals(input.getHypervisorHost());
-            }
-        });
+        return Iterables.find(getServers(),
+                (@Nullable final Hypervisor input) -> null != input && host.equals(input.getHypervisorHost())
+        );
     }
 
     @POST
