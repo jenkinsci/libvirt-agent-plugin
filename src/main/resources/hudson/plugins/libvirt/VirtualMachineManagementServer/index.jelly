@@ -3,7 +3,6 @@
         >
     <l:layout title="${%Hypervisor hosts}" norefresh="true" permission="${it.requiredPermission}">
         <l:header>
-            <script src="${rootURL}${it.getJsUrl('libvirt-manage.js')}" type="text/javascript"></script>
             <style type="text/css">
                 tr.disablehover:hover {
                 background-color: white;
@@ -24,8 +23,9 @@
 
             <H2>Domains</H2>
 
-            <form method="post" action="controlSubmit" name="controlSubmit" id="control">
-                <input type="hidden" id="stopId" name="stopId" value=""/>
+            <j:forEach var="res" indexVar="resId" items="${it.domains}">
+                <form class="no-json" method="post" action="controlSubmit" name="controlSubmit" id="control${resId}"></form>
+            </j:forEach>
 
             <table width="100%" border="1" cellpadding="2" cellspacing="0"
                    class="pane bigtable"
@@ -39,7 +39,7 @@
 
                 </tr>
 
-                <j:forEach var="res" items="${it.domains}">
+                <j:forEach var="res" indexVar="resId" items="${it.domains}">
                     <tr>
                         <td>${res.name}</td>
                         <td>${res.isRunningOrBlocked()}</td>
@@ -53,7 +53,8 @@
 
                         <td>
                             <j:if test="${res.isRunningOrBlocked()}">
-                                <input type="button" value="stop" onclick="stop('${res.name}')"></input>
+                                <input type="hidden" form="control${resId}" name="stopId" value="${res.name}"/>
+                                <input type="submit" form="control${resId}" value="stop"/>
                             </j:if>
                         </td>
 
@@ -63,8 +64,6 @@
 
             </table>
 
-
-            </form>
 
         </l:main-panel>
     </l:layout>

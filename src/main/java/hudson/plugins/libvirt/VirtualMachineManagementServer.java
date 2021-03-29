@@ -57,10 +57,6 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
         return dt.toString();
     }
 
-    public String getJsUrl(String jsName) {
-        return Consts.PLUGIN_JS_URL + jsName;
-    }
-
     @POST
     public void doControlSubmit(@QueryParameter("stopId") String stopId, StaplerRequest req, StaplerResponse rsp) throws ServletException,
             IOException,

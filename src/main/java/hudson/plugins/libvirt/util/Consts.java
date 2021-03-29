@@ -11,11 +11,6 @@ public final class Consts {
      */
     public static final String PLUGIN_IMAGES_URL = PLUGIN_URL + "images/";
 
-    /**
-     * The base URL of the plugin javascripts.
-     */
-    public static final String PLUGIN_JS_URL = PLUGIN_URL + "js/";
-
     private Consts() {
       //not called
     }
