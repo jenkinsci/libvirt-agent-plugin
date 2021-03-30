@@ -13,9 +13,6 @@ import org.kohsuke.stapler.StaplerProxy;
 import java.io.IOException;
 import java.util.Collection;
 
-import static hudson.plugins.libvirt.util.Consts.PLUGIN_IMAGES_URL;
-
-
 /**
  * Manage the libvirt hypervisors.
  */
@@ -24,7 +21,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
 
     @Override
     public String getIconFileName() {
-        return PLUGIN_IMAGES_URL + "/64x64/libvirt.png";
+        return "/plugin/libvirt-slave/images/64x64/libvirt.png";
     }
 
     @Override
