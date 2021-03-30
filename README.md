@@ -44,12 +44,14 @@ To create a new Hypervisor you need to add a new "Cloud" in the Jenkins "Manage 
 The required parameters to setup are:
 
 -   **Hypervisor Type**: The Hypervisor you have in your system
+-   **Hypervisor Transport**: Remote transport for a libvirtd.
+    Use libssh or libssh2 with Jenkins username/password credentials.
 -   **Hypervisor Host**: Hostname or IP address to contact your hypervisor
 -   **Username**: Username to use for connection
 -   **Port**: The TCP connection port. Each transport has a default.
 -   **URI parameter**: By default xen and kvm expose the control API using *system*.
     If, for any reasons, you don't have this default value or need to provide further parameters,
-    you can set those here
+    you can set them here
 -   **Concurrent Agents Capacity**: If you are running a setup where agents are being shut down once they are idling
     and you want to control how many concurrent agents can be run by Jenkins on the particular hypervisor,
     you can set this threshold here.
@@ -65,8 +67,6 @@ Here an example of connection string will be used by Libvirt Agents Plugin to cr
 you can test your connection typing, from your Jenkins Server:
 
      virsh connect xen+ssh://username@hostname:port/system
-
-You will have to set up public key authentication for the connection that can be used by the Jenkins service user.
 
 To verify all your parameters you can click on *Test Connection* button and check the output reported.
 

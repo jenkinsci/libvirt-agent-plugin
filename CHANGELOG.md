@@ -7,6 +7,10 @@ Unreleased
 -   Fix [JENKINS-50552](https://issues.jenkins.io/browse/JENKINS-50552):
     Pipeline projects do not trigger libvirt VM snapshot reverts
     (Thanks to Benoit Guerin for the contribution)
+-   Separate hypervisor driver from transport
+-   Add Virtuozzo and OpenVZ hypervisor drivers
+-   Add unix, ext, tcp, libssh, and libssh2 transports
+-   Implement SSH username/password logins based on the Credentials plugin for libssh and libssh2
 
 ### 1.9.1
 

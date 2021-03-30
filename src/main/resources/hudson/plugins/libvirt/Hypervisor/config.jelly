@@ -8,6 +8,13 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
             </j:forEach>
         </select>
     </f:entry>
+    <f:entry title="${%Hypervisor Transport}" field="hypervisorTransport" name="hypervisorTransport" help="/plugin/libvirt-slave/help-libvirt-hypervisorTransport.html">
+        <select class="setting-input" name="hypervisorTransport">
+            <j:forEach var="t" items="${descriptor.getHypervisorTransports()}" varStatus="loop">
+                <f:option value="${t}" selected="${t==instance.hypervisorTransport}">${t}</f:option>
+            </j:forEach>
+        </select>
+    </f:entry>
     <f:entry title="${%Hypervisor Host}" field="hypervisorHost" help="/plugin/libvirt-slave/help-libvirt-hypervisorHost.html">
         <f:textbox checkMethod="post"/>
     </f:entry>
@@ -19,7 +26,7 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
             <f:textbox checkMethod="post" default="0"/>
         </f:entry>
         <f:entry title="${%URI parameters}" field="hypervisorSystemUrl" help="/plugin/libvirt-slave/help-libvirt-hypervisorUrl.html">
-            <f:textbox checkMethod="post" default="system?no_tty=1"/>
+            <f:textbox checkMethod="post" default="system"/>
         </f:entry>
         <f:entry title="${%Concurrent Agents Capacity}" help="/plugin/libvirt-slave/help-libvirt-maxOnlineSlaves.html">
             <f:textbox checkMethod="post" clazz="required number" field="maxOnlineSlaves" />
@@ -29,5 +36,5 @@ xmlns:c="/lib/credentials" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
             <c:select/>
         </f:entry>
     </f:advanced>
-    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="hypervisorType,hypervisorHost,username,hypervisorSshPort,hypervisorSystemUrl,credentialsId"/>
+    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="hypervisorType,hypervisorTransport,hypervisorHost,username,hypervisorSshPort,hypervisorSystemUrl,credentialsId"/>
 </j:jelly>

@@ -1,9 +1,12 @@
 <div>
     <p>
-        Defaults to <code>system</code>, parameter <code>no_tty</code> is appended automatically. Use this to provide extra parameters as described in 
-        <a href="http://libvirt.org/remote.html#Remote_URI_parameters">http://libvirt.org/remote.html#Remote_URI_parameters</a>.
-        <br/>
-        <br/>
-        QEMU Example: <code>system?keyfile=/somefile&no_verify=1</code>
+        Defaults to <code>system</code>. The Libvirt Agents Plugin's SSH sessions are not interactive, so the following <a href="https://libvirt.org/uri.html#Remote_URI_parameters">extra parameters</a> are appended to the URI's path component for specific transports:
+    </p>
+    <dl>
+        <dt>ssh</dt><dd><code>no_tty=1</code></dd>
+        <dt>libssh, libssh2</dt><dd><code>sshauth=password&amp;known_hosts_verify=auto</code></dd>
+    </dl>
+    <p>
+        QEMU Example: <code>system?keyfile=/somefile&amp;no_verify=1</code>
     </p>
 </div>

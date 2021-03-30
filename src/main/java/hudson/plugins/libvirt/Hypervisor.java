@@ -15,22 +15,18 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Date: Mar 04, 2010
- *
  * @author Marco Mornati<mmornati@byte-code.com>
  * @author Philipp Bartsch <tastybug@tastybug.com>
  */
 package hudson.plugins.libvirt;
 
-import com.cloudbees.jenkins.plugins.sshcredentials.SSHAuthenticator;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.SchemeRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.google.common.base.Strings;
-import com.trilead.ssh2.Connection;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
@@ -61,6 +57,7 @@ import java.util.logging.Logger;
 import javax.servlet.ServletException;
 
 import hudson.util.ListBoxModel;
+import java.util.Arrays;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
@@ -80,6 +77,7 @@ public class Hypervisor extends Cloud {
     private static final Logger LOGGER = Logger.getLogger(Hypervisor.class.getName());
 
     private final String hypervisorType;
+    private final String hypervisorTransport;
     private final String hypervisorHost;
     private final String hypervisorSystemUrl;
     private int hypervisorSshPort;
@@ -91,12 +89,18 @@ public class Hypervisor extends Cloud {
     private final String credentialsId;
 
     @DataBoundConstructor
-    public Hypervisor(String hypervisorType, String hypervisorHost,
+    public Hypervisor(String hypervisorType, String hypervisorTransport, String hypervisorHost,
                       int hypervisorSshPort, String hypervisorSystemUrl,
                       String username, int maxOnlineSlaves,
                       String credentialsId) {
         super("Hypervisor(libvirt)");
         this.hypervisorType = hypervisorType;
+        final String[] ht = this.hypervisorType.split("\\+");
+        if (ht.length > 1) {
+            // convert old format with integrated transport
+            hypervisorTransport = ht[1];
+        }
+        this.hypervisorTransport = hypervisorTransport;
         this.hypervisorHost = hypervisorHost;
         if (hypervisorSystemUrl != null) {
             this.hypervisorSystemUrl = hypervisorSystemUrl;
@@ -122,6 +126,7 @@ public class Hypervisor extends Cloud {
     private ConnectionBuilder createBuilder() {
         return ConnectionBuilder.newBuilder()
                 .hypervisorType(hypervisorType)
+                .hypervisorTransport(hypervisorTransport)
                 .userName(username)
                 .withCredentials(lookupSystemCredentials(credentialsId))
                 .hypervisorHost(hypervisorHost)
@@ -190,6 +195,10 @@ public class Hypervisor extends Cloud {
         return hypervisorType;
     }
 
+    public String getHypervisorTransport() {
+        return hypervisorTransport;
+    }
+
     public String getHypervisorSystemUrl() {
         return hypervisorSystemUrl;
     }
@@ -211,7 +220,7 @@ public class Hypervisor extends Cloud {
     }
 
     public String getHypervisorDescription() {
-        return getHypervisorType() + " - " + getHypervisorHost();
+        return getHypervisorType() + "+" + getHypervisorTransport() + " - " + getHypervisorHost();
     }
 
     public synchronized Map<String, IDomain> getDomains() throws VirtException {
@@ -406,13 +415,13 @@ public class Hypervisor extends Cloud {
         return (DescriptorImpl) super.getDescriptor();
     }
 
-    public static StandardCredentials lookupSystemCredentials(String credentialsId) {
+    public static StandardUsernamePasswordCredentials lookupSystemCredentials(String credentialsId) {
         if (Strings.isNullOrEmpty(credentialsId)) {
             return null;
         }
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider
-                        .lookupCredentials(StandardCredentials.class,
+                        .lookupCredentials(StandardUsernamePasswordCredentials.class,
                                            Jenkins.get(), ACL.SYSTEM,
                                 new SchemeRequirement("ssh")),
                 CredentialsMatchers.withId(credentialsId)
@@ -426,6 +435,7 @@ public class Hypervisor extends Cloud {
     @Extension
     public static final class DescriptorImpl extends Descriptor<Cloud> {
         private String type;
+        private String transport;
         private String hvHost;
         private String systemUrl;
         private int sshPort;
@@ -440,6 +450,7 @@ public class Hypervisor extends Cloud {
         public boolean configure(StaplerRequest req, JSONObject o)
                 throws FormException {
             type = o.getString("hypervisorType");
+            transport = o.getString("hypervisorTransport");
             hvHost = o.getString("hypervisorHost");
             systemUrl = o.getString("hypervisorSystemUrl");
             sshPort = o.getInt("hypervisorSshPort");
@@ -450,6 +461,7 @@ public class Hypervisor extends Cloud {
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item context,
                                                      @QueryParameter String hypervisorType,
+                                                     @QueryParameter String hypervisorTransport,
                                                      @QueryParameter String hypervisorHost,
                                                      @QueryParameter String hypervisorSshPort,
                                                      @QueryParameter String username,
@@ -471,6 +483,7 @@ public class Hypervisor extends Cloud {
 
             ConnectionBuilder builder = ConnectionBuilder.newBuilder()
                         .hypervisorType(hypervisorType)
+                        .hypervisorTransport(hypervisorTransport)
                         .userName(username)
                         .withCredentials(lookupSystemCredentials(credentialsId))
                         .hypervisorHost(hypervisorHost)
@@ -490,17 +503,17 @@ public class Hypervisor extends Cloud {
                     .includeMatchingAs(
                         auth,
                         context,
-                        StandardCredentials.class,
+                        StandardUsernamePasswordCredentials.class,
                         URIRequirementBuilder.fromUri(hypervisorUri).build(),
                         CredentialsMatchers.anyOf(
-                                CredentialsMatchers.instanceOf(StandardCredentials.class),
-                                SSHAuthenticator.matcher(Connection.class)
+                                CredentialsMatchers.instanceOf(StandardUsernamePasswordCredentials.class)
                         ))
                     .includeCurrentValue(credentialsId);
         }
 
         public FormValidation doCheckCredentialsId(@AncestorInPath Item item,
                                                    @QueryParameter String hypervisorType,
+                                                   @QueryParameter String hypervisorTransport,
                                                    @QueryParameter String hypervisorHost,
                                                    @QueryParameter String hypervisorSshPort,
                                                    @QueryParameter String username,
@@ -535,6 +548,7 @@ public class Hypervisor extends Cloud {
 
         @POST
         public FormValidation doTestConnection(@QueryParameter String hypervisorType,
+                                               @QueryParameter String hypervisorTransport,
                                                @QueryParameter String hypervisorHost,
                                                @QueryParameter String hypervisorSshPort,
                                                @QueryParameter String username,
@@ -553,6 +567,7 @@ public class Hypervisor extends Cloud {
 
                 ConnectionBuilder builder = ConnectionBuilder.newBuilder()
                         .hypervisorType(hypervisorType)
+                        .hypervisorTransport(hypervisorTransport)
                         .userName(username)
                         .withCredentials(lookupSystemCredentials(credentialsId))
                         .hypervisorHost(hypervisorHost)
@@ -607,26 +622,20 @@ public class Hypervisor extends Cloud {
             return type;
         }
 
+        public String getHypervisorTransport() {
+            return transport;
+        }
+
         public String getUsername() {
             return user;
         }
 
         public List<String> getHypervisorTypes() {
-            List<String> types = new ArrayList<>();
-            types.add("QEMU");
-            types.add("QEMU+SSH");
-            types.add("XEN");
-            types.add("XEN+SSH");
-            types.add("LXC");
-            types.add("LXC+SSH");
-            types.add("BHYVE");
-            types.add("BHYVE+SSH");
-            types.add("OPENVZ");
-            types.add("OPENVZ+SSH");
-            types.add("VZ");
-            types.add("VZ+SSH");
-            types.add("R4D");
-            return types;
+            return Arrays.asList("QEMU", "XEN", "LXC", "BHYVE", "OPENVZ", "VZ", "R4D");
+        }
+
+        public List<String> getHypervisorTransports() {
+            return Arrays.asList("", "tls", "unix", "ssh", "ext", "tcp", "libssh", "libssh2");
         }
     }
 }

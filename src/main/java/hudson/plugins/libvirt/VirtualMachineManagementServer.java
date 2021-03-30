@@ -5,7 +5,6 @@ import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
-import hudson.plugins.libvirt.util.Consts;
 
 import jenkins.model.Jenkins;
 

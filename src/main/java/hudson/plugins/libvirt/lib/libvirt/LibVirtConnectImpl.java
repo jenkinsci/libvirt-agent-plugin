@@ -5,6 +5,8 @@ import hudson.plugins.libvirt.lib.IConnect;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
 import org.libvirt.Connect;
+import org.libvirt.Connect.OpenFlags;
+import org.libvirt.ConnectAuth;
 import org.libvirt.LibvirtException;
 
 /**
@@ -17,14 +19,19 @@ public class LibVirtConnectImpl implements IConnect {
         this.connect = connect;
     }
 
-    public LibVirtConnectImpl(String hypervisorUri, boolean b) throws VirtException {
+    public LibVirtConnectImpl(String hypervisorUri, ConnectAuth auth, boolean readOnly) throws VirtException {
+        int flags = 0;
+        if (readOnly) {
+            flags |= OpenFlags.READONLY.getBit();
+        }
         try {
-            this.connect = new Connect(hypervisorUri, b);
+            this.connect = new Connect(hypervisorUri, auth, flags);
         } catch (LibvirtException e) {
             throw new VirtException(e);
         }
     }
 
+    @Override
     public long getVersion() throws VirtException {
         try {
             return connect.getVersion();
@@ -33,6 +40,7 @@ public class LibVirtConnectImpl implements IConnect {
         }
     }
 
+    @Override
     public int[] listDomains() throws VirtException {
         try {
             return connect.listDomains();
@@ -41,6 +49,7 @@ public class LibVirtConnectImpl implements IConnect {
         }
     }
 
+    @Override
     public String[] listDefinedDomains() throws VirtException {
         try {
             return connect.listDefinedDomains();
@@ -49,6 +58,7 @@ public class LibVirtConnectImpl implements IConnect {
         }
     }
 
+    @Override
     public IDomain domainLookupByName(String c) throws VirtException {
         try {
             return new LibVirtDomainImpl(connect.domainLookupByName(c));
@@ -57,6 +67,7 @@ public class LibVirtConnectImpl implements IConnect {
         }
     }
 
+    @Override
     public IDomain domainLookupByID(int c) throws VirtException {
         try {
             return new LibVirtDomainImpl(connect.domainLookupByID(c));
@@ -65,6 +76,7 @@ public class LibVirtConnectImpl implements IConnect {
         }
     }
 
+    @Override
     public void close() throws VirtException {
         try {
             connect.close();
@@ -73,6 +85,7 @@ public class LibVirtConnectImpl implements IConnect {
         }
     }
 
+    @Override
     public boolean isConnected() throws VirtException {
         try {
             return connect.isConnected();
