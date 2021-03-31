@@ -10,7 +10,8 @@ import java.util.logging.Logger;
 import org.libvirt.ConnectAuth;
 
 /**
- * Created by magnayn on 05/02/2014.
+ * @author Nigel Magnay
+ * @version 05/02/2014
  */
 public class ConnectionBuilder {
     private static final Logger LOGGER = Logger.getLogger(ConnectionBuilder.class.getName());

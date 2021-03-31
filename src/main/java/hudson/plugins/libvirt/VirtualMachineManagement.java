@@ -1,6 +1,5 @@
 package hudson.plugins.libvirt;
 
-
 import com.google.common.collect.Collections2;
 import hudson.Extension;
 import hudson.model.Describable;

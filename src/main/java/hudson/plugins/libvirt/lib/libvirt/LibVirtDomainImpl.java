@@ -9,7 +9,8 @@ import org.libvirt.DomainSnapshot;
 import org.libvirt.LibvirtException;
 
 /**
- * Created by magnayn on 04/02/2014.
+ * @author Nigel Magnay
+ * @version 04/02/2014
  */
 public class LibVirtDomainImpl implements IDomain {
     private final Domain domain;

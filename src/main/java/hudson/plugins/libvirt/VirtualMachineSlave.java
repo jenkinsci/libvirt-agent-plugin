@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2010, Byte-Code srl <http://www.byte-code.com>
- * Copyright (C) 2012 Philipp Bartsch <tastybug@tastybug.com>
+ * Copyright (C) 2012, Philipp Bartsch <tastybug@tastybug.com>
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -14,11 +14,6 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Date: Mar 04, 2010
- *
- * @author Marco Mornati<mmornati@byte-code.com>
- * @author Philipp Bartsch <tastybug@tastybug.com>
  */
 package hudson.plugins.libvirt;
 
@@ -49,6 +44,10 @@ import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+/**
+ * @author Marco Mornati
+ * @author Philipp Bartsch
+ */
 public class VirtualMachineSlave extends Slave {
 
     static final long serialVersionUID = 1L;

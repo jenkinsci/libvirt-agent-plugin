@@ -1,6 +1,5 @@
 package hudson.plugins.libvirt.lib.libvirt;
 
-
 import hudson.plugins.libvirt.lib.IConnect;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.VirtException;
@@ -10,7 +9,8 @@ import org.libvirt.ConnectAuth;
 import org.libvirt.LibvirtException;
 
 /**
- * Created by magnayn on 04/02/2014.
+ * @author Nigel Magnay
+ * @version 04/02/2014
  */
 public class LibVirtConnectImpl implements IConnect {
     private final Connect connect;

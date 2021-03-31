@@ -21,7 +21,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Created by magnayn on 22/02/2014.
+ * @author Nigel Magnay
+ * @version 22/02/2014
  */
 public class VirtualMachineManagementServer implements Describable<VirtualMachineManagementServer> {
     private final String host;

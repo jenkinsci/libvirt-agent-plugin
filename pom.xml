@@ -16,7 +16,7 @@
     <url>https://github.com/jenkinsci/libvirt-slave-plugin</url>
     <licenses>
         <license>
-            <name>GNU GENERAL PUBLIC LICENSE (GPLv3)</name>
+            <name>GNU GENERAL PUBLIC LICENSE (GPL-3.0-or-later)</name>
             <url>http://www.opensource.org/licenses/gpl-3.0.html</url>
         </license>
     </licenses>
