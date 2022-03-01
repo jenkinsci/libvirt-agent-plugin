@@ -20,6 +20,7 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.concurrent.ExecutionException;
 
 import hudson.model.Executor;
 import hudson.model.Queue;
@@ -92,10 +93,14 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         if (slave != null && slave.getRebootAfterRun()) {
             LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
             taskListener.getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner());
-            VirtualMachine virtualMachine = ((VirtualMachineLauncher) slave.getLauncher()).getVirtualMachine();
-            ComputerUtils.stop(virtualMachine, slave.getShutdownMethod(), taskListener);
-            ComputerUtils.revertToSnapshot(virtualMachine, slave.getSnapshotName(), taskListener);
+            try {
+                disconnect(new OfflineCause.ByCLI("Stopping " + slave.getVirtualMachineName() + " as a part of afterTaskCompleted().")).get();
+                tryReconnect();
+            } catch (final InterruptedException e) {
+                LOGGER.log(Level.INFO, "Interrupted while disconnecting from virtual machine {0}.", slave.getVirtualMachineName());
+            } catch (final ExecutionException e) {
+                LOGGER.log(Level.WARNING, "Execution exception catched while disconnecting from virtual machine {0}. ", slave.getVirtualMachineName());
+            }
         }
     }
 

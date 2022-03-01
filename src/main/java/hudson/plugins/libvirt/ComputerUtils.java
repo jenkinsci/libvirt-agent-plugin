@@ -12,7 +12,7 @@ import hudson.model.TaskListener;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
 import hudson.plugins.libvirt.lib.VirtException;
-import hudson.slaves.OfflineCause;
+
 import java.text.MessageFormat;
 
 public final class ComputerUtils {
@@ -36,12 +36,6 @@ public final class ComputerUtils {
             computer.getChannel().syncLocalIO();
             try {
                 computer.getChannel().close();
-                computer.disconnect(new OfflineCause.ByCLI("Stopping " + name + "."));
-                try {
-                    computer.waitUntilOffline();
-                } catch (final InterruptedException e) {
-                    error(listener, "Interrupted while waiting for computer to be offline: " + e);
-                }
             } catch (final IOException e) {
                 error(listener, "Error closing channel: " + e);
             }

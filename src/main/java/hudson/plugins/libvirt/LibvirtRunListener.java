@@ -6,10 +6,13 @@ import hudson.model.listeners.RunListener;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.ExecutionException;
 
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Executor;
+import hudson.slaves.OfflineCause;
+import hudson.slaves.SlaveComputer;
 
 @Extension
 public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
@@ -36,14 +39,18 @@ public final class LibvirtRunListener extends RunListener<Run<?, ?>> {
             if (slave.getRebootAfterRun()) {
 
                 LOGGER.log(Level.INFO, "Virtual machine {0} is to be shut down.", slave.getVirtualMachineName());
-                ComputerUtils.disconnect(slave.getVirtualMachineName(), computer);
-
-                VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
-                VirtualMachine virtualMachine = launcher.getVirtualMachine();
-
-                ComputerUtils.stop(virtualMachine, slave.getShutdownMethod());
-                ComputerUtils.revertToSnapshot(virtualMachine, slave.getSnapshotName());
-                ComputerUtils.start(virtualMachine);
+                try {
+                    computer.disconnect(new OfflineCause.ByCLI("Stopping " + slave.getVirtualMachineName()
+                                                               + " as a part of onFinalized().")).get();
+                    SlaveComputer slaveComputer = slave.getComputer();
+                    if (slaveComputer != null) {
+                        slaveComputer.tryReconnect();
+                    }
+                } catch (final InterruptedException e) {
+                    LOGGER.log(Level.INFO, "Interrupted while disconnecting from virtual machine {0}.", slave.getVirtualMachineName());
+                } catch (final ExecutionException e) {
+                    LOGGER.log(Level.WARNING, "Execution exception catched while disconnecting from virtual machine {0}.", slave.getVirtualMachineName());
+                }
             }
         }
     }

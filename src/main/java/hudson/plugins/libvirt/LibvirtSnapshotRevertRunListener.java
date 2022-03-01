@@ -1,5 +1,7 @@
 package hudson.plugins.libvirt;
 
+import java.util.concurrent.ExecutionException;
+
 import hudson.Extension;
 import hudson.model.Executor;
 import hudson.model.Node;
@@ -7,8 +9,8 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import hudson.slaves.ComputerLauncher;
-
-import java.io.IOException;
+import hudson.slaves.OfflineCause;
+import hudson.slaves.SlaveComputer;
 
 
 @Extension
@@ -36,7 +38,6 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
             }
 
             String slaveBeforeJobSnapshotName = slave.getBeforeJobSnapshotName();
-
             if (jobBeforeJobSnapshotName != null && jobBeforeJobSnapshotName.length() > 0) {
                 listener.getLogger().println("Got snapshot " + jobBeforeJobSnapshotName + " from job configuration");
                 snapshotName = jobBeforeJobSnapshotName;
@@ -66,20 +67,22 @@ public class LibvirtSnapshotRevertRunListener extends RunListener<Run<?, ?>> {
             VirtualMachine virtualMachine = slaveLauncher.getVirtualMachine();
 
             listener.getLogger().println("Preparing to revert " + virtualMachine.getName() + " to snapshot " + snapshotName + ".");
-
-            ComputerUtils.disconnect(virtualMachine.getName(), slave.getComputer(), listener);
-            ComputerUtils.stop(virtualMachine, slave.getShutdownMethod());
-            ComputerUtils.revertToSnapshot(virtualMachine, snapshotName);
-            ComputerUtils.start(virtualMachine);
-
-            listener.getLogger().println("Relaunching " + virtualMachine.getName() + ".");
             try {
-                launcher.launch(slave.getComputer(), listener);
-            } catch (IOException | InterruptedException e) {
-                listener.fatalError("Could not relaunch VM: " + e);
-            } catch (NullPointerException e) {
-                listener.fatalError("Could not determine node.");
+                SlaveComputer slaveComputer = (SlaveComputer) slave.getComputer();
+                if (slaveComputer != null) {
+                    slaveComputer.disconnect(new OfflineCause.ByCLI("Stopping " +
+                                                                    slave.getVirtualMachineName() +
+                                                                    " as a part of revertVMSnapshot().")).get();
+                    listener.getLogger().println("Relaunching " + virtualMachine.getName() + ".");
+                    slaveComputer.tryReconnect();
+                }
+            } catch (final InterruptedException e) {
+                listener.getLogger().println("Interrupted while disconnecting from virtual machine " + slave.getVirtualMachineName());
+            } catch (final ExecutionException e) {
+                listener.getLogger().println("Execution exception catched while disconnecting from virtual machine " +  slave.getVirtualMachineName());
             }
+
+
         }
     }
 }
