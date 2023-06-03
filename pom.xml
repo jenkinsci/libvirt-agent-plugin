@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>libvirt-slave</artifactId>
-    <version>1.9.3-SNAPSHOT</version>
+    <version>${changelist}</version>
     <packaging>hpi</packaging>
     <name>Jenkins Libvirt Agents plugin</name>
     <description>This plugin allows Jenkins to use libvirt-based agents.</description>
@@ -42,12 +42,14 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/libvirt-slave-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:jenkinsci/libvirt-slave-plugin.git</developerConnection>
-        <url>https://github.com/jenkinsci/libvirt-slave-plugin</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
+        <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+        <url>https://github.com/${gitHubRepo}</url>
+        <tag>${scmTag}</tag>
     </scm>
     <properties>
+        <changelist>999999-SNAPSHOT</changelist>
+        <gitHubRepo>jenkinsci/libvirt-slave-plugin</gitHubRepo>
         <java.level>8</java.level>
         <jenkins.version>2.319</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
