@@ -50,7 +50,6 @@
     <properties>
         <changelist>999999-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/libvirt-slave-plugin</gitHubRepo>
-        <java.level>11</java.level>
         <jenkins.version>2.375</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>false</spotbugs.failOnError>
