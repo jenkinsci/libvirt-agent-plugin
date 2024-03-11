@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.60</version>
+        <version>4.79</version>
         <relativePath />
     </parent>
     <groupId>org.jenkins-ci.plugins</groupId>
@@ -55,7 +55,7 @@
     <properties>
         <changelist>999999-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/libvirt-agent-plugin</gitHubRepo>
-        <jenkins.version>2.375</jenkins.version>
+        <jenkins.version>2.414.3</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>false</spotbugs.failOnError>
         <spotbugs.threshold>Low</spotbugs.threshold>
@@ -118,8 +118,8 @@
     <dependencies>
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
-            <artifactId>bom-2.375.x</artifactId>
-            <version>1678.vc1feb_6a_3c0f1</version>
+            <artifactId>bom-2.414.x</artifactId>
+            <version>2884.vc36b_64ce114a_</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
