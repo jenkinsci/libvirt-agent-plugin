@@ -13,6 +13,7 @@ import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.remoting.VirtualChannel;
+import hudson.slaves.OfflineCause;
 
 import java.text.MessageFormat;
 
@@ -27,12 +28,12 @@ public final class ComputerUtils {
     private ComputerUtils() {
     }
 
-    public static void disconnect(final String name, final Computer computer) {
-        disconnect(name, computer, null);
+    public static void disconnect(final String name, final Computer computer, OfflineCause cause) {
+        disconnect(name, computer, null, cause);
     }
 
     public static void disconnect(final String name, final Computer computer,
-            @CheckForNull final TaskListener listener) {
+            @CheckForNull final TaskListener listener, OfflineCause cause) {
         VirtualChannel virtualChannel = computer.getChannel();
         if (virtualChannel == null) {
             error(listener, "Could not determine channel.");
@@ -43,6 +44,12 @@ public final class ComputerUtils {
             virtualChannel.syncLocalIO();
             try {
                 virtualChannel.close();
+                computer.disconnect(cause);
+                try {
+                    computer.waitUntilOffline();
+                } catch (final InterruptedException e) {
+                    error(listener, "Interrupted while waiting for computer to be offline: " + e);
+                }
             } catch (final IOException e) {
                 error(listener, "Error closing channel: " + e);
             }

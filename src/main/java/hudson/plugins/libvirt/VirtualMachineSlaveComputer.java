@@ -16,13 +16,14 @@
  */
 package hudson.plugins.libvirt;
 
+import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.concurrent.ExecutionException;
 
 import hudson.model.Executor;
+import hudson.model.Job;
 import hudson.model.Queue;
 import hudson.model.Slave;
 import hudson.plugins.libvirt.lib.VirtException;
@@ -40,6 +41,16 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         super(slave);
     }
 
+    /**
+     * On disconnect, stop the virtual machine and revert to the "Revert" snapshot if set.
+     *
+     * If the cause of the disconnection is "OfflineClause.RevertSnapshot" do not revert
+     * to the "Revert" snapshot as we are already disconnecting to revert to another
+     * specific snapshot.
+     *
+     * @param cause Object that identifies the reason the node was disconnected.
+     * @return Future to track the asynchronous disconnect operation.
+     */
     @Override
     public Future<?> disconnect(OfflineCause cause) {
         String reason = "unknown";
@@ -53,7 +64,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             LOGGER.log(Level.SEVERE, "disconnect from null agent reason: {0}", reason);
             return super.disconnect(cause);
         }
-        String virtualMachineName = slave.getVirtualMachineName();
+
         VirtualMachineLauncher vmL = (VirtualMachineLauncher) getLauncher();
         Hypervisor hypervisor;
         try {
@@ -64,13 +75,18 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             return super.disconnect(cause);
         }
 
-        LOGGER.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down." + reason);
-        getListener().getLogger().println("Virtual machine \"" + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-
+        LOGGER.log(Level.INFO, "Preparing to shut down VM \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\"): " + reason);
+        getListener().getLogger().println("Preparing to shut down VM \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\"): " + reason);
         try {
-            ComputerUtils.disconnect(virtualMachineName, this, getListener());
             ComputerUtils.stop(vmL.getVirtualMachine(), slave.getShutdownMethod(), getListener());
-            ComputerUtils.revertToSnapshot(vmL.getVirtualMachine(), slave.getSnapshotName(), getListener());
+
+            // Revert the node to the "Revert" snapshot unless we are disconnecting to revert another snapshot
+            if (!(cause instanceof OfflineClause.RevertSnapshot) && !slave.getSnapshotName().isEmpty()) {
+                LOGGER.info("Preparing to revert VM \"" + slave.getVirtualMachineName() + "\" to Revert snapshot \"" + slave.getSnapshotName() + "\"");
+                getListener().getLogger().println("Preparing to revert VM \"" + slave.getVirtualMachineName() + "\" to Revert snapshot \"" + slave.getSnapshotName() + "\"");
+                ComputerUtils.revertToSnapshot(vmL.getVirtualMachine(), slave.getSnapshotName(), getListener());
+            }
+
             hypervisor.markVMOffline(getDisplayName(), vmL.getVirtualMachineName());
         } catch (VirtException t) {
             getListener().fatalError(t.getMessage(), t);
@@ -80,34 +96,113 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             rec.setThrown(t);
             LOGGER.log(rec);
         }
+
         return super.disconnect(cause);
     }
 
-    private void afterTaskCompleted(Executor executor) {
+    /**
+     * On Task completion, reboot the node if it's configured to do so.
+     *
+     * @param executor The executor.
+     */
+    private void afterTaskCompleted(Executor executor, Queue.Task task) {
         VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
         if (slave != null && slave.getRebootAfterRun()) {
-            LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-            getListener().getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-            try {
-                disconnect(new OfflineCause.ByCLI("Stopping " + slave.getVirtualMachineName() + " as a part of afterTaskCompleted().")).get();
-                tryReconnect();
-            } catch (final InterruptedException e) {
-                LOGGER.log(Level.INFO, "Interrupted while disconnecting from virtual machine {0}.", slave.getVirtualMachineName());
-            } catch (final ExecutionException e) {
-                LOGGER.log(Level.WARNING, "Execution exception catched while disconnecting from virtual machine {0}. ", slave.getVirtualMachineName());
-            }
+            VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
+            VirtualMachine virtualMachine = launcher.getVirtualMachine();
+
+            LOGGER.log(Level.INFO, "Preparing to reboot VM \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") after task \"" + task.getDisplayName() + "\"");
+            getListener().getLogger().println("Preparing to reboot VM \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") after task \"" + task.getDisplayName() + "\"");
+
+            // Disconnect will handle the 'Revert' snapshot if it's configured on the node
+            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner(), new OfflineClause.Reboot("Reboot after run"));
+            ComputerUtils.start(virtualMachine);
         }
     }
 
     @Override
     public void taskCompleted(Executor executor, Queue.Task task, long durationMS) {
         super.taskCompleted(executor, task, durationMS);
-        afterTaskCompleted(executor);
+        afterTaskCompleted(executor, task);
     }
 
     @Override
     public void taskCompletedWithProblems(Executor executor, Queue.Task task, long durationMS, Throwable problems) {
         super.taskCompletedWithProblems(executor, task, durationMS, problems);
-        afterTaskCompleted(executor);
+        afterTaskCompleted(executor, task);
+    }
+
+    /**
+     * On task start, revert the node to the BeforeJobSnapshot if it's set on the Job or the Node.
+     *
+     * @param executor The executor.
+     * @param task The task.
+     */
+    @Override
+    public synchronized void taskAccepted(Executor executor, Queue.Task task) {
+        super.taskAccepted(executor, task);
+
+        VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
+        if (slave != null) {
+            String snapshotName = null;
+
+            Job<?, ?> job;
+            if (task.getOwnerTask() instanceof Job) {
+                job = (Job<?, ?>) task.getOwnerTask();
+            } else {
+                LOGGER.warning("Unable to find job for task \"" + task.getName() + "\"");
+                return;
+            }
+
+            // Get the Job BeforeJobSnapshot if it's set
+            BeforeJobSnapshotJobProperty prop = job.getProperty(BeforeJobSnapshotJobProperty.class);
+            String jobBeforeJobSnapshotName;
+            if (prop != null) {
+                jobBeforeJobSnapshotName = prop.getSnapshotName();
+
+                if (jobBeforeJobSnapshotName != null && !jobBeforeJobSnapshotName.isEmpty()) {
+                    LOGGER.info("Got Before Job snapshot \"" + jobBeforeJobSnapshotName + "\" from job \"" + job.getName() + "\"");
+                    getListener().getLogger().println("Got Before Job snapshot \"" + jobBeforeJobSnapshotName + "\" from job \"" + job.getName() + "\"");
+                    snapshotName = jobBeforeJobSnapshotName;
+                }
+            }
+
+            // If we didn't get a Job level BeforeJobSnapshot, get it from the Node if it's set
+            if (snapshotName == null) {
+                String slaveBeforeJobSnapshotName = slave.getBeforeJobSnapshotName();
+                if (slaveBeforeJobSnapshotName != null && !slaveBeforeJobSnapshotName.isEmpty()) {
+                    LOGGER.info("Got Before Job snapshot \"" + slaveBeforeJobSnapshotName + "\" from node \"" + getDisplayName() + "\"");
+                    getListener().getLogger().println("Got Before Job snapshot \"" + slaveBeforeJobSnapshotName + "\" from node \"" + getDisplayName() + "\"");
+                    snapshotName = slaveBeforeJobSnapshotName;
+                }
+            }
+
+            // If we got a BeforeJobSnapshot from the Job or the Node, revert the Virtual Machine to it
+            if (snapshotName != null) {
+                VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
+                VirtualMachine virtualMachine = launcher.getVirtualMachine();
+
+                LOGGER.info("Will revert VM \"" + virtualMachine.getName() + "\" to Before Job snapshot \"" + snapshotName + "\" for task \"" + task.getDisplayName() + "\"");
+                getListener().getLogger().println("Will revert VM \"" + virtualMachine.getName() + "\" to Before Job snapshot \"" + snapshotName + "\" for task \"" + task.getDisplayName() + "\"");
+
+                SlaveComputer slaveComputer = (SlaveComputer) slave.getComputer();
+                if (slaveComputer == null) {
+                    getListener().fatalError("Could not determine node.");
+                    return;
+                }
+
+                ComputerUtils.disconnect(virtualMachine.getName(), slaveComputer, getListener(), new OfflineClause.RevertSnapshot("Reverting to snapshot \"" + snapshotName + "\""));
+                ComputerUtils.revertToSnapshot(virtualMachine, snapshotName);
+                ComputerUtils.start(virtualMachine);
+
+                LOGGER.info("Relaunching agent \"" + getDisplayName() + "\"");
+                getListener().getLogger().println("Relaunching agent \"" + getDisplayName() + "\"");
+                try {
+                    this.getLauncher().launch(slaveComputer, getListener());
+                } catch (IOException | InterruptedException e) {
+                    getListener().fatalError("Could not relaunch VM: " + e);
+                }
+            }
+        }
     }
 }
