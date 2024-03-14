@@ -60,18 +60,18 @@ public final class ComputerUtils {
         if (domain != null) {
             try {
                 if (domain.isRunningOrBlocked()) {
-                    log(listener, "Machine " + virtualMachine.getName()
+                    log(listener, "VM " + virtualMachine.getName()
                             + " is already running, no startup required.");
                     return;
                 }
             } catch (final VirtException e) {
-                error(listener, "Error checking if " + virtualMachine.getName()
+                error(listener, "Error checking if VM " + virtualMachine.getName()
                         + " is already running, will consider it as stopped.");
             }
 
             for (int i = 0; i < RETRY_MAX; i++) {
                 try {
-                    log(listener, "Starting " + virtualMachine.getName() + "...");
+                    log(listener, "Starting VM \"" + virtualMachine.getName() + "\"");
                     domain.create();
                     break;
                 } catch (final VirtException e) {
@@ -96,19 +96,19 @@ public final class ComputerUtils {
             try {
                 if (domain.isNotBlockedAndNotRunning()) {
                     log(listener,
-                            "Machine " + virtualMachine.getName() + " is not running, no shutdown required.");
+                            "VM \"" + virtualMachine.getName() + "\" is not running, no shutdown required.");
                     return;
                 }
             } catch (final VirtException e) {
                 error(listener,
-                      MessageFormat.format("Error checking if {0} is stopped, will consider it as running.",
+                      MessageFormat.format("Error checking if VM \"{0}\" is stopped, will consider it as running.",
                               virtualMachine.getName()));
             }
 
             for (int i = 0; i < RETRY_MAX; i++) {
                 try {
                     log(listener,
-                        MessageFormat.format("Stopping {0} (using method {1})...",
+                        MessageFormat.format("Stopping VM \"{0}\" (using method {1})",
                                 virtualMachine.getName(), shutdownMethod));
                     if ("suspend".equals(shutdownMethod)) {
                         domain.suspend();
@@ -141,18 +141,17 @@ public final class ComputerUtils {
                 try {
                     final IDomainSnapshot snapshot = domain.snapshotLookupByName(snapshotName);
                     try {
-                        log(listener, MessageFormat.format("Reverting {0} to snapshot {1}.",
+                        log(listener, MessageFormat.format("Reverting VM \"{0}\" to snapshot \"{1}\"",
                                 virtualMachine.getName(), snapshotName));
                         domain.revertToSnapshot(snapshot);
                     } catch (final VirtException e) {
-                        error(listener, MessageFormat.format("Error reverting to snapshot named {0} for VM {1}: {2}",
+                        error(listener, MessageFormat.format("Error reverting to snapshot \"{0}\" for VM \"{1}\": {2}",
                                 snapshotName, virtualMachine.getName(), e));
                     }
                 } catch (final VirtException e) {
-                    error(listener, MessageFormat.format("No snapshot named {0} for VM {1}: {2}",
+                    error(listener, MessageFormat.format("No snapshot named \"{0}\" for VM \"{1}\": {2}",
                             snapshotName, virtualMachine.getName(), e));
                 }
-
             }
         }
     }
@@ -164,7 +163,7 @@ public final class ComputerUtils {
             final Map<String, IDomain> domains = virtualMachine.getHypervisor().getDomains();
             domain = domains.get(virtualMachine.getName());
             if (domain == null) {
-                error(listener, "No VM named " + virtualMachine.getName());
+                error(listener, "No VM named \"" + virtualMachine.getName() + "\"");
             }
         } catch (final VirtException e) {
             error(listener, "Can't get VM domains: " + e);
@@ -185,5 +184,4 @@ public final class ComputerUtils {
         }
         LOGGER.log(Level.WARNING, message);
     }
-
 }
