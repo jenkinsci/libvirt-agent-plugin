@@ -25,12 +25,9 @@ import java.util.concurrent.ExecutionException;
 import hudson.model.Executor;
 import hudson.model.Queue;
 import hudson.model.Slave;
-import hudson.model.TaskListener;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.OfflineCause;
 import hudson.slaves.SlaveComputer;
-import hudson.util.StreamTaskListener;
-import hudson.util.io.RewindableRotatingFileOutputStream;
 
 /**
  * @author Marco Mornati
@@ -39,11 +36,8 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineSlaveComputer.class.getName());
 
-    private final TaskListener taskListener;
-
     public VirtualMachineSlaveComputer(Slave slave) {
         super(slave);
-        this.taskListener = new StreamTaskListener(new RewindableRotatingFileOutputStream(getLogFile(), 10));
     }
 
     @Override
@@ -55,7 +49,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
         VirtualMachineSlave slave = (VirtualMachineSlave) getNode();
         if (null == slave) {
-            taskListener.getLogger().println("disconnect from undefined agent reason: " + reason);
+            getListener().getLogger().println("disconnect from null agent reason: " + reason);
             LOGGER.log(Level.SEVERE, "disconnect from null agent reason: {0}", reason);
             return super.disconnect(cause);
         }
@@ -65,20 +59,21 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         try {
             hypervisor = vmL.findOurHypervisorInstance();
         } catch (VirtException e) {
-            taskListener.getLogger().println(e.getMessage());
+            getListener().getLogger().println("cannot find hypervisor instance on disconnect: " + e.getMessage());
             LOGGER.log(Level.SEVERE, "cannot find hypervisor instance on disconnect: {0}", e.getMessage());
             return super.disconnect(cause);
         }
 
         LOGGER.log(Level.INFO, "Virtual machine \""  + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down." + reason);
-        taskListener.getLogger().println("Virtual machine \"" + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+        getListener().getLogger().println("Virtual machine \"" + virtualMachineName + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+
         try {
-            ComputerUtils.disconnect(virtualMachineName, this, taskListener);
-            ComputerUtils.stop(vmL.getVirtualMachine(), slave.getShutdownMethod(), taskListener);
-            ComputerUtils.revertToSnapshot(vmL.getVirtualMachine(), slave.getSnapshotName(), taskListener);
+            ComputerUtils.disconnect(virtualMachineName, this, getListener());
+            ComputerUtils.stop(vmL.getVirtualMachine(), slave.getShutdownMethod(), getListener());
+            ComputerUtils.revertToSnapshot(vmL.getVirtualMachine(), slave.getSnapshotName(), getListener());
             hypervisor.markVMOffline(getDisplayName(), vmL.getVirtualMachineName());
         } catch (VirtException t) {
-            taskListener.fatalError(t.getMessage(), t);
+            getListener().fatalError(t.getMessage(), t);
 
             LogRecord rec = new LogRecord(Level.SEVERE, "Error while shutting down {0} on Hypervisor {1}.");
             rec.setParameters(new Object[]{slave.getVirtualMachineName(), hypervisor.getHypervisorURI()});
@@ -92,7 +87,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         VirtualMachineSlave slave = (VirtualMachineSlave) this.getNode();
         if (slave != null && slave.getRebootAfterRun()) {
             LOGGER.log(Level.INFO, "Virtual machine \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
-            taskListener.getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
+            getListener().getLogger().println("Virtual machine \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") is to be shut down.");
             try {
                 disconnect(new OfflineCause.ByCLI("Stopping " + slave.getVirtualMachineName() + " as a part of afterTaskCompleted().")).get();
                 tryReconnect();
