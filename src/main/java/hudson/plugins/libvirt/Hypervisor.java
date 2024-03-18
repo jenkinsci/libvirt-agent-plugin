@@ -124,12 +124,10 @@ public class Hypervisor extends Cloud {
     }
 
     private ConnectionBuilder createBuilder() {
-        return ConnectionBuilder.newBuilder()
-                .hypervisorType(hypervisorType)
+        return new ConnectionBuilder(hypervisorType, hypervisorHost)
                 .hypervisorTransport(hypervisorTransport)
                 .userName(username)
                 .withCredentials(lookupSystemCredentials(credentialsId))
-                .hypervisorHost(hypervisorHost)
                 .hypervisorPort(hypervisorSshPort)
                 .hypervisorSysUrl(hypervisorSystemUrl);
     }
@@ -481,12 +479,10 @@ public class Hypervisor extends Cloud {
                 return model.includeCurrentValue(credentialsId);
             }
 
-            ConnectionBuilder builder = ConnectionBuilder.newBuilder()
-                        .hypervisorType(hypervisorType)
+            ConnectionBuilder builder = new ConnectionBuilder(hypervisorType, hypervisorHost)
                         .hypervisorTransport(hypervisorTransport)
                         .userName(username)
                         .withCredentials(lookupSystemCredentials(credentialsId))
-                        .hypervisorHost(hypervisorHost)
                         .hypervisorPort(Integer.parseInt(hypervisorSshPort))
                         .hypervisorSysUrl(hypervisorSystemUrl);
 
@@ -565,12 +561,10 @@ public class Hypervisor extends Cloud {
                     return FormValidation.error("Hypervisor type is not specified!");
                 }
 
-                ConnectionBuilder builder = ConnectionBuilder.newBuilder()
-                        .hypervisorType(hypervisorType)
+                ConnectionBuilder builder = new ConnectionBuilder(hypervisorType, hypervisorHost)
                         .hypervisorTransport(hypervisorTransport)
                         .userName(username)
                         .withCredentials(lookupSystemCredentials(credentialsId))
-                        .hypervisorHost(hypervisorHost)
                         .hypervisorPort(Integer.parseInt(hypervisorSshPort))
                         .hypervisorSysUrl(hypervisorSystemUrl);
 
