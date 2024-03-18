@@ -13,7 +13,7 @@
     <packaging>hpi</packaging>
     <name>Jenkins Libvirt Agents plugin</name>
     <description>This plugin allows Jenkins to use libvirt-based agents.</description>
-    <url>https://github.com/jenkinsci/libvirt-slave-plugin</url>
+    <url>https://github.com/jenkinsci/libvirt-agent-plugin</url>
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE (GPL-3.0-or-later)</name>
@@ -49,7 +49,7 @@
     </scm>
     <properties>
         <changelist>999999-SNAPSHOT</changelist>
-        <gitHubRepo>jenkinsci/libvirt-slave-plugin</gitHubRepo>
+        <gitHubRepo>jenkinsci/libvirt-agent-plugin</gitHubRepo>
         <jenkins.version>2.375</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>false</spotbugs.failOnError>
