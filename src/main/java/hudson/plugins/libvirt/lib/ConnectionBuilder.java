@@ -19,22 +19,18 @@ public class ConnectionBuilder {
     private String uri;
     private boolean readOnly = false;
 
-    private String hypervisorType;
+    private final String hypervisorType;
     private String hypervisorTransport;
     private String userName;
-    private String hypervisorHost;
+    private final String hypervisorHost;
     private int    hypervisorPort;
     private String hypervisorSysUrl;
 
     private StandardUsernamePasswordCredentials credentials;
 
-    public static ConnectionBuilder newBuilder() {
-        return new ConnectionBuilder();
-    }
-
-    public ConnectionBuilder hypervisorType(String type) {
-        this.hypervisorType = type;
-        return this;
+    public ConnectionBuilder(String hypervisorType, String hypervisorHost) {
+        this.hypervisorType = hypervisorType;
+        this.hypervisorHost = hypervisorHost;
     }
 
     public ConnectionBuilder hypervisorTransport(String transport) {
@@ -44,11 +40,6 @@ public class ConnectionBuilder {
 
     public ConnectionBuilder userName(String user) {
         this.userName = user;
-        return this;
-    }
-
-    public ConnectionBuilder hypervisorHost(String host) {
-        this.hypervisorHost = host;
         return this;
     }
 
