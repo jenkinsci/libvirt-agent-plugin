@@ -12,6 +12,7 @@ import hudson.model.TaskListener;
 import hudson.plugins.libvirt.lib.IDomain;
 import hudson.plugins.libvirt.lib.IDomainSnapshot;
 import hudson.plugins.libvirt.lib.VirtException;
+import hudson.remoting.VirtualChannel;
 
 import java.text.MessageFormat;
 
@@ -32,17 +33,21 @@ public final class ComputerUtils {
 
     public static void disconnect(final String name, final Computer computer,
             @CheckForNull final TaskListener listener) {
+        VirtualChannel virtualChannel = computer.getChannel();
+        if (virtualChannel == null) {
+            error(listener, "Could not determine channel.");
+            return;
+        }
+
         try {
-            computer.getChannel().syncLocalIO();
+            virtualChannel.syncLocalIO();
             try {
-                computer.getChannel().close();
+                virtualChannel.close();
             } catch (final IOException e) {
                 error(listener, "Error closing channel: " + e);
             }
         } catch (final InterruptedException e) {
             error(listener, "Interrupted while syncing IO: " + e);
-        } catch (final NullPointerException e) {
-            error(listener, "Could not determine channel.");
         }
     }
 
