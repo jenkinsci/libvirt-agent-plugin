@@ -50,13 +50,22 @@ public class PluginImpl extends Plugin {
 
     private static final Logger LOGGER = Logger.getLogger(PluginImpl.class.getName());
 
-    private static PluginImpl instance;
+    private static PluginImpl INSTANCE;
 
     /**
      * Constructor.
      */
     public PluginImpl() {
-        instance = this;
+        setInstance(this);
+    }
+
+    /**
+     * Set the singleton instance, used in constructor.
+     *
+     * @param plugin the singleton
+     */
+    private static void setInstance(PluginImpl plugin){
+        INSTANCE = plugin;
     }
 
     /**
@@ -65,7 +74,7 @@ public class PluginImpl extends Plugin {
      * @return the singleton.
      */
     public static PluginImpl getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
