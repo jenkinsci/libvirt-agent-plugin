@@ -28,6 +28,7 @@ import hudson.slaves.SlaveComputer;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -41,13 +42,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class VirtualMachineLauncher extends ComputerLauncher {
 
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineLauncher.class.getName());
-    private static final int MSEC_PER_SEC = 1000;
 
     private final ComputerLauncher delegate;
     private transient VirtualMachine virtualMachine;
     private final String hypervisorDescription;
     private final String virtualMachineName;
-    private final int waitTimeMs;
+    private final int waitingTimeSecs;
     private final int timesToRetryOnFailure;
 
     @DataBoundConstructor
@@ -57,7 +57,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
         this.delegate = delegate;
         this.virtualMachineName = virtualMachineName;
         this.hypervisorDescription = hypervisorDescription;
-        this.waitTimeMs = waitingTimeSecs * MSEC_PER_SEC;
+        this.waitingTimeSecs = waitingTimeSecs;
         this.timesToRetryOnFailure = timesToRetryOnFailure;
         lookupVirtualMachineHandle();
     }
@@ -132,8 +132,8 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             }
 
             ComputerUtils.start(virtualMachine, taskListener);
-            taskListener.getLogger().println("Waiting for " + waitTimeMs + "ms to let it fully boot up...");
-            Thread.sleep(waitTimeMs);
+            taskListener.getLogger().println("Waiting for " + waitingTimeSecs + "s to let it fully boot up...");
+            Thread.sleep(TimeUnit.SECONDS.toMillis(waitingTimeSecs));
 
             int attempts = 0;
             while (true) {
@@ -155,9 +155,9 @@ public class VirtualMachineLauncher extends ComputerLauncher {
                     break;
                 }
 
-                taskListener.getLogger().println("Not up yet, waiting for " + waitTimeMs + "ms more ("
+                taskListener.getLogger().println("Not up yet, waiting for " + waitingTimeSecs + "s more ("
                                                  + attempts + "/" + timesToRetryOnFailure + " retries)...");
-                Thread.sleep(waitTimeMs);
+                Thread.sleep(TimeUnit.SECONDS.toMillis(waitingTimeSecs));
             }
         } catch (IOException e) {
             taskListener.fatalError(e.getMessage(), e);
