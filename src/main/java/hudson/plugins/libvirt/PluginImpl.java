@@ -64,7 +64,7 @@ public class PluginImpl extends Plugin {
      *
      * @param plugin the singleton
      */
-    private static void setInstance(PluginImpl plugin){
+    private static void setInstance(PluginImpl plugin) {
         INSTANCE = plugin;
     }
 
