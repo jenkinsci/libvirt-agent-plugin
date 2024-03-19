@@ -24,6 +24,7 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.domains.SchemeRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.google.common.base.Strings;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
@@ -439,6 +440,7 @@ public class Hypervisor extends Cloud {
         private int sshPort;
         private String user;
 
+        @NonNull
         @Override
         public String getDisplayName() {
             return "Hypervisor (via libvirt)";

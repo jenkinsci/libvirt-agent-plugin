@@ -17,6 +17,7 @@
  */
 package hudson.plugins.libvirt;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.Util;
@@ -185,6 +186,7 @@ public class VirtualMachineSlave extends Slave {
             load();
         }
 
+        @NonNull
         @Override
         public String getDisplayName() {
             return "Agent virtual computer running on a virtualization platform (via libvirt)";
