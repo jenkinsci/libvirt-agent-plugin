@@ -210,8 +210,7 @@ public class VirtualMachineSlave extends Slave {
         public String[] getDefinedSnapshots(String description, String vmName) {
             Hypervisor hypervisor = getHypervisorByDescription(description);
             if (hypervisor != null) {
-                String[] snapS = hypervisor.getSnapshots(vmName);
-                return snapS;
+                return hypervisor.getSnapshots(vmName);
             }
             return new String[0];
         }
