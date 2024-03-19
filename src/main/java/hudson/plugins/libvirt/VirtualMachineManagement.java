@@ -1,6 +1,7 @@
 package hudson.plugins.libvirt;
 
 import com.google.common.collect.Collections2;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
@@ -53,6 +54,7 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
     @Extension
     public static final class DescriptorImpl extends Descriptor<VirtualMachineManagement> {
 
+        @NonNull
         @Override
         public String getDisplayName() {
             // unused, but needs to be non null
@@ -75,8 +77,13 @@ public class VirtualMachineManagement extends ManagementLink implements StaplerP
 
     }
 
-
     public Collection<String> getServerNames() {
         return Collections2.transform(PluginImpl.getInstance().getServers(), Hypervisor::getHypervisorHost);
+    }
+
+    @NonNull
+    @Override
+    public ManagementLink.Category getCategory() {
+        return Category.TOOLS;
     }
 }
