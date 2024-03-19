@@ -99,11 +99,6 @@ public class VirtualMachine implements Comparable<VirtualMachine> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("VirtualComputer");
-        sb.append("{name='").append(name).append('\'');
-        sb.append(", hypervisor=").append(hypervisor);
-        sb.append('}');
-        return sb.toString();
+        return "VirtualComputer{name='" + name + "' hypervisor=" + hypervisor + '}';
     }
 }

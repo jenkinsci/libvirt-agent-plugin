@@ -335,12 +335,7 @@ public class Hypervisor extends Cloud {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Hypervisor");
-        sb.append("{hypervisorUri='").append(hypervisorHost).append('\'');
-        sb.append(", username='").append(username).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "Hypervisor{hypervisorUri='" + hypervisorHost + "', username='" + username + "'}";
     }
 
     public synchronized Boolean canMarkVMOnline(String slaveName, String vmName) {
