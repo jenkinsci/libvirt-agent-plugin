@@ -241,7 +241,7 @@ public class VirtualMachineSlave extends Slave {
         }
 
         private Hypervisor getHypervisorByDescription(String description) {
-            if (description != null && !description.equals("")) {
+            if (description != null && !description.isEmpty()) {
                 for (Cloud cloud : Jenkins.get().clouds) {
                     if (cloud instanceof Hypervisor
                         && ((Hypervisor) cloud).getHypervisorDescription().equals(description)) {

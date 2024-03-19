@@ -229,7 +229,7 @@ public class Hypervisor extends Cloud {
         LOGGER.log(info);
         if (con != null) {
             for (String c : con.listDefinedDomains()) {
-                if (c != null && !c.equals("")) {
+                if (c != null && !c.isEmpty()) {
                     IDomain domain;
                     try {
                         domain = con.domainLookupByName(c);
