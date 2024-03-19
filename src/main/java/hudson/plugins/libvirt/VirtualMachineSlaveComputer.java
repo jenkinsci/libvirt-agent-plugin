@@ -185,7 +185,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 LOGGER.info("Will revert VM \"" + virtualMachine.getName() + "\" to Before Job snapshot \"" + snapshotName + "\" for task \"" + task.getDisplayName() + "\"");
                 getListener().getLogger().println("Will revert VM \"" + virtualMachine.getName() + "\" to Before Job snapshot \"" + snapshotName + "\" for task \"" + task.getDisplayName() + "\"");
 
-                SlaveComputer slaveComputer = (SlaveComputer) slave.getComputer();
+                SlaveComputer slaveComputer = slave.getComputer();
                 if (slaveComputer == null) {
                     getListener().fatalError("Could not determine node.");
                     return;
