@@ -3,9 +3,10 @@
 name: cd
 on:
   workflow_dispatch:
-  check_run:
-    types:
-      - completed
+# Pause autorelease
+#  check_run:
+#    types:
+#      - completed
 
 permissions:
   checks: read
