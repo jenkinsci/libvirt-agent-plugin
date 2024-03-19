@@ -1,5 +1,6 @@
 package hudson.plugins.libvirt;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.JobProperty;
 import hudson.model.JobPropertyDescriptor;
@@ -12,6 +13,7 @@ public class BeforeJobSnapshotJobProperty extends JobProperty<Job<?, ?>> {
     @Extension
     public static class DescriptorImpl extends JobPropertyDescriptor {
 
+        @NonNull
         @Override
         public String getDisplayName() {
             return "Pre-execution node snapshot";

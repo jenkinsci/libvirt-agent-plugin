@@ -1,5 +1,6 @@
 package hudson.plugins.libvirt;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
@@ -75,6 +76,7 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
     @Extension
     public static final class DescriptorImpl extends Descriptor<VirtualMachineManagementServer> {
 
+        @NonNull
         @Override
         public String getDisplayName() {
             return "server ";
