@@ -135,9 +135,9 @@ public class VirtualMachineLauncher extends ComputerLauncher {
             taskListener.getLogger().println("Waiting for " + waitingTimeSecs + "s to let it fully boot up...");
             Thread.sleep(TimeUnit.SECONDS.toMillis(waitingTimeSecs));
 
-            int attempts = 0;
+            int retries = -1;
             while (true) {
-                attempts++;
+                retries++;
 
                 taskListener.getLogger().println("Connecting agent client.");
 
@@ -150,13 +150,13 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
                 if (slaveComputer.isOnline()) {
                     break;
-                } else if (attempts >= timesToRetryOnFailure) {
+                } else if (retries >= timesToRetryOnFailure) {
                     taskListener.getLogger().println("Maximum retries reached. Failed to start agent client.");
                     break;
                 }
 
                 taskListener.getLogger().println("Not up yet, waiting for " + waitingTimeSecs + "s more ("
-                                                 + attempts + "/" + timesToRetryOnFailure + " retries)...");
+                                                 + retries + "/" + timesToRetryOnFailure + " retries)");
                 Thread.sleep(TimeUnit.SECONDS.toMillis(waitingTimeSecs));
             }
         } catch (IOException e) {
