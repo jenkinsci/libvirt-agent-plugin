@@ -31,6 +31,8 @@ import hudson.slaves.OfflineCause;
 import hudson.slaves.SlaveComputer;
 
 /**
+ * Represents the running state of a virtual machine slave computer that holds Executors.
+ *
  * @author Marco Mornati
  */
 public class VirtualMachineSlaveComputer extends SlaveComputer {
@@ -39,6 +41,36 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
     public VirtualMachineSlaveComputer(Slave slave) {
         super(slave);
+    }
+
+    /**
+     * Log to both the agent log and the system log.
+     *
+     * @param message The message to log.
+     */
+    private void info(final String message) {
+        getListener().getLogger().println(message);
+        LOGGER.info(message);
+    }
+
+    /**
+     * Log a warning to both the agent log and the system log.
+     *
+     * @param message The message to log.
+     */
+    private void warn(final String message) {
+        getListener().error(message);
+        LOGGER.warning(message);
+    }
+
+    /**
+     * Log an error to both the agent log and the system log.
+     *
+     * @param message The message to log.
+     */
+    private void error(final String message) {
+        getListener().fatalError(message);
+        LOGGER.log(Level.SEVERE, message);
     }
 
     /**
@@ -60,8 +92,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
 
         VirtualMachineSlave slave = (VirtualMachineSlave) getNode();
         if (null == slave) {
-            getListener().getLogger().println("disconnect from null agent reason: " + reason);
-            LOGGER.log(Level.SEVERE, "disconnect from null agent reason: {0}", reason);
+            info("disconnect from null agent reason: " + reason);
             return super.disconnect(cause);
         }
 
@@ -70,20 +101,17 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
         try {
             hypervisor = vmL.findOurHypervisorInstance();
         } catch (VirtException e) {
-            getListener().getLogger().println("cannot find hypervisor instance on disconnect: " + e.getMessage());
-            LOGGER.log(Level.SEVERE, "cannot find hypervisor instance on disconnect: {0}", e.getMessage());
+            info("cannot find hypervisor instance on disconnect: " + e.getMessage());
             return super.disconnect(cause);
         }
 
-        LOGGER.log(Level.INFO, "Preparing to shut down VM \""  + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\"): " + reason);
-        getListener().getLogger().println("Preparing to shut down VM \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\"): " + reason);
+        info("Preparing to shut down VM '" + slave.getVirtualMachineName() + "' (agent '" + getDisplayName() + "'): " + reason);
         try {
             ComputerUtils.stop(vmL.getVirtualMachine(), slave.getShutdownMethod(), getListener());
 
             // Revert the node to the "Revert" snapshot unless we are disconnecting to revert another snapshot
             if (!(cause instanceof OfflineClause.RevertSnapshot) && !slave.getSnapshotName().isEmpty()) {
-                LOGGER.info("Preparing to revert VM \"" + slave.getVirtualMachineName() + "\" to Revert snapshot \"" + slave.getSnapshotName() + "\"");
-                getListener().getLogger().println("Preparing to revert VM \"" + slave.getVirtualMachineName() + "\" to Revert snapshot \"" + slave.getSnapshotName() + "\"");
+                info("Preparing to revert VM '" + slave.getVirtualMachineName() + "' to Revert snapshot '" + slave.getSnapshotName() + "'");
                 ComputerUtils.revertToSnapshot(vmL.getVirtualMachine(), slave.getSnapshotName(), getListener());
             }
 
@@ -111,12 +139,13 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
             VirtualMachine virtualMachine = launcher.getVirtualMachine();
 
-            LOGGER.log(Level.INFO, "Preparing to reboot VM \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") after task \"" + task.getDisplayName() + "\"");
-            getListener().getLogger().println("Preparing to reboot VM \"" + slave.getVirtualMachineName() + "\" (agent \"" + getDisplayName() + "\") after task \"" + task.getDisplayName() + "\"");
+            info("Preparing to reboot VM '" + slave.getVirtualMachineName() + "' (agent '" + getDisplayName() + "') "
+                    + "after task '" + task.getDisplayName() + "'");
 
             // Disconnect will handle the 'Revert' snapshot if it's configured on the node
-            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner(), new OfflineClause.Reboot("Reboot after run"));
-            ComputerUtils.start(virtualMachine);
+            ComputerUtils.disconnect(slave.getVirtualMachineName(), executor.getOwner(), getListener(),
+                    new OfflineClause.Reboot("Reboot after run"));
+            ComputerUtils.start(virtualMachine, getListener());
         }
     }
 
@@ -150,7 +179,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             if (task.getOwnerTask() instanceof Job) {
                 job = (Job<?, ?>) task.getOwnerTask();
             } else {
-                LOGGER.warning("Unable to find job for task \"" + task.getName() + "\"");
+                warn("Unable to find job for task \"" + task.getName() + "\"");
                 return;
             }
 
@@ -161,8 +190,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 jobBeforeJobSnapshotName = prop.getSnapshotName();
 
                 if (jobBeforeJobSnapshotName != null && !jobBeforeJobSnapshotName.isEmpty()) {
-                    LOGGER.info("Got Before Job snapshot \"" + jobBeforeJobSnapshotName + "\" from job \"" + job.getName() + "\"");
-                    getListener().getLogger().println("Got Before Job snapshot \"" + jobBeforeJobSnapshotName + "\" from job \"" + job.getName() + "\"");
+                    info("Got Before Job snapshot '" + jobBeforeJobSnapshotName + "' from job configuration '" + job.getName() + "'");
                     snapshotName = jobBeforeJobSnapshotName;
                 }
             }
@@ -171,8 +199,7 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
             if (snapshotName == null) {
                 String slaveBeforeJobSnapshotName = slave.getBeforeJobSnapshotName();
                 if (slaveBeforeJobSnapshotName != null && !slaveBeforeJobSnapshotName.isEmpty()) {
-                    LOGGER.info("Got Before Job snapshot \"" + slaveBeforeJobSnapshotName + "\" from node \"" + getDisplayName() + "\"");
-                    getListener().getLogger().println("Got Before Job snapshot \"" + slaveBeforeJobSnapshotName + "\" from node \"" + getDisplayName() + "\"");
+                    info("Got Before Job snapshot '" + slaveBeforeJobSnapshotName + "' from node configuration '" + getDisplayName() + "'");
                     snapshotName = slaveBeforeJobSnapshotName;
                 }
             }
@@ -182,25 +209,25 @@ public class VirtualMachineSlaveComputer extends SlaveComputer {
                 VirtualMachineLauncher launcher = (VirtualMachineLauncher) slave.getLauncher();
                 VirtualMachine virtualMachine = launcher.getVirtualMachine();
 
-                LOGGER.info("Will revert VM \"" + virtualMachine.getName() + "\" to Before Job snapshot \"" + snapshotName + "\" for task \"" + task.getDisplayName() + "\"");
-                getListener().getLogger().println("Will revert VM \"" + virtualMachine.getName() + "\" to Before Job snapshot \"" + snapshotName + "\" for task \"" + task.getDisplayName() + "\"");
+                info("Will revert VM '" + virtualMachine.getName() + "' to Before Job snapshot '" + snapshotName + "' "
+                        + "for task '" + task.getDisplayName() + "'");
 
                 SlaveComputer slaveComputer = slave.getComputer();
                 if (slaveComputer == null) {
-                    getListener().fatalError("Could not determine node.");
+                    error("Could not determine node.");
                     return;
                 }
 
-                ComputerUtils.disconnect(virtualMachine.getName(), slaveComputer, getListener(), new OfflineClause.RevertSnapshot("Reverting to snapshot \"" + snapshotName + "\""));
-                ComputerUtils.revertToSnapshot(virtualMachine, snapshotName);
-                ComputerUtils.start(virtualMachine);
+                ComputerUtils.disconnect(virtualMachine.getName(), slaveComputer, getListener(),
+                        new OfflineClause.RevertSnapshot("Reverting to snapshot '" + snapshotName + "'"));
+                ComputerUtils.revertToSnapshot(virtualMachine, snapshotName, getListener());
+                ComputerUtils.start(virtualMachine, getListener());
 
-                LOGGER.info("Relaunching agent \"" + getDisplayName() + "\"");
-                getListener().getLogger().println("Relaunching agent \"" + getDisplayName() + "\"");
+                info("Relaunching agent '" + getDisplayName() + "'");
                 try {
                     this.getLauncher().launch(slaveComputer, getListener());
                 } catch (IOException | InterruptedException e) {
-                    getListener().fatalError("Could not relaunch VM: " + e);
+                    error("Could not relaunch agent: " + e);
                 }
             }
         }
