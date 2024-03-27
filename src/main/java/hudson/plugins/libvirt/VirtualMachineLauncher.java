@@ -23,11 +23,13 @@ import hudson.model.Descriptor;
 import hudson.plugins.libvirt.lib.VirtException;
 import hudson.slaves.Cloud;
 import hudson.slaves.ComputerLauncher;
+import hudson.slaves.DelegatingComputerLauncher;
 import hudson.slaves.SlaveComputer;
 
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -39,11 +41,12 @@ import org.kohsuke.stapler.DataBoundConstructor;
  * @author Marco Mornati
  * @author Philipp Bartsch
  */
-public class VirtualMachineLauncher extends ComputerLauncher {
+public class VirtualMachineLauncher extends DelegatingComputerLauncher {
 
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineLauncher.class.getName());
 
-    private final ComputerLauncher delegate;
+    @Deprecated
+    private final ComputerLauncher delegate = null;
     private transient VirtualMachine virtualMachine;
     private final String hypervisorDescription;
     private final String virtualMachineName;
@@ -51,15 +54,40 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     private final int timesToRetryOnFailure;
 
     @DataBoundConstructor
-    public VirtualMachineLauncher(ComputerLauncher delegate, String hypervisorDescription, String virtualMachineName,
+    public VirtualMachineLauncher(ComputerLauncher launcher, String hypervisorDescription, String virtualMachineName,
             int waitingTimeSecs, int timesToRetryOnFailure) {
-        super();
-        this.delegate = delegate;
+        super(launcher);
         this.virtualMachineName = virtualMachineName;
         this.hypervisorDescription = hypervisorDescription;
         this.waitingTimeSecs = waitingTimeSecs;
         this.timesToRetryOnFailure = timesToRetryOnFailure;
         lookupVirtualMachineHandle();
+    }
+
+    /**
+     * Private constructor for readResolve().
+     */
+    private VirtualMachineLauncher(ComputerLauncher launcher, VirtualMachine virtualMachine, String hypervisorDescription,
+                                   String virtualMachineName, int waitingTimeSecs, int timesToRetryOnFailure) {
+        super(launcher);
+        this.virtualMachine = virtualMachine;
+        this.hypervisorDescription = hypervisorDescription;
+        this.virtualMachineName = virtualMachineName;
+        this.waitingTimeSecs = waitingTimeSecs;
+        this.timesToRetryOnFailure = timesToRetryOnFailure;
+    }
+
+    /**
+     * Migrates instances from the old parent class to the new parent class.
+     * @return the deserialized instance.
+     * @throws ObjectStreamException if something went wrong.
+     */
+    private Object readResolve() throws ObjectStreamException {
+        if (delegate != null) {
+            return new VirtualMachineLauncher(delegate, virtualMachine, hypervisorDescription, virtualMachineName,
+                    waitingTimeSecs, timesToRetryOnFailure);
+        }
+        return this;
     }
 
     private void lookupVirtualMachineHandle() {
@@ -82,8 +110,12 @@ public class VirtualMachineLauncher extends ComputerLauncher {
         }
     }
 
+    /**
+     * @deprecated use {@link #getLauncher()}
+     */
+    @Deprecated
     public ComputerLauncher getDelegate() {
-        return delegate;
+        return launcher;
     }
 
     public VirtualMachine getVirtualMachine() {
@@ -97,7 +129,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
     @Override
     public boolean isLaunchSupported() {
-        return true;
+        return launcher.isLaunchSupported();
     }
 
     private Hypervisor lookupHypervisorInstance() throws VirtException {
@@ -143,7 +175,7 @@ public class VirtualMachineLauncher extends ComputerLauncher {
 
                 // This call doesn't seem to actually throw anything, but we'll catch IOException just in case
                 try {
-                    delegate.launch(slaveComputer, taskListener);
+                    launcher.launch(slaveComputer, taskListener);
                 } catch (IOException e) {
                     taskListener.getLogger().println("unexpectedly caught exception when delegating launch of agent: " + e.getMessage());
                 }
@@ -178,17 +210,8 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     }
 
     @Override
-    public synchronized void afterDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
-        delegate.afterDisconnect(slaveComputer, taskListener);
-    }
-
-    @Override
-    public void beforeDisconnect(SlaveComputer slaveComputer, TaskListener taskListener) {
-        delegate.beforeDisconnect(slaveComputer, taskListener);
-    }
-
-    @Override
     public Descriptor<ComputerLauncher> getDescriptor() {
+        // Don't allow creation of launcher from UI
         throw new UnsupportedOperationException();
     }
 }
