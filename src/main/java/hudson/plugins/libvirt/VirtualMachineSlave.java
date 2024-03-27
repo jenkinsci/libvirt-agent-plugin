@@ -136,8 +136,13 @@ public class VirtualMachineSlave extends Slave {
         return beforeJobSnapshotName;
     }
 
+    /**
+     * For UI.
+     *
+     * @return original launcher
+     */
     public ComputerLauncher getDelegateLauncher() {
-        return ((VirtualMachineLauncher) getLauncher()).getDelegate();
+        return ((VirtualMachineLauncher) getLauncher()).getLauncher();
     }
 
     @Override
