@@ -28,6 +28,8 @@ import hudson.slaves.SlaveComputer;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -190,5 +192,25 @@ public class VirtualMachineLauncher extends ComputerLauncher {
     @Override
     public Descriptor<ComputerLauncher> getDescriptor() {
         throw new UnsupportedOperationException();
+    }
+
+    public boolean getTcpSupported() {
+        return Jenkins.get().getTcpSlaveAgentListener() != null;
+    }
+
+    public boolean getInstanceIdentityInstalled() {
+        return Jenkins.get().getPluginManager().getPlugin("instance-identity") != null;
+    }
+
+    public boolean getWebSocketSupported() {
+        // HACK!! Work around @Restricted(Beta.class). Normally, we would write:
+        // return WebSockets.isSupported();
+        try {
+            Class<?> cl = Class.forName("jenkins.websocket.WebSockets");
+            Method m =  cl.getMethod("isSupported");
+            return (boolean) m.invoke(null);
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException x) {
+            return false;
+        }
     }
 }

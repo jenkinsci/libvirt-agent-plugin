@@ -81,19 +81,19 @@ ${copy_java_cmd_secret2_windows}
                   ${%commonOptions}
               </p>
           </j:if>
-          <j:if test="${!it.launcher.descriptor.tcpSupported}">
+          <j:if test="${!it.launcher.tcpSupported}">
               <p>
                   ${%tcp-port-disabled}
                   <l:isAdmin><a href="${rootURL}/manage/configureSecurity/">${%configure.link.text}</a>.</l:isAdmin>
               </p>
           </j:if>
-          <j:if test="${!it.launcher.descriptor.instanceIdentityInstalled}">
+          <j:if test="${!it.launcher.instanceIdentityInstalled}">
               <p>
                   ${%instance-identity-missing}
                   <l:isAdmin><a href="${rootURL}/manage/pluginManager/available">${%install-instance-identity}</a>.</l:isAdmin>
               </p>
           </j:if>
-          <j:if test="${!it.launcher.descriptor.webSocketSupported}">
+          <j:if test="${!it.launcher.webSocketSupported}">
               <p>
                   ${%web-socket-unsupported}
               </p>
