@@ -45,11 +45,9 @@ public class VirtualMachine implements Comparable<VirtualMachine> {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof VirtualMachine)) {
+        if (!(o instanceof VirtualMachine that)) {
             return false;
         }
-
-        VirtualMachine that = (VirtualMachine) o;
 
         if (hypervisor == null) {
             if (that.hypervisor != null) {
@@ -62,16 +60,10 @@ public class VirtualMachine implements Comparable<VirtualMachine> {
         }
 
         if (name == null) {
-            if (that.name != null) {
-                return false;
-            }
+            return that.name == null;
         } else {
-            if (!name.equals(that.name)) {
-                return false;
-            }
+            return name.equals(that.name);
         }
-
-        return true;
     }
 
     @Override

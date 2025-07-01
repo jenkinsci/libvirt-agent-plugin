@@ -47,25 +47,26 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import hudson.util.ListBoxModel;
 import java.util.Arrays;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
+import org.springframework.security.core.Authentication;
 
 /**
  * Represents a virtual datacenter.
@@ -103,11 +104,7 @@ public class Hypervisor extends Cloud {
         }
         this.hypervisorTransport = hypervisorTransport;
         this.hypervisorHost = hypervisorHost;
-        if (hypervisorSystemUrl != null) {
-            this.hypervisorSystemUrl = hypervisorSystemUrl;
-        } else {
-            this.hypervisorSystemUrl = "system";
-        }
+        this.hypervisorSystemUrl = Objects.requireNonNullElse(hypervisorSystemUrl, "system");
 
         if (hypervisorSshPort > 0) {
             this.hypervisorSshPort = hypervisorSshPort;
@@ -415,9 +412,9 @@ public class Hypervisor extends Cloud {
         }
         return CredentialsMatchers.firstOrNull(
                 CredentialsProvider
-                        .lookupCredentials(StandardUsernamePasswordCredentials.class,
-                                           Jenkins.get(), ACL.SYSTEM,
-                                new SchemeRequirement("ssh")),
+                        .lookupCredentialsInItemGroup(StandardUsernamePasswordCredentials.class,
+                                           Jenkins.get(), ACL.SYSTEM2,
+                                List.of(new SchemeRequirement("ssh"))),
                 CredentialsMatchers.withId(credentialsId)
         );
     }
@@ -442,7 +439,7 @@ public class Hypervisor extends Cloud {
         }
 
         @Override
-        public boolean configure(StaplerRequest req, JSONObject o)
+        public boolean configure(StaplerRequest2 req, JSONObject o)
                 throws FormException {
             type = o.getString("hypervisorType");
             transport = o.getString("hypervisorTransport");
@@ -487,9 +484,9 @@ public class Hypervisor extends Cloud {
 
             Authentication auth;
             if (context instanceof Queue.Task) {
-                auth = Tasks.getAuthenticationOf((Queue.Task) context);
+                auth = Tasks.getAuthenticationOf2((Queue.Task) context);
             } else {
-                auth = ACL.SYSTEM;
+                auth = ACL.SYSTEM2;
             }
             return model
                     .includeEmptyValue()

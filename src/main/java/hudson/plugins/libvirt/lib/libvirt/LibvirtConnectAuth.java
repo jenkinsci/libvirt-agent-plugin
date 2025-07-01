@@ -42,12 +42,12 @@ public final class LibvirtConnectAuth extends ConnectAuth {
                 default:
                     // ignore
             }
-            if (response.equals("") && (c.defresult == null || !c.defresult.equals(""))) {
+            if (response.isEmpty() && (c.defresult == null || !c.defresult.isEmpty())) {
                 c.result = c.defresult;
             } else {
                 c.result = response;
             }
-            if (c.result == null || c.result.equals("")) {
+            if (c.result == null || c.result.isEmpty()) {
                 return -1;
             }
         }

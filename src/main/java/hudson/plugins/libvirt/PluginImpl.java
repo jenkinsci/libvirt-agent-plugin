@@ -32,14 +32,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 
 import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.verb.POST;
 
 /**
@@ -141,7 +141,7 @@ public class PluginImpl extends Plugin {
         }
     }
 
-    public void doComputerNameValues(StaplerRequest req, StaplerResponse rsp,
+    public void doComputerNameValues(StaplerRequest2 req, StaplerResponse2 rsp,
                                      @QueryParameter("value") String value)
             throws IOException, ServletException {
         ListBoxModel m = new ListBoxModel();
@@ -153,8 +153,7 @@ public class PluginImpl extends Plugin {
         }
 
         for (Cloud cloud : Jenkins.get().clouds) {
-            if (cloud instanceof Hypervisor) {
-                Hypervisor hypervisor = (Hypervisor) cloud;
+            if (cloud instanceof Hypervisor hypervisor) {
                 if (value != null && value.equals(hypervisor.getHypervisorDescription())) {
                     virtualMachines = hypervisor.getVirtualMachines();
                     break;
@@ -169,7 +168,7 @@ public class PluginImpl extends Plugin {
         m.writeTo(req, rsp);
     }
 
-    public void doSnapshotNameValues(StaplerRequest req, StaplerResponse rsp,
+    public void doSnapshotNameValues(StaplerRequest2 req, StaplerResponse2 rsp,
                                      @QueryParameter("vm") String vm,
                                      @QueryParameter("hypervisor") String hypervisor)
             throws IOException, ServletException {
@@ -182,8 +181,7 @@ public class PluginImpl extends Plugin {
 
         m.add(new ListBoxModel.Option("", ""));
         for (Cloud cloud : Jenkins.get().clouds) {
-            if (cloud instanceof Hypervisor) {
-                Hypervisor hypHandle = (Hypervisor) cloud;
+            if (cloud instanceof Hypervisor hypHandle) {
                 if (hypervisor != null && hypervisor.equals(hypHandle.getHypervisorURI())) {
                     String[] ss = hypHandle.getSnapshots(vm);
                     for (String sshot : ss) {

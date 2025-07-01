@@ -142,7 +142,7 @@ public final class ComputerUtils {
 
     public static void revertToSnapshot(final VirtualMachine virtualMachine, final String snapshotName,
             @CheckForNull final TaskListener listener) {
-        if (snapshotName != null && snapshotName.length() > 0) {
+        if (snapshotName != null && !snapshotName.isEmpty()) {
             final IDomain domain = getDomain(virtualMachine, listener);
             if (domain != null) {
                 try {

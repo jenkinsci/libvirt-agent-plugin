@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.82</version>
+        <version>5.18</version>
         <relativePath />
     </parent>
     <groupId>org.jenkins-ci.plugins</groupId>
@@ -17,12 +17,12 @@
     <licenses>
         <license>
             <name>GNU GENERAL PUBLIC LICENSE (GPL-3.0-or-later)</name>
-            <url>http://www.opensource.org/licenses/gpl-3.0.html</url>
+            <url>https://www.opensource.org/licenses/gpl-3.0.html</url>
         </license>
     </licenses>
     <organization>
         <name>Byte-Code</name>
-        <url>http://www.byte-code.com</url>
+        <url>https://www.byte-code.com</url>
     </organization>
     <developers>
         <developer>
@@ -56,7 +56,7 @@
         <changelist>999999-SNAPSHOT</changelist>
         <gitHubRepo>jenkinsci/libvirt-agent-plugin</gitHubRepo>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
-        <jenkins.baseline>2.414</jenkins.baseline>
+        <jenkins.baseline>2.479</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
         <spotbugs.effort>Max</spotbugs.effort>
         <spotbugs.failOnError>false</spotbugs.failOnError>
@@ -147,7 +147,7 @@
         <dependency>
             <groupId>io.jenkins.tools.bom</groupId>
             <artifactId>bom-${jenkins.baseline}.x</artifactId>
-            <version>2982.vdce2153031a_0</version>
+            <version>4948.vcf1d17350668</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>
