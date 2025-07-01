@@ -37,6 +37,7 @@ import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +52,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
  */
 public class VirtualMachineSlave extends Slave {
 
-    static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(VirtualMachineSlave.class.getName());
 
     private final String      hypervisorDescription;

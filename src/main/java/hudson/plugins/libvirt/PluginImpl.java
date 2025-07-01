@@ -153,8 +153,7 @@ public class PluginImpl extends Plugin {
         }
 
         for (Cloud cloud : Jenkins.get().clouds) {
-            if (cloud instanceof Hypervisor) {
-                Hypervisor hypervisor = (Hypervisor) cloud;
+            if (cloud instanceof Hypervisor hypervisor) {
                 if (value != null && value.equals(hypervisor.getHypervisorDescription())) {
                     virtualMachines = hypervisor.getVirtualMachines();
                     break;
@@ -182,8 +181,7 @@ public class PluginImpl extends Plugin {
 
         m.add(new ListBoxModel.Option("", ""));
         for (Cloud cloud : Jenkins.get().clouds) {
-            if (cloud instanceof Hypervisor) {
-                Hypervisor hypHandle = (Hypervisor) cloud;
+            if (cloud instanceof Hypervisor hypHandle) {
                 if (hypervisor != null && hypervisor.equals(hypHandle.getHypervisorURI())) {
                     String[] ss = hypHandle.getSnapshots(vm);
                     for (String sshot : ss) {
