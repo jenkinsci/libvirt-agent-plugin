@@ -52,7 +52,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import hudson.util.ListBoxModel;
 import java.util.Arrays;
@@ -64,7 +64,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.verb.POST;
 
 /**
@@ -442,7 +442,7 @@ public class Hypervisor extends Cloud {
         }
 
         @Override
-        public boolean configure(StaplerRequest req, JSONObject o)
+        public boolean configure(StaplerRequest2 req, JSONObject o)
                 throws FormException {
             type = o.getString("hypervisorType");
             transport = o.getString("hypervisorTransport");

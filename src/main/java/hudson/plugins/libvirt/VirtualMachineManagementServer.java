@@ -10,16 +10,16 @@ import hudson.plugins.libvirt.lib.VirtException;
 import jenkins.model.Jenkins;
 
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.verb.POST;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Nigel Magnay
@@ -59,7 +59,7 @@ public class VirtualMachineManagementServer implements Describable<VirtualMachin
     }
 
     @POST
-    public void doControlSubmit(@QueryParameter("stopId") String stopId, StaplerRequest req, StaplerResponse rsp) throws ServletException,
+    public void doControlSubmit(@QueryParameter("stopId") String stopId, StaplerRequest2 req, StaplerResponse2 rsp) throws ServletException,
             IOException,
             InterruptedException, VirtException {
 
