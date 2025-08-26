@@ -141,6 +141,10 @@ public class PluginImpl extends Plugin {
         }
     }
 
+    /**
+     * Retrieve the list of virtual machine names from the hypervisor.
+     */
+    @POST
     public void doComputerNameValues(StaplerRequest2 req, StaplerResponse2 rsp,
                                      @QueryParameter("value") String value)
             throws IOException, ServletException {
@@ -168,6 +172,10 @@ public class PluginImpl extends Plugin {
         m.writeTo(req, rsp);
     }
 
+    /**
+     * Retrieve the list of snapshots from a virtual machine on an hypervisor.
+     */
+    @POST
     public void doSnapshotNameValues(StaplerRequest2 req, StaplerResponse2 rsp,
                                      @QueryParameter("vm") String vm,
                                      @QueryParameter("hypervisor") String hypervisor)

@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  * @author Marco Mornati
@@ -222,6 +223,7 @@ public class VirtualMachineSlave extends Slave {
             return new String[0];
         }
 
+        @POST
         public ListBoxModel doFillHypervisorDescriptionItems() {
             ListBoxModel items = new ListBoxModel();
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);

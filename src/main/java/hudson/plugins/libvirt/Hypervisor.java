@@ -451,6 +451,7 @@ public class Hypervisor extends Cloud {
             return super.configure(req, o);
         }
 
+        @POST
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item context,
                                                      @QueryParameter String hypervisorType,
                                                      @QueryParameter String hypervisorTransport,
@@ -501,6 +502,7 @@ public class Hypervisor extends Cloud {
                     .includeCurrentValue(credentialsId);
         }
 
+        @POST
         public FormValidation doCheckCredentialsId(@AncestorInPath Item item,
                                                    @QueryParameter String hypervisorType,
                                                    @QueryParameter String hypervisorTransport,
