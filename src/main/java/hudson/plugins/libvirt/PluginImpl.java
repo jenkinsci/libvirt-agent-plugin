@@ -107,11 +107,11 @@ public class PluginImpl extends Plugin {
     }
 
     @POST
-    public FormValidation doCheckStartupWaitingPeriodSeconds(@QueryParameter String secsValue)
+    public FormValidation doCheckStartupWaitingPeriodSeconds(@QueryParameter String value)
             throws IOException, ServletException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         try {
-            int v = Integer.parseInt(secsValue);
+            int v = Integer.parseInt(value);
             if (v < 0) {
                 return FormValidation.error("Negative value..");
             } else if (v == 0) {
@@ -126,11 +126,11 @@ public class PluginImpl extends Plugin {
     }
 
     @POST
-    public FormValidation doCheckStartupTimesToRetryOnFailure(@QueryParameter String retriesValue)
+    public FormValidation doCheckStartupTimesToRetryOnFailure(@QueryParameter String value)
             throws IOException, ServletException {
         Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         try {
-            int v = Integer.parseInt(retriesValue);
+            int v = Integer.parseInt(value);
             if (v < 0) {
                 return FormValidation.error("Negative value.");
             } else {
