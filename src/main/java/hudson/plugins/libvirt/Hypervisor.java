@@ -26,6 +26,7 @@ import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.google.common.base.Strings;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.Computer;
 import hudson.model.Descriptor;
 import hudson.model.Item;
@@ -59,7 +60,6 @@ import hudson.util.ListBoxModel;
 import java.util.Arrays;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
 
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -523,7 +523,7 @@ public class Hypervisor extends Cloud {
                 }
             }
 
-            if (StringUtils.isBlank(credentialsId)) {
+            if (Util.fixEmptyAndTrim(credentialsId) == null) {
                 return FormValidation.ok();
             }
 
